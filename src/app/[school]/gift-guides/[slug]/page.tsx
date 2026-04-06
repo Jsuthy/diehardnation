@@ -7,6 +7,7 @@ import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/schema'
 import ProductCardGrid from '@/components/products/ProductCardGrid'
 
 export const revalidate = 3600
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   return []

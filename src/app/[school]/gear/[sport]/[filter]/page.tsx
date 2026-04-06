@@ -10,6 +10,7 @@ import SchemaScript from '@/components/SchemaScript'
 import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/schema'
 
 export const revalidate = 3600
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   // We rely on ISR for filter pages — too many combos for static gen
