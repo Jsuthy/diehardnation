@@ -1,0 +1,19 @@
+# DieHardNation
+Independent college fan gear aggregator covering all 130 FBS schools.
+Products sourced from eBay and Amazon via affiliate partnerships.
+Not affiliated with any university, conference, or NCAA.
+
+## Coverage
+130 FBS schools across SEC, Big Ten, Big 12, ACC, and all other conferences.
+8 sports per school: football, basketball, volleyball, wrestling,
+baseball, softball, track, and general fan gear.
+
+## Pages
+/[school]/ — School fan gear hub
+/[school]/gear/[sport]/ — Sport-specific gear
+/[school]/gear/[sport]/[filter]/ — Filtered gear by category or price
+/[school]/news/ — School news and game recaps
+/[school]/gift-guides/ — Gift guide collections
+/[school]/product/[slug]/ — Individual product pages
+/trending — Most popular gear across all schools
+/news — Latest news from all schools

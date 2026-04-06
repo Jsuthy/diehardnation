@@ -1,10 +1,22 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getSchool, getProducts } from '@/lib/supabase/queries'
+import Link from 'next/link'
+import { getSchool, getProducts, getProgrammaticPage } from '@/lib/supabase/queries'
 import { SPORTS } from '@/lib/constants/sports'
+import { SCHOOLS } from '@/lib/constants/schools'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
+import SchemaScript from '@/components/SchemaScript'
+import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/schema'
 
 export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const sportSlugs = SPORTS.map(s => s.slug)
+  const topSchools = SCHOOLS.filter(s => s.fan_size_rank <= 20)
+  return topSchools.flatMap(school =>
+    sportSlugs.map(sport => ({ school: school.slug, sport }))
+  )
+}
 
 export async function generateMetadata({
   params,
@@ -16,10 +28,12 @@ export async function generateMetadata({
   const sport = SPORTS.find(s => s.slug === sportSlug)
   if (!school || !sport) return {}
 
-  return {
-    title: `${school.short_name} ${sport.name} Gear`,
-    description: `Shop ${school.name} ${sport.name.toLowerCase()} fan gear. ${school.mascot} apparel from eBay and Amazon.`,
-  }
+  const page = await getProgrammaticPage(slug, sportSlug === 'general' ? 'all-gear' : sportSlug)
+
+  const title = page?.title || `${school.name} ${sport.name} Gear \u2014 Shop ${school.mascot} ${sport.name} Apparel`
+  const description = page?.description || `Shop ${school.name} ${sport.name.toLowerCase()} gear. ${sport.name} jerseys, hoodies, hats and more. Independent fan aggregator \u2014 links to eBay and Amazon.`
+
+  return { title, description, openGraph: { title, description } }
 }
 
 export default async function SportPage({
@@ -39,24 +53,61 @@ export default async function SportPage({
     limit: 24,
   })
 
+  const otherSports = SPORTS.filter(s => s.slug !== sportSlug && s.slug !== 'general')
+
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: school.short_name, url: `/${slug}` },
+    { name: `${sport.name} Gear`, url: `/${slug}/gear/${sportSlug}` },
+  ]
+
   return (
     <main>
+      <SchemaScript schema={[
+        buildBreadcrumbSchema(breadcrumbs),
+        ...(products.length > 0 ? [buildItemListSchema(products, `${school.short_name} ${sport.name} Gear`)] : []),
+      ]} />
+
+      {/* Breadcrumb */}
+      <nav className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
+        <Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Home</Link>
+        {' / '}
+        <Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.short_name}</Link>
+        {' / '}
+        <span style={{ color: 'var(--text-secondary)' }}>{sport.name} Gear</span>
+      </nav>
+
+      {/* Hero */}
       <section style={{ background: school.primary_color, padding: '32px 0' }}>
         <div className="container">
           <h1 style={{
             color: 'white',
             fontWeight: 900,
-            fontSize: 'clamp(28px, 5vw, 48px)',
+            fontSize: 'clamp(28px, 5vw, 52px)',
             letterSpacing: '-0.03em',
+            lineHeight: 1,
           }}>
-            {school.short_name.toUpperCase()} {sport.name.toUpperCase()}
+            {school.short_name.toUpperCase()} {sport.name.toUpperCase()} GEAR
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginTop: 6 }}>
-            {total} products found
+          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, marginTop: 8 }}>
+            Shop {school.mascot} {sport.name.toLowerCase()} apparel &mdash; updated daily
           </p>
+          <span style={{
+            display: 'inline-block',
+            marginTop: 12,
+            fontSize: 12,
+            fontWeight: 700,
+            background: 'rgba(255,255,255,0.2)',
+            color: 'white',
+            padding: '4px 10px',
+            borderRadius: 12,
+          }}>
+            {total} products
+          </span>
         </div>
       </section>
 
+      {/* Products */}
       <SchoolShopClient
         initialProducts={products}
         totalCount={total}
@@ -64,6 +115,36 @@ export default async function SportPage({
         schoolColor={school.primary_color}
         school={school}
       />
+
+      {/* Related sports */}
+      {otherSports.length > 0 && (
+        <section className="container" style={{ padding: '32px 20px 48px' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
+            Also shop {school.short_name}:
+          </h2>
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8 }}>
+            {otherSports.map(s => (
+              <Link
+                key={s.slug}
+                href={`/${slug}/gear/${s.slug}`}
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  padding: '6px 14px',
+                  borderRadius: 20,
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {s.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   )
 }
