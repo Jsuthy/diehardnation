@@ -1,65 +1,161 @@
-import Image from "next/image";
+import { Suspense } from 'react'
+import HeroSearch from '@/components/home/HeroSearch'
+import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
+import { getPublicClient } from '@/lib/supabase/server'
+import type { Product, NewsPost } from '@/lib/supabase/types'
 
-export default function Home() {
+async function getTrendingProducts(): Promise<Product[]> {
+  try {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true)
+      .order('click_count', { ascending: false })
+      .limit(8)
+    return (data as Product[]) || []
+  } catch {
+    return []
+  }
+}
+
+async function getLatestNews(): Promise<NewsPost[]> {
+  try {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('news_posts')
+      .select('*')
+      .eq('is_published', true)
+      .order('published_at', { ascending: false })
+      .limit(6)
+    return (data as NewsPost[]) || []
+  } catch {
+    return []
+  }
+}
+
+export default async function HomePage() {
+  const [trendingProducts, latestNews] = await Promise.all([
+    getTrendingProducts(),
+    getLatestNews(),
+  ])
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    <main>
+      {/* Hero */}
+      <section className="container" style={{ padding: '80px 20px 60px' }}>
+        <h1 style={{
+          fontSize: 'clamp(48px, 8vw, 96px)',
+          fontWeight: 900,
+          letterSpacing: '-0.04em',
+          lineHeight: 0.95,
+          color: 'var(--text-primary)',
+        }}>
+          FIND YOUR SCHOOL.
+        </h1>
+        <h2 style={{
+          fontSize: 'clamp(48px, 8vw, 96px)',
+          fontWeight: 900,
+          letterSpacing: '-0.04em',
+          lineHeight: 0.95,
+          color: 'var(--text-secondary)',
+          marginBottom: 32,
+        }}>
+          SHOP YOUR TEAM.
+        </h2>
+        <Suspense fallback={<div style={{ height: 52, maxWidth: 480 }} />}>
+          <HeroSearch />
+        </Suspense>
+      </section>
+
+      {/* Conference tabs + school grid */}
+      <section className="container">
+        <ConferenceSchoolGrid />
+      </section>
+
+      {/* Trending gear */}
+      {trendingProducts.length > 0 && (
+        <section className="container" style={{ padding: '48px 20px' }}>
+          <h2 style={{
+            fontSize: 24,
+            fontWeight: 900,
+            letterSpacing: '-0.02em',
+            marginBottom: 24,
+          }}>
+            TRENDING GEAR
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 16,
+          }}>
+            {trendingProducts.map(p => (
+              <div key={p.id} style={{
+                background: 'white',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)',
+                overflow: 'hidden',
+                padding: 12,
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, lineHeight: 1.4 }}>
+                  {p.title}
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700 }}>
+                  ${p.price.toFixed(2)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Latest news */}
+      {latestNews.length > 0 && (
+        <section className="container" style={{ padding: '48px 20px 80px' }}>
+          <h2 style={{
+            fontSize: 24,
+            fontWeight: 900,
+            letterSpacing: '-0.02em',
+            marginBottom: 24,
+          }}>
+            LATEST FROM THE NATION
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 16,
+          }}>
+            {latestNews.map(post => (
+              <article key={post.id} style={{
+                background: 'white',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)',
+                padding: 16,
+              }}>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: 'var(--brand)',
+                  marginBottom: 6,
+                }}>
+                  {post.school_slug}
+                </div>
+                <h3 style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.4, marginBottom: 6 }}>
+                  {post.title}
+                </h3>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                  {post.excerpt}
+                </p>
+                <time style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, display: 'block' }}>
+                  {new Date(post.published_at).toLocaleDateString()}
+                </time>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  )
 }

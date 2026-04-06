@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base — pure white, products breathe */
+  --bg: #FFFFFF;
+  --surface: #F5F5F5;
+  --surface-2: #EEEEEE;
+  --border: #E8E8E8;
+  --border-strong: #D0D0D0;
+
+  /* Text */
+  --text-primary: #0A0A0A;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9B9B9B;
+
+  /* Brand */
+  --brand: #CC0000;
+  --brand-hover: #AA0000;
+
+  /* School (overridden per school via data-school attribute) */
+  --school-color: #CC0000;
+  --school-bg: #0A0A0A;
+  --school-text: #FFFFFF;
+
+  /* Spacing */
+  --nav-height: 60px;
+  --school-nav-height: 48px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* School theme overrides */
+[data-school="nebraska"]  { --school-color: #D11F3A; --school-bg: #0A0A0A; }
+[data-school="alabama"]   { --school-color: #9E1B32; --school-bg: #FFFFFF; }
+[data-school="michigan"]  { --school-color: #FFCB05; --school-bg: #00274C; }
+[data-school="ohio-state"]{ --school-color: #BB0000; --school-bg: #FFFFFF; }
+[data-school="texas"]     { --school-color: #BF5700; --school-bg: #FFFFFF; }
+[data-school="georgia"]   { --school-color: #BA0C2F; --school-bg: #FFFFFF; }
+[data-school="penn-state"]{ --school-color: #041E42; --school-bg: #FFFFFF; }
+[data-school="lsu"]       { --school-color: #461D7C; --school-bg: #FDD023; }
+[data-school="notre-dame"]{ --school-color: #0C2340; --school-bg: #C99700; }
+[data-school="tennessee"] { --school-color: #FF8200; --school-bg: #FFFFFF; }
+[data-school="oklahoma"]  { --school-color: #841617; --school-bg: #FFFFFF; }
+[data-school="auburn"]    { --school-color: #0C2340; --school-bg: #E87722; }
+[data-school="florida"]   { --school-color: #0021A5; --school-bg: #FA4616; }
+[data-school="clemson"]   { --school-color: #F66733; --school-bg: #522D80; }
+[data-school="wisconsin"] { --school-color: #C5050C; --school-bg: #FFFFFF; }
+[data-school="iowa"]      { --school-color: #FFCD00; --school-bg: #000000; }
+[data-school="michigan-state"] { --school-color: #18453B; --school-bg: #FFFFFF; }
+[data-school="texas-am"]  { --school-color: #500000; --school-bg: #FFFFFF; }
+[data-school="oregon"]    { --school-color: #154733; --school-bg: #FEE123; }
+[data-school="usc"]       { --school-color: #990000; --school-bg: #FFC72C; }
+
+/* Typography utilities */
+.font-display { font-weight: 900; letter-spacing: -0.02em; }
+.text-school  { color: var(--school-color); }
+.bg-school    { background: var(--school-color); }
+
+/* Layout */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
 }
