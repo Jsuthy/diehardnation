@@ -353,3 +353,73 @@ curl -X POST https://diehardnation.com/api/content/publish \
     ]
   }'
 ```
+
+---
+
+## Workflow 5: School Queue Runner (AUTONOMOUS)
+
+**Trigger:** Schedule — every 2 hours (cron: `0 */2 * * *`)
+
+This is the fully autonomous workflow that builds all 130 schools
+with zero human input. It runs every 2 hours, picks the next
+unbuilt school by fan size rank, and fully bootstraps it.
+
+**Timeline:** 130 schools ÷ 12 builds/day = ~11 days to complete all.
+
+### Nodes
+
+**Node 1 — Schedule Trigger**
+- Cron: `0 */2 * * *`
+
+**Node 2 — HTTP Request (get next school)**
+- Method: `GET`
+- URL: `https://diehardnation.vercel.app/api/schools/queue?limit=1`
+- Headers: `Authorization: Bearer diehardnation_ingest_2026`
+
+**Node 3 — IF (any schools left?)**
+- Condition: `{{ $json.schools.length > 0 }}`
+- True: continue to build
+- False: stop (all schools built)
+
+**Node 4 — HTTP Request (build school)**
+- Method: `POST`
+- URL: `https://diehardnation.vercel.app/api/schools/build`
+- Headers:
+  - `Authorization: Bearer diehardnation_ingest_2026`
+  - `Content-Type: application/json`
+- Body: `{ "school_slug": "={{ $json.schools[0].slug }}" }`
+- **Timeout: 300 seconds** (building takes 2-3 minutes)
+- Continue on error: YES
+
+**Node 5 — Done**
+- Log the result
+
+### n8n Setup
+
+1. Create a new workflow named "School Queue Runner"
+2. Add a Schedule trigger node with cron `0 */2 * * *`
+3. Add the HTTP Request nodes as described above
+4. Activate the workflow
+5. Monitor progress at: `/admin?token=YOUR_ADMIN_TOKEN`
+
+### Monitoring
+
+Check build progress:
+```bash
+curl -H "Authorization: Bearer diehardnation_admin_2026" \
+  "https://diehardnation.vercel.app/api/admin/stats"
+```
+
+Check queue:
+```bash
+curl -H "Authorization: Bearer diehardnation_ingest_2026" \
+  "https://diehardnation.vercel.app/api/schools/queue?limit=5"
+```
+
+Build a specific school manually:
+```bash
+curl -X POST https://diehardnation.vercel.app/api/schools/build \
+  -H "Authorization: Bearer diehardnation_ingest_2026" \
+  -H "Content-Type: application/json" \
+  -d '{"school_slug": "alabama"}'
+```
