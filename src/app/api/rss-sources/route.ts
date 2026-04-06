@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPublicClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing school_slug' }, { status: 400 })
   }
 
-  const supabase = getPublicClient()
+  const supabase = getAdminClient()
   const { data, error } = await supabase
     .from('rss_sources')
     .select('*')
