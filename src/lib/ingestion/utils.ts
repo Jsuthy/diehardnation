@@ -50,11 +50,26 @@ export function generateSlug(title: string, externalId: string): string {
   return `${base}-${suffix}`
 }
 
+// Global exclusions — these reject a product regardless of school
+const GLOBAL_EXCLUSIONS = [
+  'high school', 'nfhs', 'middle school', 'elementary',
+  'little league', 'youth league', 'pop warner',
+  'nfl ', 'nba ', 'mlb ', 'nhl ', 'mls ',
+  'stickers', 'sticker pack', 'die cut',
+  'phone case', 'iphone', 'samsung',
+]
+
 export function isSchoolProduct(title: string, school: School): boolean {
   const t = title.toLowerCase()
+
+  // Global exclusions
+  for (const g of GLOBAL_EXCLUSIONS) {
+    if (t.includes(g)) return false
+  }
+
   const filter = getSchoolFilter(school)
 
-  // Check exclusions first — if any exclusion term found, reject
+  // Check school-specific exclusions
   for (const excluded of filter.excluded) {
     if (t.includes(excluded.toLowerCase())) return false
   }
