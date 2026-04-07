@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase/server'
 import { runIngestionForSchool } from '@/lib/ingestion'
 import { generateWithOllama, parseJsonFromOllama } from '@/lib/ollama'
+import { SPECIFIC_SEARCH_TERMS } from '@/lib/ingestion/school-filters'
 import type { School } from '@/lib/supabase/types'
 
 export const maxDuration = 300 // 5 minutes for Vercel
@@ -51,80 +52,89 @@ export async function POST(request: NextRequest) {
     let articlesPublished = 0
     const errors: string[] = []
 
-    // 2. Generate search terms via Ollama
-    try {
-      const prompt = `Generate eBay search terms for ${s.name} (${s.nickname}, ${s.mascot}) fan gear. Return ONLY valid JSON with these exact keys:
+    // 2. Generate search terms — use curated terms for known schools, Ollama for others
+    const specificTerms = SPECIFIC_SEARCH_TERMS[schoolSlug]
+    if (specificTerms) {
+      // Use curated, school-specific search terms
+      const rows: { school_slug: string; term: string; sport: string }[] = []
+      for (const [sport, terms] of Object.entries(specificTerms)) {
+        for (const term of terms) {
+          rows.push({ school_slug: schoolSlug, term, sport })
+        }
+      }
+      await supabase
+        .from('school_search_terms')
+        .upsert(rows, { onConflict: 'school_slug,term' })
+      searchTermsCreated = rows.length
+    } else {
+      // Try Ollama, fall back to template terms
+      try {
+        const prompt = `Generate eBay search terms for ${s.name} fan gear.
+IMPORTANT: Terms must be specific enough to avoid products from similarly-named schools.
+For example, for Michigan use 'michigan wolverines' not just 'michigan'.
+For USC use 'usc trojans' not just 'trojans'.
+
+School: ${s.name}
+Nickname: ${s.nickname}
+Mascot: ${s.mascot}
+Conference: ${s.conference}
+
+Return ONLY valid JSON with sport keys and arrays of specific search terms that include the full team name or unique identifier:
 {
-  "football": ["term1", "term2", "term3", "term4", "term5"],
-  "basketball": ["term1", "term2", "term3", "term4", "term5"],
-  "volleyball": ["term1", "term2", "term3"],
-  "baseball": ["term1", "term2", "term3"],
-  "wrestling": ["term1", "term2"],
-  "softball": ["term1", "term2"],
-  "track": ["term1", "term2"],
-  "general": ["term1", "term2", "term3", "term4", "term5"]
+  "football": ["${s.slug} ${s.mascot.toLowerCase()} football jersey", "4 more terms"],
+  "basketball": ["${s.slug} ${s.mascot.toLowerCase()} basketball", "2 more"],
+  "volleyball": ["${s.name.toLowerCase()} volleyball", "1 more"],
+  "general": ["${s.name.toLowerCase()} gear", "${s.nickname.toLowerCase()} apparel", "3 more"]
 }
-Each term should be a realistic eBay search specific to ${s.name} or ${s.nickname}. Example: '${s.slug} ${s.mascot.toLowerCase()} football jersey'. Return ONLY the JSON, nothing else.`
+Return ONLY the JSON, nothing else.`
 
-      const raw = await generateWithOllama(prompt)
-      const parsed = parseJsonFromOllama(raw)
+        const raw = await generateWithOllama(prompt)
+        const parsed = parseJsonFromOllama(raw)
 
-      if (parsed) {
-        const rows: { school_slug: string; term: string; sport: string }[] = []
-        for (const [sport, terms] of Object.entries(parsed)) {
-          if (Array.isArray(terms)) {
-            for (const term of terms) {
-              if (typeof term === 'string' && term.length > 3) {
-                rows.push({ school_slug: schoolSlug, term, sport })
+        if (parsed) {
+          const rows: { school_slug: string; term: string; sport: string }[] = []
+          for (const [sport, terms] of Object.entries(parsed)) {
+            if (Array.isArray(terms)) {
+              for (const term of terms) {
+                if (typeof term === 'string' && term.length > 3) {
+                  rows.push({ school_slug: schoolSlug, term, sport })
+                }
               }
             }
           }
+          if (rows.length > 0) {
+            await supabase
+              .from('school_search_terms')
+              .upsert(rows, { onConflict: 'school_slug,term' })
+            searchTermsCreated = rows.length
+          }
         }
+      } catch (err) {
+        errors.push(`Ollama error: ${err}`)
+      }
 
-        if (rows.length > 0) {
-          await supabase
-            .from('school_search_terms')
-            .upsert(rows, { onConflict: 'school_slug,term' })
-          searchTermsCreated = rows.length
-        }
-      } else {
-        // Fallback: generate basic search terms
+      // If no terms yet (Ollama failed or returned garbage), use safe fallback
+      if (searchTermsCreated === 0) {
         const fallbackTerms = [
           { term: `${s.name} football jersey`, sport: 'football' },
-          { term: `${s.short_name} football shirt`, sport: 'football' },
-          { term: `${s.nickname} football hoodie`, sport: 'football' },
+          { term: `${s.name} football shirt`, sport: 'football' },
+          { term: `${s.name} football hoodie`, sport: 'football' },
           { term: `${s.name} basketball gear`, sport: 'basketball' },
-          { term: `${s.nickname} basketball shirt`, sport: 'basketball' },
+          { term: `${s.name} basketball shirt`, sport: 'basketball' },
           { term: `${s.name} volleyball shirt`, sport: 'volleyball' },
-          { term: `${s.mascot} merchandise`, sport: 'general' },
-          { term: `${s.short_name} hoodie`, sport: 'general' },
-          { term: `${s.nickname} hat`, sport: 'general' },
+          { term: `${s.name} merchandise`, sport: 'general' },
+          { term: `${s.name} hoodie`, sport: 'general' },
+          { term: `${s.name} hat`, sport: 'general' },
           { term: `${s.name} gear`, sport: 'general' },
-          { term: `${s.short_name} shirt`, sport: 'general' },
+          { term: `${s.name} shirt`, sport: 'general' },
         ].map(t => ({ ...t, school_slug: schoolSlug }))
 
         await supabase
           .from('school_search_terms')
           .upsert(fallbackTerms, { onConflict: 'school_slug,term' })
         searchTermsCreated = fallbackTerms.length
-        errors.push('Ollama parse failed, used fallback search terms')
+        errors.push('Used fallback search terms (full school name for safety)')
       }
-    } catch (err) {
-      // Ollama unreachable — use fallback terms
-      const fallbackTerms = [
-        `${s.name} football jersey`,
-        `${s.short_name} hoodie`,
-        `${s.nickname} shirt`,
-        `${s.mascot} gear`,
-        `${s.name} hat`,
-        `${s.short_name} merchandise`,
-      ].map(term => ({ school_slug: schoolSlug, term, sport: 'general' }))
-
-      await supabase
-        .from('school_search_terms')
-        .upsert(fallbackTerms, { onConflict: 'school_slug,term' })
-      searchTermsCreated = fallbackTerms.length
-      errors.push(`Ollama error: ${err}. Used fallback search terms.`)
     }
 
     // 3. Run eBay ingestion

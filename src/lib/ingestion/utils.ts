@@ -1,4 +1,6 @@
 import type { SportSlug, CategorySlug } from '@/lib/supabase/types'
+import type { School } from '@/lib/supabase/types'
+import { getSchoolFilter } from './school-filters'
 
 export function detectSport(title: string): SportSlug {
   const t = title.toLowerCase()
@@ -48,9 +50,21 @@ export function generateSlug(title: string, externalId: string): string {
   return `${base}-${suffix}`
 }
 
-export function isSchoolProduct(title: string, schoolTerms: string[]): boolean {
+export function isSchoolProduct(title: string, school: School): boolean {
   const t = title.toLowerCase()
-  return schoolTerms.some(term => t.includes(term.toLowerCase()))
+  const filter = getSchoolFilter(school)
+
+  // Check exclusions first — if any exclusion term found, reject
+  for (const excluded of filter.excluded) {
+    if (t.includes(excluded.toLowerCase())) return false
+  }
+
+  // Check required — at least one must be present
+  for (const required of filter.required) {
+    if (t.includes(required.toLowerCase())) return true
+  }
+
+  return false
 }
 
 export interface NormalizedProduct {

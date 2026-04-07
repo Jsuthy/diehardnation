@@ -73,13 +73,6 @@ export async function fetchEbayProductsForSchool(
   const allItems: NormalizedProduct[] = []
   const seenIds = new Set<string>()
 
-  const schoolMatchTerms = [
-    school.name.toLowerCase(),
-    school.short_name.toLowerCase(),
-    school.mascot.toLowerCase(),
-    school.nickname.toLowerCase(),
-  ]
-
   for (const term of searchTerms) {
     try {
       const items = await searchEbay(token, term, 25)
@@ -89,7 +82,7 @@ export async function fetchEbayProductsForSchool(
         if (!itemId || seenIds.has(itemId)) continue
 
         const title = String(item.title || '')
-        if (!isSchoolProduct(title, schoolMatchTerms)) continue
+        if (!isSchoolProduct(title, school)) continue
 
         const price = Number(
           (item.price as Record<string, unknown>)?.value || 0
