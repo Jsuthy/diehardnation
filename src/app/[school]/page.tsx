@@ -24,13 +24,25 @@ export async function generateMetadata({
   const school = await getSchool(slug)
   if (!school) return {}
 
-  const title = `${school.short_name || school.name} Fan Gear | DieHardNation`
+  const title = `${school.name} Fan Gear — Jerseys, Hoodies & More`
   const description = `Shop ${school.name} fan gear. ${school.mascot} jerseys, hoodies, hats and more from eBay and Amazon. Independent fan aggregator.`
 
   return {
     title,
     description,
-    openGraph: { title, description },
+    alternates: { canonical: `https://diehardnation.com/${slug}` },
+    openGraph: {
+      title: `${school.name} Fan Gear | DieHardNation`,
+      description,
+      url: `https://diehardnation.com/${slug}`,
+      siteName: 'DieHardNation',
+      images: [{
+        url: 'https://diehardnation.com/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: `${school.name} Fan Gear`,
+      }],
+    },
   }
 }
 
@@ -154,17 +166,57 @@ export default async function SchoolPage({
         </p>
       </section>
 
-      {/* JSON-LD */}
+      {/* JSON-LD: Organization + FAQ */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: 'DieHardNation',
-            url: `https://diehardnation.com/${school.slug}`,
-            description: `Shop ${school.name} fan gear. ${school.mascot} jerseys, hoodies, hats and more from eBay and Amazon.`,
-          }),
+          __html: JSON.stringify([
+            {
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'DieHardNation',
+              url: `https://diehardnation.com/${school.slug}`,
+              description: `Shop ${school.name} fan gear. ${school.mascot} jerseys, hoodies, hats and more from eBay and Amazon.`,
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: [
+                {
+                  '@type': 'Question',
+                  name: `Where can I buy ${school.name} fan gear?`,
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: `DieHardNation aggregates ${school.name} ${school.mascot} fan gear from trusted retailers like eBay and Amazon. Browse ${stats.productCount}+ products including jerseys, hoodies, hats, and more — all in one place.`,
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: `What are the best ${school.name} gifts for fans?`,
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: `Popular ${school.mascot} gifts include game day apparel, vintage-style tees, and officially licensed accessories. Check our ${school.short_name} gift guides for curated picks across every budget.`,
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: `Does DieHardNation ship ${school.name} gear?`,
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: `DieHardNation is an affiliate aggregator — we link you directly to retailers like eBay and Amazon who handle shipping. This means you get their shipping speeds, return policies, and buyer protection.`,
+                  },
+                },
+                {
+                  '@type': 'Question',
+                  name: `What ${school.name} sports gear is available?`,
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: `We carry ${school.mascot} gear across football, basketball, baseball, and more. Browse by sport to find ${school.short_name} apparel for any season. Currently ${stats.productCount} products available across ${stats.pageCount} categories.`,
+                  },
+                },
+              ],
+            },
+          ]),
         }}
       />
     </main>

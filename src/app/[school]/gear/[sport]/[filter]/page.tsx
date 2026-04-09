@@ -39,10 +39,26 @@ export async function generateMetadata({
   const pageSlug = `${sportSlug === 'general' ? '' : sportSlug + '-'}${filterSlug}`
   const page = await getProgrammaticPage(slug, pageSlug)
 
-  const title = page?.title || `${school.short_name} ${sport.name} ${filter.name} \u2014 Shop ${school.mascot} Gear`
+  const title = page?.title || `${school.name} ${sport.name} ${filter.name} | DieHardNation`
   const description = page?.description || `${school.name} ${sport.name.toLowerCase()} ${filter.name.toLowerCase()}. Shop ${school.mascot} fan apparel from eBay and Amazon.`
 
-  return { title, description, openGraph: { title, description } }
+  return {
+    title,
+    description,
+    alternates: { canonical: `https://diehardnation.com/${slug}/gear/${sportSlug}/${filterSlug}` },
+    openGraph: {
+      title: `${school.name} ${sport.name} ${filter.name} | DieHardNation`,
+      description,
+      url: `https://diehardnation.com/${slug}/gear/${sportSlug}/${filterSlug}`,
+      siteName: 'DieHardNation',
+      images: [{
+        url: 'https://diehardnation.com/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: `${school.name} ${sport.name} ${filter.name}`,
+      }],
+    },
+  }
 }
 
 export default async function FilterPage({

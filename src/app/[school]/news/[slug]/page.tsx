@@ -19,12 +19,29 @@ export async function generateMetadata({
   params: Promise<{ school: string; slug: string }>
 }): Promise<Metadata> {
   const { school: schoolSlug, slug } = await params
-  const post = await getNewsPost(schoolSlug, slug)
-  if (!post) return {}
+  const [school, post] = await Promise.all([
+    getSchool(schoolSlug),
+    getNewsPost(schoolSlug, slug),
+  ])
+  if (!post || !school) return {}
 
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `https://diehardnation.com/${schoolSlug}/news/${slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `https://diehardnation.com/${schoolSlug}/news/${slug}`,
+      siteName: 'DieHardNation',
+      type: 'article',
+      images: [{
+        url: 'https://diehardnation.com/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: post.title,
+      }],
+    },
   }
 }
 
