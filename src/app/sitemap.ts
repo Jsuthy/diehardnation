@@ -9,8 +9,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [schoolsResult, pagesResult, newsResult, productsResult] = await Promise.allSettled([
     supabase.from('schools').select('slug').eq('is_active', true),
     supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at').eq('is_active', true).gte('product_count', 3),
-    supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true),
-    supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).limit(50000),
+    supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
+    supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).neq('slug', '').not('slug', 'is', null).limit(50000),
   ])
 
   const schools = schoolsResult.status === 'fulfilled' ? schoolsResult.value.data || [] : []

@@ -24,7 +24,7 @@ export async function generateMetadata({
   const school = await getSchool(slug)
   if (!school) return {}
 
-  const title = `${school.name} Fan Gear \u2014 Shop ${school.mascot} Apparel`
+  const title = `${school.short_name || school.name} Fan Gear | DieHardNation`
   const description = `Shop ${school.name} fan gear. ${school.mascot} jerseys, hoodies, hats and more from eBay and Amazon. Independent fan aggregator.`
 
   return {

@@ -34,6 +34,8 @@ async function getLatestNews(): Promise<NewsPost[]> {
   }
 }
 
+export const revalidate = 600
+
 export default async function HomePage() {
   const [trendingProducts, latestNews] = await Promise.all([
     getTrendingProducts(),

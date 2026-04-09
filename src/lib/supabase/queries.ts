@@ -1,4 +1,4 @@
-import { getAdminClient, getPublicClient } from './server'
+import { getPublicClient } from './server'
 import type { School, Product, NewsPost, ProgrammaticPage } from './types'
 
 // ─── Schools ───────────────────────────────────────────

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { getTrendingProducts } from '@/lib/supabase/queries'
 import { getSchoolBySlug } from '@/lib/constants/schools'
-import ProductCardGrid from '@/components/products/ProductCardGrid'
 
 export const metadata: Metadata = {
   title: 'Trending College Fan Gear \u2014 Most Popular Right Now',

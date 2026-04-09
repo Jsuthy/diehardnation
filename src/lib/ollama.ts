@@ -29,7 +29,7 @@ export async function generateWithOllama(prompt: string, options?: {
 
 export function parseJsonFromOllama(raw: string): Record<string, unknown> | null {
   // Strip markdown fences
-  let clean = raw.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
+  const clean = raw.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
 
   // Try direct parse
   try {
