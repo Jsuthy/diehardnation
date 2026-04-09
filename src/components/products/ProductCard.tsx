@@ -55,7 +55,7 @@ export default function ProductCard({ product, schoolColor }: ProductCardProps) 
         {product.image_url ? (
           <Image
             src={product.image_url}
-            alt={product.title}
+            alt={`${product.title} — ${product.school_slug} fan gear`}
             fill
             style={{ objectFit: 'cover' }}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

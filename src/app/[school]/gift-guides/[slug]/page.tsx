@@ -71,14 +71,16 @@ export default async function GiftGuidePage({
         ...(products.length > 0 ? [buildItemListSchema(products, page.title)] : []),
       ]} />
 
-      <nav style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
-        <Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Home</Link>
-        {' / '}
-        <Link href={`/${schoolSlug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.short_name}</Link>
-        {' / '}
-        <Link href={`/${schoolSlug}/gift-guides`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Gift Guides</Link>
-        {' / '}
-        <span style={{ color: 'var(--text-secondary)' }}>{page.title}</span>
+      <nav aria-label="breadcrumb" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
+        <ol style={{ display: 'flex', gap: 0, listStyle: 'none', margin: 0, padding: 0 }}>
+          <li><Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>DieHardNation</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li><Link href={`/${schoolSlug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.name}</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li><Link href={`/${schoolSlug}/gift-guides`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Gift Guides</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li style={{ color: 'var(--text-secondary)' }}>{page.title}</li>
+        </ol>
       </nav>
 
       <h1 style={{
@@ -116,7 +118,7 @@ export default async function GiftGuidePage({
 
       {/* Why these picks */}
       <section style={{ marginTop: 40, maxWidth: 640 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Why these picks</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Top {school.short_name} Fan Picks</h2>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
           Whether you&apos;re shopping for a die-hard {school.mascot} fan or looking for the perfect
           game day gift, these {school.nickname} picks are fan favorites from eBay and Amazon.
@@ -128,7 +130,7 @@ export default async function GiftGuidePage({
       {/* Related guides */}
       {relatedGuides.length > 0 && (
         <section style={{ marginTop: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>More {school.short_name} Gift Guides</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>More {school.name} Gift Guides</h2>
           <div style={{ display: 'flex', gap: 12 }}>
             {relatedGuides.map(g => (
               <Link

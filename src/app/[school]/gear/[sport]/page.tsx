@@ -86,12 +86,14 @@ export default async function SportPage({
       ]} />
 
       {/* Breadcrumb */}
-      <nav className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
-        <Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Home</Link>
-        {' / '}
-        <Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.short_name}</Link>
-        {' / '}
-        <span style={{ color: 'var(--text-secondary)' }}>{sport.name} Gear</span>
+      <nav aria-label="breadcrumb" className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
+        <ol style={{ display: 'flex', gap: 0, listStyle: 'none', margin: 0, padding: 0 }}>
+          <li><Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>DieHardNation</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li><Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.name}</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li style={{ color: 'var(--text-secondary)' }}>{sport.name} Gear</li>
+        </ol>
       </nav>
 
       {/* Hero */}
@@ -104,7 +106,7 @@ export default async function SportPage({
             letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            {school.short_name.toUpperCase()} {sport.name.toUpperCase()} GEAR
+            {school.name.toUpperCase()} {sport.name.toUpperCase()} GEAR
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, marginTop: 8 }}>
             Shop {school.mascot} {sport.name.toLowerCase()} apparel &mdash; updated daily
@@ -125,6 +127,11 @@ export default async function SportPage({
       </section>
 
       {/* Products */}
+      <section aria-label={`${school.name} ${sport.name} fan gear products`} className="container" style={{ padding: '24px 20px 0' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>
+          Shop {school.short_name} {sport.name} by Category
+        </h2>
+      </section>
       <SchoolShopClient
         initialProducts={products}
         totalCount={total}
@@ -137,7 +144,7 @@ export default async function SportPage({
       {otherSports.length > 0 && (
         <section className="container" style={{ padding: '32px 20px 48px' }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
-            Also shop {school.short_name}:
+            More {school.short_name} Sports Gear
           </h2>
           <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8 }}>
             {otherSports.map(s => (

@@ -35,12 +35,14 @@ export default async function GiftGuidesPage({
 
   return (
     <main className="container" style={{ padding: '32px 20px 64px' }}>
-      <nav style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
-        <Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Home</Link>
-        {' / '}
-        <Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.short_name}</Link>
-        {' / '}
-        <span style={{ color: 'var(--text-secondary)' }}>Gift Guides</span>
+      <nav aria-label="breadcrumb" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
+        <ol style={{ display: 'flex', gap: 0, listStyle: 'none', margin: 0, padding: 0 }}>
+          <li><Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>DieHardNation</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li><Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.name}</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li style={{ color: 'var(--text-secondary)' }}>Gift Guides</li>
+        </ol>
       </nav>
 
       <h1 style={{
@@ -49,7 +51,7 @@ export default async function GiftGuidesPage({
         letterSpacing: '-0.03em',
         marginBottom: 8,
       }}>
-        {school.short_name.toUpperCase()} GIFT GUIDES
+        {school.name.toUpperCase()} FAN GIFT GUIDES
       </h1>
       <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 32 }}>
         The best {school.mascot} fan gear picks, curated for gift giving.

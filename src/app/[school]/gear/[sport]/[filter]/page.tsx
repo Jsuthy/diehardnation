@@ -98,14 +98,16 @@ export default async function FilterPage({
       ]} />
 
       {/* Breadcrumb */}
-      <nav className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
-        <Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Home</Link>
-        {' / '}
-        <Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.short_name}</Link>
-        {' / '}
-        <Link href={`/${slug}/gear/${sportSlug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{sport.name} Gear</Link>
-        {' / '}
-        <span style={{ color: 'var(--text-secondary)' }}>{filter.name}</span>
+      <nav aria-label="breadcrumb" className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
+        <ol style={{ display: 'flex', gap: 0, listStyle: 'none', margin: 0, padding: 0 }}>
+          <li><Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>DieHardNation</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li><Link href={`/${slug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{school.name}</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li><Link href={`/${slug}/gear/${sportSlug}`} style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{sport.name} Gear</Link></li>
+          <li style={{ margin: '0 6px' }}>/</li>
+          <li style={{ color: 'var(--text-secondary)' }}>{filter.name}</li>
+        </ol>
       </nav>
 
       {/* Hero */}
@@ -118,7 +120,9 @@ export default async function FilterPage({
             letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            {school.short_name.toUpperCase()} {sport.name.toUpperCase()} {filter.name.toUpperCase()}
+            {filter.type === 'price'
+              ? `${school.name.toUpperCase()} ${sport.name.toUpperCase()} GEAR ${filter.name.toUpperCase()}`
+              : `${school.name.toUpperCase()} ${sport.name.toUpperCase()} ${filter.name.toUpperCase()}`}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginTop: 6 }}>
             {total} products found
@@ -126,6 +130,13 @@ export default async function FilterPage({
         </div>
       </section>
 
+      <section aria-label={`${school.name} ${sport.name} ${filter.name} products`} className="container" style={{ padding: '24px 20px 0' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>
+          {filter.type === 'price'
+            ? `Best ${school.short_name} ${sport.name} Gear ${filter.name}`
+            : `Shop ${school.short_name} ${sport.name} ${filter.name}`}
+        </h2>
+      </section>
       <SchoolShopClient
         initialProducts={products}
         totalCount={total}
@@ -133,6 +144,43 @@ export default async function FilterPage({
         schoolColor={school.primary_color}
         school={school}
       />
+
+      {/* Related links */}
+      <section className="container" style={{ padding: '32px 20px 48px' }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
+          More {school.short_name} {sport.name} Gear
+        </h2>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Link
+            href={`/${slug}/gear/${sportSlug}`}
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              padding: '6px 14px',
+              borderRadius: 20,
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
+            }}
+          >
+            All {sport.name} Gear
+          </Link>
+          <Link
+            href={`/${slug}`}
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              padding: '6px 14px',
+              borderRadius: 20,
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
+            }}
+          >
+            All {school.short_name} Gear
+          </Link>
+        </div>
+      </section>
     </main>
   )
 }

@@ -78,7 +78,7 @@ export default async function SchoolPage({
             letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            {school.name.toUpperCase()}
+            {school.name.toUpperCase()} FAN GEAR
           </h1>
           <p style={{
             color: 'rgba(255,255,255,0.75)',
@@ -98,6 +98,16 @@ export default async function SchoolPage({
       </section>
 
       {/* Client shop section: search, filters, grid */}
+      <section aria-label={`${school.name} fan gear products`}>
+        <h2 style={{
+          fontSize: 20,
+          fontWeight: 900,
+          letterSpacing: '-0.02em',
+          padding: '24px 20px 0',
+        }} className="container">
+          Best {school.name} Fan Gear Deals
+        </h2>
+      </section>
       <SchoolShopClient
         initialProducts={initialProducts}
         totalCount={totalCount}
@@ -115,7 +125,7 @@ export default async function SchoolPage({
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            {school.name.toUpperCase()} NEWS
+            Latest {school.short_name} News
           </h2>
           <div style={{
             display: 'grid',

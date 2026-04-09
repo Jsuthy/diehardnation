@@ -72,18 +72,17 @@ export default async function HomePage() {
           lineHeight: 0.95,
           color: 'var(--text-primary)',
         }}>
-          FIND YOUR SCHOOL.
+          COLLEGE FAN GEAR FOR EVERY SCHOOL
         </h1>
-        <h2 style={{
-          fontSize: 'clamp(48px, 8vw, 96px)',
-          fontWeight: 900,
-          letterSpacing: '-0.04em',
-          lineHeight: 0.95,
+        <p style={{
+          fontSize: 'clamp(20px, 3vw, 28px)',
+          fontWeight: 700,
           color: 'var(--text-secondary)',
+          marginTop: 12,
           marginBottom: 32,
         }}>
-          SHOP YOUR TEAM.
-        </h2>
+          Find your school. Shop your team.
+        </p>
         <Suspense fallback={<div style={{ height: 52, maxWidth: 480 }} />}>
           <HeroSearch />
         </Suspense>
@@ -91,6 +90,14 @@ export default async function HomePage() {
 
       {/* Conference tabs + school grid */}
       <section className="container">
+        <h2 style={{
+          fontSize: 24,
+          fontWeight: 900,
+          letterSpacing: '-0.02em',
+          padding: '32px 20px 16px',
+        }}>
+          FIND YOUR SCHOOL
+        </h2>
         <ConferenceSchoolGrid />
       </section>
 
@@ -103,7 +110,7 @@ export default async function HomePage() {
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            TRENDING GEAR
+            TRENDING GEAR ACROSS THE NATION
           </h2>
           <div style={{
             display: 'grid',
@@ -139,7 +146,7 @@ export default async function HomePage() {
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            LATEST FROM THE NATION
+            LATEST NEWS FROM THE NATION
           </h2>
           <div style={{
             display: 'grid',

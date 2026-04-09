@@ -130,6 +130,9 @@ export default async function NewsPostPage({
         margin: '28px 0',
         borderRadius: '0 var(--radius-sm) var(--radius-sm) 0',
       }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
+          Shop {school.short_name} Fan Gear
+        </h2>
         <Link
           href={`/${schoolSlug}`}
           style={{
@@ -140,16 +143,16 @@ export default async function NewsPostPage({
             textDecoration: 'none',
           }}
         >
-          Shop {school.short_name} fan gear &rarr;
+          Browse all {school.short_name} gear &rarr;
         </Link>
       </div>
 
       {/* Related products */}
       {relatedProducts.length > 0 && (
         <section style={{ marginTop: 40 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-            Related {school.short_name} Gear
-          </h3>
+          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
+            More {school.short_name} News
+          </h2>
           <ProductCardGrid products={relatedProducts} schoolColor={school.primary_color} />
         </section>
       )}
