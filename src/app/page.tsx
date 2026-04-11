@@ -4,6 +4,7 @@ import HeroSearch from '@/components/home/HeroSearch'
 import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
 import { getPublicClient } from '@/lib/supabase/server'
 import type { Product, NewsPost } from '@/lib/supabase/types'
+import { HUB_METADATA } from '@/lib/seo/metadata-templates'
 
 export async function generateMetadata({
   searchParams,
@@ -14,20 +15,20 @@ export async function generateMetadata({
   const hasConference = !!params.conference
 
   return {
-    title: 'DieHardNation — College Fan Gear for Every School',
-    description: 'Shop college fan gear across all 130 FBS schools. Jerseys, hoodies, hats and more from eBay and Amazon. Find your school, shop your team.',
+    title: HUB_METADATA.title,
+    description: HUB_METADATA.description,
     alternates: { canonical: 'https://diehardnation.com' },
     ...(hasConference && { robots: { index: false, follow: true } }),
     openGraph: {
-      title: 'DieHardNation — College Fan Gear for Every School',
-      description: 'Shop college fan gear across all 130 FBS schools. Jerseys, hoodies, hats and more from eBay and Amazon.',
+      title: HUB_METADATA.title,
+      description: HUB_METADATA.description,
       url: 'https://diehardnation.com',
       siteName: 'DieHardNation',
       images: [{
         url: 'https://diehardnation.com/og-default.png',
         width: 1200,
         height: 630,
-        alt: 'DieHardNation — College Fan Gear for Every School',
+        alt: HUB_METADATA.title,
       }],
     },
   }
@@ -82,7 +83,7 @@ export default async function HomePage() {
           lineHeight: 0.95,
           color: 'var(--text-primary)',
         }}>
-          COLLEGE FAN GEAR FOR EVERY SCHOOL
+          {HUB_METADATA.h1}
         </h1>
         <p style={{
           fontSize: 'clamp(20px, 3vw, 28px)',
@@ -106,7 +107,7 @@ export default async function HomePage() {
           letterSpacing: '-0.02em',
           padding: '32px 20px 16px',
         }}>
-          FIND YOUR SCHOOL
+          {HUB_METADATA.h2s[2]}
         </h2>
         <ConferenceSchoolGrid />
       </section>
@@ -120,7 +121,7 @@ export default async function HomePage() {
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            TRENDING GEAR ACROSS THE NATION
+            {HUB_METADATA.h2s[3].toUpperCase()}
           </h2>
           <div style={{
             display: 'grid',
@@ -156,7 +157,7 @@ export default async function HomePage() {
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            LATEST NEWS FROM THE NATION
+            {HUB_METADATA.h2s[4].toUpperCase()}
           </h2>
           <div style={{
             display: 'grid',

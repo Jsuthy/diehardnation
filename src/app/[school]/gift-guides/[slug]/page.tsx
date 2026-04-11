@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getSchool, getProducts, getProgrammaticPage, getProgrammaticPages } from '@/lib/supabase/queries'
-import SchemaScript from '@/components/SchemaScript'
 import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/schema'
+import { getGiftGuideMetadata } from '@/lib/seo/metadata-templates'
 import ProductCardGrid from '@/components/products/ProductCardGrid'
 
 export const revalidate = 3600
@@ -21,10 +21,14 @@ export async function generateMetadata({
   const { school: schoolSlug, slug } = await params
   const page = await getProgrammaticPage(schoolSlug, slug)
   if (!page) return {}
+  const school = await getSchool(schoolSlug)
+  if (!school) return {}
+
+  const meta = getGiftGuideMetadata(school, page.title)
 
   return {
-    title: page.title,
-    description: page.description,
+    title: meta.title,
+    description: meta.description,
   }
 }
 
@@ -57,6 +61,8 @@ export default async function GiftGuidePage({
     .filter(p => p.page_type === 'gift-guide' && p.slug !== slug)
     .slice(0, 3)
 
+  const meta = getGiftGuideMetadata(school, page.title)
+
   const breadcrumbs = [
     { name: 'Home', url: '/' },
     { name: school.short_name, url: `/${schoolSlug}` },
@@ -66,10 +72,20 @@ export default async function GiftGuidePage({
 
   return (
     <main className="container" style={{ padding: '16px 20px 64px' }}>
-      <SchemaScript schema={[
-        buildBreadcrumbSchema(breadcrumbs),
-        ...(products.length > 0 ? [buildItemListSchema(products, page.title)] : []),
-      ]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbSchema(breadcrumbs))
+        }}
+      />
+      {products.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildItemListSchema(products, page.title))
+          }}
+        />
+      )}
 
       <nav aria-label="breadcrumb" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
         <ol style={{ display: 'flex', gap: 0, listStyle: 'none', margin: 0, padding: 0 }}>
@@ -118,7 +134,7 @@ export default async function GiftGuidePage({
 
       {/* Why these picks */}
       <section style={{ marginTop: 40, maxWidth: 640 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Top {school.short_name} Fan Picks</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{meta.h2s[0]}</h2>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
           Whether you&apos;re shopping for a die-hard {school.mascot} fan or looking for the perfect
           game day gift, these {school.nickname} picks are fan favorites from eBay and Amazon.
@@ -130,7 +146,7 @@ export default async function GiftGuidePage({
       {/* Related guides */}
       {relatedGuides.length > 0 && (
         <section style={{ marginTop: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>More {school.name} Gift Guides</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>{meta.h2s[3]}</h2>
           <div style={{ display: 'flex', gap: 12 }}>
             {relatedGuides.map(g => (
               <Link

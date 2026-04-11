@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getSchool, getProducts, getProgrammaticPage } from '@/lib/supabase/queries'
+import { getSchool, getProducts } from '@/lib/supabase/queries'
 import { SPORTS } from '@/lib/constants/sports'
 import { SCHOOLS } from '@/lib/constants/schools'
 import { CONFERENCES } from '@/lib/constants/conferences'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
+import { getSportMetadata } from '@/lib/seo/metadata-templates'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -28,18 +29,15 @@ export async function generateMetadata({
   const sport = SPORTS.find(s => s.slug === sportSlug)
   if (!school || !sport) return {}
 
-  const page = await getProgrammaticPage(slug, sportSlug === 'general' ? 'all-gear' : sportSlug)
-
-  const title = page?.title || `${school.name} ${sport.name} Gear — Fan Apparel & Merchandise`
-  const description = page?.description || `Shop ${school.name} ${sport.name.toLowerCase()} gear. ${sport.name} jerseys, hoodies, hats and more. Independent fan aggregator — links to eBay and Amazon.`
+  const meta = getSportMetadata(school, sportSlug)
 
   return {
-    title,
-    description,
+    title: meta.title,
+    description: meta.description,
     alternates: { canonical: `https://diehardnation.com/${slug}/gear/${sportSlug}` },
     openGraph: {
-      title: `${school.name} ${sport.name} Gear | DieHardNation`,
-      description,
+      title: meta.title,
+      description: meta.description,
       url: `https://diehardnation.com/${slug}/gear/${sportSlug}`,
       siteName: 'DieHardNation',
       images: [{
@@ -72,6 +70,7 @@ export default async function SportPage({
   const otherSports = SPORTS.filter(s => s.slug !== sportSlug && s.slug !== 'general')
 
   const conference = CONFERENCES.find(c => c.slug === school.conference)
+  const meta = getSportMetadata(school, sportSlug)
 
   return (
     <main>
@@ -144,7 +143,7 @@ export default async function SportPage({
             letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            {school.name.toUpperCase()} {sport.name.toUpperCase()} GEAR
+            {meta.h1}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, marginTop: 8 }}>
             Shop {school.mascot} {sport.name.toLowerCase()} apparel &mdash; updated daily
@@ -172,17 +171,14 @@ export default async function SportPage({
           color: 'var(--text-secondary)',
           maxWidth: 760,
         }}>
-          Shop {school.name} {sport.name.toLowerCase()} gear — jerseys, hoodies, hats, and
-          accessories for {school.mascot} {sport.name.toLowerCase()} fans. DieHardNation
-          aggregates the best {school.short_name} {sport.name.toLowerCase()} apparel from
-          eBay and Amazon, updated daily so you never miss a deal.
+          {meta.intro}
         </p>
       </section>
 
       {/* Products */}
       <section aria-label={`${school.name} ${sport.name} fan gear products`} className="container" style={{ padding: '24px 20px 0' }}>
         <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>
-          Shop {school.short_name} {sport.name} by Category
+          {meta.h2s[2]}
         </h2>
       </section>
       <SchoolShopClient
@@ -197,7 +193,7 @@ export default async function SportPage({
       {otherSports.length > 0 && (
         <section className="container" style={{ padding: '32px 20px' }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
-            More {school.short_name} Sports Gear
+            {meta.h2s[3]}
           </h2>
           <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8 }}>
             {otherSports.map(s => (
@@ -231,7 +227,7 @@ export default async function SportPage({
           letterSpacing: '-0.02em',
           marginBottom: 12,
         }}>
-          About {school.name} {sport.name} Gear on DieHardNation
+          About {school.name} {sport.name} on DieHardNation
         </h2>
         <p style={{
           fontSize: 14,

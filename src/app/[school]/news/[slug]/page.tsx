@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getSchool, getNewsPost, getProducts } from '@/lib/supabase/queries'
 import Link from 'next/link'
 import { buildNewsArticleSchema, buildBreadcrumbSchema } from '@/lib/schema'
+import { getNewsMetadata } from '@/lib/seo/metadata-templates'
 import ProductCardGrid from '@/components/products/ProductCardGrid'
 
 export const revalidate = 3600
@@ -24,9 +25,11 @@ export async function generateMetadata({
   ])
   if (!post || !school) return {}
 
+  const meta = getNewsMetadata(school, post)
+
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: meta.title,
+    description: meta.description,
     alternates: { canonical: `https://diehardnation.com/${schoolSlug}/news/${slug}` },
     openGraph: {
       title: post.title,

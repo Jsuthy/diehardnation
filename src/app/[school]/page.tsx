@@ -5,6 +5,7 @@ import { CONFERENCES } from '@/lib/constants/conferences'
 import { SCHOOLS } from '@/lib/constants/schools'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
 import Link from 'next/link'
+import { getSchoolMetadata } from '@/lib/seo/metadata-templates'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -24,16 +25,15 @@ export async function generateMetadata({
   const school = await getSchool(slug)
   if (!school) return {}
 
-  const title = `${school.name} Fan Gear — Jerseys, Hoodies & More`
-  const description = `Shop ${school.name} fan gear. ${school.mascot} jerseys, hoodies, hats and more from eBay and Amazon. Independent fan aggregator.`
+  const meta = getSchoolMetadata(school)
 
   return {
-    title,
-    description,
+    title: meta.title,
+    description: meta.description,
     alternates: { canonical: `https://diehardnation.com/${slug}` },
     openGraph: {
-      title: `${school.name} Fan Gear | DieHardNation`,
-      description,
+      title: meta.title,
+      description: meta.description,
       url: `https://diehardnation.com/${slug}`,
       siteName: 'DieHardNation',
       images: [{
@@ -62,6 +62,7 @@ export default async function SchoolPage({
   ])
 
   const conference = CONFERENCES.find(c => c.slug === school.conference)
+  const meta = getSchoolMetadata(school)
 
   return (
     <main>
@@ -169,7 +170,7 @@ export default async function SchoolPage({
             letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            {school.name.toUpperCase()} FAN GEAR
+            {meta.h1}
           </h1>
           <p style={{
             color: 'rgba(255,255,255,0.75)',
@@ -196,11 +197,7 @@ export default async function SchoolPage({
           color: 'var(--text-secondary)',
           maxWidth: 760,
         }}>
-          {school.name} fan gear — everything you need to rep the {school.mascot} on game day
-          and beyond. DieHardNation aggregates {school.name} jerseys, hoodies, hats, and
-          accessories from eBay and Amazon, updated daily so you always find the best deals.
-          Whether you&apos;re shopping for {school.short_name} football, basketball, volleyball,
-          or any other sport, we&apos;ve got you covered.
+          {meta.intro}
         </p>
       </section>
 
@@ -212,7 +209,7 @@ export default async function SchoolPage({
           letterSpacing: '-0.02em',
           padding: '24px 20px 0',
         }} className="container">
-          Best {school.name} Fan Gear Deals
+          {meta.h2s[3]}
         </h2>
       </section>
       <SchoolShopClient
@@ -232,7 +229,7 @@ export default async function SchoolPage({
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            Latest {school.short_name} News
+            {meta.h2s[4]}
           </h2>
           <div style={{
             display: 'grid',
@@ -276,7 +273,7 @@ export default async function SchoolPage({
           letterSpacing: '-0.02em',
           marginBottom: 12,
         }}>
-          About {school.name} Fan Gear on DieHardNation
+          About {school.name} on DieHardNation
         </h2>
         <p style={{
           fontSize: 14,

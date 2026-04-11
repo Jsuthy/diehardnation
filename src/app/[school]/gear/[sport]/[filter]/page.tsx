@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getSchool, getProducts, getProgrammaticPage } from '@/lib/supabase/queries'
+import { getSchool, getProducts } from '@/lib/supabase/queries'
 import { SPORTS } from '@/lib/constants/sports'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { PRICE_RANGES } from '@/lib/constants/price-ranges'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
+import { getSportCategoryMetadata, getSportPriceMetadata } from '@/lib/seo/metadata-templates'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -34,19 +35,17 @@ export async function generateMetadata({
   const filter = parseFilter(filterSlug)
   if (!school || !sport || !filter) return {}
 
-  const pageSlug = `${sportSlug === 'general' ? '' : sportSlug + '-'}${filterSlug}`
-  const page = await getProgrammaticPage(slug, pageSlug)
-
-  const title = page?.title || `${school.name} ${sport.name} ${filter.name} | DieHardNation`
-  const description = page?.description || `${school.name} ${sport.name.toLowerCase()} ${filter.name.toLowerCase()}. Shop ${school.mascot} fan apparel from eBay and Amazon.`
+  const meta = filter.type === 'price'
+    ? getSportPriceMetadata(school, sportSlug, filterSlug)
+    : getSportCategoryMetadata(school, sportSlug, filterSlug)
 
   return {
-    title,
-    description,
+    title: meta.title,
+    description: meta.description,
     alternates: { canonical: `https://diehardnation.com/${slug}/gear/${sportSlug}/${filterSlug}` },
     openGraph: {
-      title: `${school.name} ${sport.name} ${filter.name} | DieHardNation`,
-      description,
+      title: meta.title,
+      description: meta.description,
       url: `https://diehardnation.com/${slug}/gear/${sportSlug}/${filterSlug}`,
       siteName: 'DieHardNation',
       images: [{
@@ -80,6 +79,10 @@ export default async function FilterPage({
   if (filter.type === 'price') queryParams.priceRange = filter.slug
 
   const { products, total } = await getProducts(queryParams)
+
+  const meta = filter.type === 'price'
+    ? getSportPriceMetadata(school, sportSlug, filterSlug)
+    : getSportCategoryMetadata(school, sportSlug, filterSlug)
 
   const breadcrumbs = [
     { name: 'Home', url: '/' },
@@ -163,9 +166,7 @@ export default async function FilterPage({
             letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            {filter.type === 'price'
-              ? `${school.name.toUpperCase()} ${sport.name.toUpperCase()} GEAR ${filter.name.toUpperCase()}`
-              : `${school.name.toUpperCase()} ${sport.name.toUpperCase()} ${filter.name.toUpperCase()}`}
+            {meta.h1}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginTop: 6 }}>
             {total} products found
@@ -173,11 +174,21 @@ export default async function FilterPage({
         </div>
       </section>
 
+      {/* Intro paragraph — SEO text content */}
+      <section className="container" style={{ padding: '24px 20px 0' }}>
+        <p style={{
+          fontSize: 15,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 760,
+        }}>
+          {meta.intro}
+        </p>
+      </section>
+
       <section aria-label={`${school.name} ${sport.name} ${filter.name} products`} className="container" style={{ padding: '24px 20px 0' }}>
         <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>
-          {filter.type === 'price'
-            ? `Best ${school.short_name} ${sport.name} Gear ${filter.name}`
-            : `Shop ${school.short_name} ${sport.name} ${filter.name}`}
+          {meta.h2s[0]}
         </h2>
       </section>
       <SchoolShopClient
@@ -191,7 +202,7 @@ export default async function FilterPage({
       {/* Related links */}
       <section className="container" style={{ padding: '32px 20px 48px' }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
-          More {school.short_name} {sport.name} Gear
+          {meta.h2s[2]}
         </h2>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Link

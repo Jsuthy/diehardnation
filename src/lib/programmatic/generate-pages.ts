@@ -2,6 +2,8 @@ import { getAdminClient } from '@/lib/supabase/server'
 import { SPORTS } from '@/lib/constants/sports'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { PRICE_RANGES } from '@/lib/constants/price-ranges'
+import { getSportMetadata, getSportCategoryMetadata, getSportPriceMetadata } from '@/lib/seo/metadata-templates'
+import type { School } from '@/lib/supabase/types'
 
 const MIN_PRODUCTS = 3
 
@@ -13,11 +15,13 @@ export async function generateProgrammaticPagesForSchool(
   // Get school info
   const { data: school } = await supabase
     .from('schools')
-    .select('name, short_name, mascot')
+    .select('*')
     .eq('slug', schoolSlug)
     .single()
 
   if (!school) return { created: 0 }
+
+  const schoolTyped = school as School
 
   const pages: {
     school_slug: string
@@ -41,6 +45,7 @@ export async function generateProgrammaticPagesForSchool(
       .eq('sport', sport.slug)
 
     if ((count || 0) >= MIN_PRODUCTS) {
+      const sportMeta = getSportMetadata(schoolTyped, sport.slug)
       pages.push({
         school_slug: schoolSlug,
         slug: sport.slug === 'general' ? 'all-gear' : sport.slug,
@@ -48,8 +53,8 @@ export async function generateProgrammaticPagesForSchool(
         sport: sport.slug,
         category: null,
         price_range: null,
-        title: `${school.short_name} ${sport.name} Gear`,
-        description: `Shop ${school.name} ${sport.name.toLowerCase()} fan gear. ${school.mascot} apparel from eBay and Amazon.`,
+        title: sportMeta.title,
+        description: sportMeta.description,
         product_count: count || 0,
       })
 
@@ -64,6 +69,7 @@ export async function generateProgrammaticPagesForSchool(
           .eq('category', cat.slug)
 
         if ((catCount || 0) >= MIN_PRODUCTS) {
+          const catMeta = getSportCategoryMetadata(schoolTyped, sport.slug, cat.slug)
           pages.push({
             school_slug: schoolSlug,
             slug: `${sport.slug === 'general' ? '' : sport.slug + '-'}${cat.slug}`,
@@ -71,8 +77,8 @@ export async function generateProgrammaticPagesForSchool(
             sport: sport.slug,
             category: cat.slug,
             price_range: null,
-            title: `${school.short_name} ${sport.slug === 'general' ? '' : sport.name + ' '}${cat.name}`,
-            description: `${school.name} ${sport.slug === 'general' ? '' : sport.name.toLowerCase() + ' '}${cat.name.toLowerCase()}. Shop ${school.mascot} apparel.`,
+            title: catMeta.title,
+            description: catMeta.description,
             product_count: catCount || 0,
           })
         }
@@ -89,6 +95,7 @@ export async function generateProgrammaticPagesForSchool(
           .eq('price_range', pr.slug)
 
         if ((prCount || 0) >= MIN_PRODUCTS) {
+          const priceMeta = getSportPriceMetadata(schoolTyped, sport.slug, pr.slug)
           pages.push({
             school_slug: schoolSlug,
             slug: `${sport.slug === 'general' ? '' : sport.slug + '-'}${pr.slug}`,
@@ -96,8 +103,8 @@ export async function generateProgrammaticPagesForSchool(
             sport: sport.slug,
             category: null,
             price_range: pr.slug,
-            title: `${school.short_name} ${sport.slug === 'general' ? '' : sport.name + ' '}Gear ${pr.label}`,
-            description: `${school.name} ${sport.slug === 'general' ? '' : sport.name.toLowerCase() + ' '}gear ${pr.label.toLowerCase()}. Affordable ${school.mascot} fan apparel.`,
+            title: priceMeta.title,
+            description: priceMeta.description,
             product_count: prCount || 0,
           })
         }
