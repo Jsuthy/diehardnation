@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { getSchool, getProducts, getProgrammaticPage } from '@/lib/supabase/queries'
 import { SPORTS } from '@/lib/constants/sports'
 import { SCHOOLS } from '@/lib/constants/schools'
+import { CONFERENCES } from '@/lib/constants/conferences'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
-import SchemaScript from '@/components/SchemaScript'
-import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/schema'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -72,18 +71,57 @@ export default async function SportPage({
 
   const otherSports = SPORTS.filter(s => s.slug !== sportSlug && s.slug !== 'general')
 
-  const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: school.short_name, url: `/${slug}` },
-    { name: `${sport.name} Gear`, url: `/${slug}/gear/${sportSlug}` },
-  ]
+  const conference = CONFERENCES.find(c => c.slug === school.conference)
 
   return (
     <main>
-      <SchemaScript schema={[
-        buildBreadcrumbSchema(breadcrumbs),
-        ...(products.length > 0 ? [buildItemListSchema(products, `${school.short_name} ${sport.name} Gear`)] : []),
-      ]} />
+      {/* JSON-LD: BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1,
+                item: { '@id': 'https://diehardnation.com', name: 'DieHardNation' }},
+              { '@type': 'ListItem', position: 2,
+                item: { '@id': `https://diehardnation.com/${slug}`, name: school.name }},
+              { '@type': 'ListItem', position: 3,
+                item: { '@id': `https://diehardnation.com/${slug}/gear/${sportSlug}`, name: `${sport.name} Gear` }},
+            ]
+          })
+        }}
+      />
+
+      {/* JSON-LD: ItemList */}
+      {products.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: `${school.name} ${sport.name} Gear`,
+              itemListElement: products.slice(0, 10).map((p, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                item: {
+                  '@type': 'Product',
+                  name: p.title,
+                  offers: {
+                    '@type': 'Offer',
+                    price: p.price,
+                    priceCurrency: 'USD',
+                    availability: 'https://schema.org/InStock',
+                    url: p.affiliate_url,
+                  }
+                }
+              }))
+            })
+          }}
+        />
+      )}
 
       {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>
@@ -126,6 +164,21 @@ export default async function SportPage({
         </div>
       </section>
 
+      {/* Sport intro paragraph — SEO text content */}
+      <section className="container" style={{ padding: '24px 20px 0' }}>
+        <p style={{
+          fontSize: 15,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 760,
+        }}>
+          Shop {school.name} {sport.name.toLowerCase()} gear — jerseys, hoodies, hats, and
+          accessories for {school.mascot} {sport.name.toLowerCase()} fans. DieHardNation
+          aggregates the best {school.short_name} {sport.name.toLowerCase()} apparel from
+          eBay and Amazon, updated daily so you never miss a deal.
+        </p>
+      </section>
+
       {/* Products */}
       <section aria-label={`${school.name} ${sport.name} fan gear products`} className="container" style={{ padding: '24px 20px 0' }}>
         <h2 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em' }}>
@@ -142,7 +195,7 @@ export default async function SportPage({
 
       {/* Related sports */}
       {otherSports.length > 0 && (
-        <section className="container" style={{ padding: '32px 20px 48px' }}>
+        <section className="container" style={{ padding: '32px 20px' }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
             More {school.short_name} Sports Gear
           </h2>
@@ -169,6 +222,41 @@ export default async function SportPage({
           </div>
         </section>
       )}
+
+      {/* About section — SEO text content */}
+      <section className="container" style={{ padding: '16px 20px 48px' }}>
+        <h2 style={{
+          fontSize: 20,
+          fontWeight: 900,
+          letterSpacing: '-0.02em',
+          marginBottom: 12,
+        }}>
+          About {school.name} {sport.name} Gear on DieHardNation
+        </h2>
+        <p style={{
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 720,
+          marginBottom: 12,
+        }}>
+          DieHardNation is an independent fan gear aggregator — not affiliated
+          with {school.name}, the {conference?.fullName || school.conference} conference,
+          or the NCAA. We connect {school.mascot} {sport.name.toLowerCase()} fans with
+          the best gear from trusted retailers including eBay and Amazon. All products
+          are sold by third-party sellers; clicking View Deal takes you directly to the retailer.
+        </p>
+        <p style={{
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 720,
+        }}>
+          Looking for {school.name} {sport.name.toLowerCase()} gear? Filter by category
+          (jerseys, hoodies, hats), or sort by price to find deals that fit your budget.
+          Our product catalog updates every 6 hours with fresh listings from eBay.
+        </p>
+      </section>
     </main>
   )
 }

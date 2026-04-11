@@ -6,8 +6,6 @@ import { SPORTS } from '@/lib/constants/sports'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { PRICE_RANGES } from '@/lib/constants/price-ranges'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
-import SchemaScript from '@/components/SchemaScript'
-import { buildBreadcrumbSchema, buildItemListSchema } from '@/lib/schema'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -92,10 +90,55 @@ export default async function FilterPage({
 
   return (
     <main>
-      <SchemaScript schema={[
-        buildBreadcrumbSchema(breadcrumbs),
-        ...(products.length > 0 ? [buildItemListSchema(products, `${school.short_name} ${sport.name} ${filter.name}`)] : []),
-      ]} />
+      {/* JSON-LD: BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1,
+                item: { '@id': 'https://diehardnation.com', name: 'DieHardNation' }},
+              { '@type': 'ListItem', position: 2,
+                item: { '@id': `https://diehardnation.com/${slug}`, name: school.name }},
+              { '@type': 'ListItem', position: 3,
+                item: { '@id': `https://diehardnation.com/${slug}/gear/${sportSlug}`, name: `${sport.name} Gear` }},
+              { '@type': 'ListItem', position: 4,
+                item: { '@id': `https://diehardnation.com/${slug}/gear/${sportSlug}/${filterSlug}`, name: filter.name }},
+            ]
+          })
+        }}
+      />
+
+      {/* JSON-LD: ItemList */}
+      {products.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: `${school.name} ${sport.name} ${filter.name}`,
+              itemListElement: products.slice(0, 10).map((p, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                item: {
+                  '@type': 'Product',
+                  name: p.title,
+                  offers: {
+                    '@type': 'Offer',
+                    price: p.price,
+                    priceCurrency: 'USD',
+                    availability: 'https://schema.org/InStock',
+                    url: p.affiliate_url,
+                  }
+                }
+              }))
+            })
+          }}
+        />
+      )}
 
       {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="container" style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text-muted)' }}>

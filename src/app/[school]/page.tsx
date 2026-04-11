@@ -65,6 +65,97 @@ export default async function SchoolPage({
 
   return (
     <main>
+      {/* JSON-LD: BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1,
+                item: { '@id': 'https://diehardnation.com', name: 'DieHardNation' }},
+              { '@type': 'ListItem', position: 2,
+                item: { '@id': `https://diehardnation.com/${school.slug}`, name: school.name }},
+            ]
+          })
+        }}
+      />
+
+      {/* JSON-LD: ItemList */}
+      {initialProducts.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: `${school.name} Fan Gear`,
+              itemListElement: initialProducts.slice(0, 10).map((p, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                item: {
+                  '@type': 'Product',
+                  name: p.title,
+                  offers: {
+                    '@type': 'Offer',
+                    price: p.price,
+                    priceCurrency: 'USD',
+                    availability: 'https://schema.org/InStock',
+                    url: p.affiliate_url,
+                  }
+                }
+              }))
+            })
+          }}
+        />
+      )}
+
+      {/* JSON-LD: FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: `Where can I buy ${school.name} fan gear?`,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: `DieHardNation aggregates ${school.name} ${school.mascot} fan gear from trusted retailers like eBay and Amazon. Browse ${stats.productCount}+ products including jerseys, hoodies, hats, and more — all in one place.`,
+                },
+              },
+              {
+                '@type': 'Question',
+                name: `What are the best ${school.name} gifts for fans?`,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: `Popular ${school.mascot} gifts include game day apparel, vintage-style tees, and officially licensed accessories. Check our ${school.short_name} gift guides for curated picks across every budget.`,
+                },
+              },
+              {
+                '@type': 'Question',
+                name: `Does DieHardNation ship ${school.name} gear?`,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: `DieHardNation is an affiliate aggregator — we link you directly to retailers like eBay and Amazon who handle shipping. This means you get their shipping speeds, return policies, and buyer protection.`,
+                },
+              },
+              {
+                '@type': 'Question',
+                name: `What ${school.name} sports gear is available?`,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: `We carry ${school.mascot} gear across football, basketball, baseball, and more. Browse by sport to find ${school.short_name} apparel for any season. Currently ${stats.productCount} products available across ${stats.pageCount} categories.`,
+                },
+              },
+            ],
+          })
+        }}
+      />
+
       {/* School hero */}
       <section style={{
         background: school.primary_color,
@@ -95,6 +186,22 @@ export default async function SchoolPage({
             {stats.productCount} products &middot; {stats.newsCount} news articles &middot; {stats.pageCount} pages
           </p>
         </div>
+      </section>
+
+      {/* School intro paragraph — SEO text content */}
+      <section className="container" style={{ padding: '24px 20px 0' }}>
+        <p style={{
+          fontSize: 15,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 760,
+        }}>
+          {school.name} fan gear — everything you need to rep the {school.mascot} on game day
+          and beyond. DieHardNation aggregates {school.name} jerseys, hoodies, hats, and
+          accessories from eBay and Amazon, updated daily so you always find the best deals.
+          Whether you&apos;re shopping for {school.short_name} football, basketball, volleyball,
+          or any other sport, we&apos;ve got you covered.
+        </p>
       </section>
 
       {/* Client shop section: search, filters, grid */}
@@ -161,8 +268,44 @@ export default async function SchoolPage({
         </section>
       )}
 
+      {/* About section — SEO text content */}
+      <section className="container" style={{ padding: '32px 20px' }}>
+        <h2 style={{
+          fontSize: 20,
+          fontWeight: 900,
+          letterSpacing: '-0.02em',
+          marginBottom: 12,
+        }}>
+          About {school.name} Fan Gear on DieHardNation
+        </h2>
+        <p style={{
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 720,
+          marginBottom: 12,
+        }}>
+          DieHardNation is an independent fan gear aggregator — not affiliated
+          with {school.name}, the {conference?.fullName || school.conference} conference,
+          or the NCAA. We connect {school.mascot} fans with the best gear from trusted
+          retailers including eBay and Amazon. All products are sold by third-party
+          sellers; clicking View Deal takes you directly to the retailer.
+        </p>
+        <p style={{
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 720,
+        }}>
+          Shopping for {school.name} gear? Browse by sport using the tabs above, filter
+          by category (jerseys, hoodies, hats), or sort by price to find deals that fit
+          your budget. Our product catalog updates every 6 hours with fresh listings
+          from eBay.
+        </p>
+      </section>
+
       {/* Disclaimer */}
-      <section className="container" style={{ padding: '32px 20px 64px' }}>
+      <section className="container" style={{ padding: '16px 20px 64px' }}>
         <p style={{
           fontSize: 11,
           color: 'var(--text-muted)',
@@ -175,60 +318,6 @@ export default async function SchoolPage({
           We earn affiliate commissions from qualifying purchases.
         </p>
       </section>
-
-      {/* JSON-LD: Organization + FAQ */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'DieHardNation',
-              url: `https://diehardnation.com/${school.slug}`,
-              description: `Shop ${school.name} fan gear. ${school.mascot} jerseys, hoodies, hats and more from eBay and Amazon.`,
-            },
-            {
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              mainEntity: [
-                {
-                  '@type': 'Question',
-                  name: `Where can I buy ${school.name} fan gear?`,
-                  acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: `DieHardNation aggregates ${school.name} ${school.mascot} fan gear from trusted retailers like eBay and Amazon. Browse ${stats.productCount}+ products including jerseys, hoodies, hats, and more — all in one place.`,
-                  },
-                },
-                {
-                  '@type': 'Question',
-                  name: `What are the best ${school.name} gifts for fans?`,
-                  acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: `Popular ${school.mascot} gifts include game day apparel, vintage-style tees, and officially licensed accessories. Check our ${school.short_name} gift guides for curated picks across every budget.`,
-                  },
-                },
-                {
-                  '@type': 'Question',
-                  name: `Does DieHardNation ship ${school.name} gear?`,
-                  acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: `DieHardNation is an affiliate aggregator — we link you directly to retailers like eBay and Amazon who handle shipping. This means you get their shipping speeds, return policies, and buyer protection.`,
-                  },
-                },
-                {
-                  '@type': 'Question',
-                  name: `What ${school.name} sports gear is available?`,
-                  acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: `We carry ${school.mascot} gear across football, basketball, baseball, and more. Browse by sport to find ${school.short_name} apparel for any season. Currently ${stats.productCount} products available across ${stats.pageCount} categories.`,
-                  },
-                },
-              ],
-            },
-          ]),
-        }}
-      />
     </main>
   )
 }

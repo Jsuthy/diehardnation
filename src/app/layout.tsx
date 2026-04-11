@@ -30,6 +30,35 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'DieHardNation',
+              url: 'https://diehardnation.com',
+              description: 'Independent college fan gear aggregator covering all 130 FBS schools.',
+              sameAs: ['https://twitter.com/diehardnation']
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'DieHardNation',
+              url: 'https://diehardnation.com',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://diehardnation.com/?q={search_term_string}',
+                'query-input': 'required name=search_term_string'
+              }
+            })
+          }}
+        />
       </body>
     </html>
   )

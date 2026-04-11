@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getSchool, getNewsPost, getProducts } from '@/lib/supabase/queries'
 import Link from 'next/link'
-import SchemaScript from '@/components/SchemaScript'
 import { buildNewsArticleSchema, buildBreadcrumbSchema } from '@/lib/schema'
 import ProductCardGrid from '@/components/products/ProductCardGrid'
 
@@ -73,10 +72,18 @@ export default async function NewsPostPage({
 
   return (
     <main className="container" style={{ padding: '32px 20px 64px', maxWidth: 680, margin: '0 auto' }}>
-      <SchemaScript schema={[
-        buildNewsArticleSchema(post, school),
-        buildBreadcrumbSchema(breadcrumbs),
-      ]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildNewsArticleSchema(post, school))
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbSchema(breadcrumbs))
+        }}
+      />
 
       <Link
         href={`/${schoolSlug}/news`}

@@ -5,22 +5,32 @@ import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
 import { getPublicClient } from '@/lib/supabase/server'
 import type { Product, NewsPost } from '@/lib/supabase/types'
 
-export const metadata: Metadata = {
-  title: 'DieHardNation — College Fan Gear for Every School',
-  description: 'Shop college fan gear across all 130 FBS schools. Jerseys, hoodies, hats and more from eBay and Amazon. Find your school, shop your team.',
-  alternates: { canonical: 'https://diehardnation.com' },
-  openGraph: {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const params = await searchParams
+  const hasConference = !!params.conference
+
+  return {
     title: 'DieHardNation — College Fan Gear for Every School',
-    description: 'Shop college fan gear across all 130 FBS schools. Jerseys, hoodies, hats and more from eBay and Amazon.',
-    url: 'https://diehardnation.com',
-    siteName: 'DieHardNation',
-    images: [{
-      url: 'https://diehardnation.com/og-default.png',
-      width: 1200,
-      height: 630,
-      alt: 'DieHardNation — College Fan Gear for Every School',
-    }],
-  },
+    description: 'Shop college fan gear across all 130 FBS schools. Jerseys, hoodies, hats and more from eBay and Amazon. Find your school, shop your team.',
+    alternates: { canonical: 'https://diehardnation.com' },
+    ...(hasConference && { robots: { index: false, follow: true } }),
+    openGraph: {
+      title: 'DieHardNation — College Fan Gear for Every School',
+      description: 'Shop college fan gear across all 130 FBS schools. Jerseys, hoodies, hats and more from eBay and Amazon.',
+      url: 'https://diehardnation.com',
+      siteName: 'DieHardNation',
+      images: [{
+        url: 'https://diehardnation.com/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: 'DieHardNation — College Fan Gear for Every School',
+      }],
+    },
+  }
 }
 
 async function getTrendingProducts(): Promise<Product[]> {
