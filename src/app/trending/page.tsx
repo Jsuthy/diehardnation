@@ -1,6 +1,22 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getTrendingProducts } from '@/lib/supabase/queries'
 import { getSchoolBySlug } from '@/lib/constants/schools'
+
+const POPULAR_SCHOOLS = [
+  { slug: 'nebraska', name: 'Nebraska' },
+  { slug: 'alabama', name: 'Alabama' },
+  { slug: 'ohio-state', name: 'Ohio State' },
+  { slug: 'michigan', name: 'Michigan' },
+  { slug: 'texas', name: 'Texas' },
+  { slug: 'georgia', name: 'Georgia' },
+  { slug: 'penn-state', name: 'Penn State' },
+  { slug: 'lsu', name: 'LSU' },
+  { slug: 'notre-dame', name: 'Notre Dame' },
+  { slug: 'tennessee', name: 'Tennessee' },
+  { slug: 'clemson', name: 'Clemson' },
+  { slug: 'florida', name: 'Florida' },
+]
 
 export const metadata: Metadata = {
   title: 'Trending College Fan Gear \u2014 Most Popular Right Now',
@@ -124,6 +140,34 @@ export default async function TrendingPage() {
           No trending products yet. Products will appear here once fans start clicking.
         </p>
       )}
+      {/* Browse by school — internal links */}
+      <nav aria-label="Browse gear by school" style={{ marginTop: 48, paddingTop: 32, borderTop: '1px solid var(--border)' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>Browse Gear by School</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {POPULAR_SCHOOLS.map(s => (
+            <Link
+              key={s.slug}
+              href={`/${s.slug}`}
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--text-secondary)',
+                textDecoration: 'none',
+                padding: '6px 12px',
+                border: '1px solid var(--border)',
+                borderRadius: 20,
+              }}
+            >
+              {s.name}
+            </Link>
+          ))}
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <Link href="/" style={{ fontSize: 13, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            View all schools &rarr;
+          </Link>
+        </div>
+      </nav>
     </main>
   )
 }

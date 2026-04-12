@@ -196,8 +196,21 @@ export default async function SchoolPage({
           lineHeight: 1.7,
           color: 'var(--text-secondary)',
           maxWidth: 760,
+          marginBottom: 12,
         }}>
           {meta.intro}
+        </p>
+        <p style={{
+          fontSize: 15,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 760,
+        }}>
+          Browse {school.name} gear by sport using the navigation above — shop {school.nickname}
+          football jerseys and hoodies for game day, {school.nickname} basketball apparel for hoops
+          season, or {school.nickname} volleyball shirts and sweatshirts year-round. Every category
+          is updated daily with fresh listings from eBay and Amazon so you always find the best
+          selection and prices.
         </p>
       </section>
 
@@ -222,7 +235,7 @@ export default async function SchoolPage({
 
       {/* Latest news */}
       {newsPosts.length > 0 && (
-        <section className="container" style={{ padding: '48px 20px' }}>
+        <section className="container" aria-label={`Latest ${school.name} news`} style={{ padding: '48px 20px' }}>
           <h2 style={{
             fontSize: 24,
             fontWeight: 900,
@@ -273,7 +286,7 @@ export default async function SchoolPage({
           letterSpacing: '-0.02em',
           marginBottom: 12,
         }}>
-          About {school.name} on DieHardNation
+          About {school.name} Fan Gear on DieHardNation
         </h2>
         <p style={{
           fontSize: 14,
@@ -286,7 +299,21 @@ export default async function SchoolPage({
           with {school.name}, the {conference?.fullName || school.conference} conference,
           or the NCAA. We connect {school.mascot} fans with the best gear from trusted
           retailers including eBay and Amazon. All products are sold by third-party
-          sellers; clicking View Deal takes you directly to the retailer.
+          sellers; clicking View Deal takes you directly to the retailer where you
+          can purchase securely.
+        </p>
+        <p style={{
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 720,
+          marginBottom: 12,
+        }}>
+          Looking for specific {school.name} gear? Use the sport tabs to browse {school.nickname}
+          football jerseys and hoodies, basketball apparel, volleyball sweatshirts, wrestling gear,
+          baseball jerseys, and softball apparel. Filter by category to find exactly what you need
+          — whether that&apos;s a {school.nickname} hoodie under $25, a premium {school.name} jersey,
+          or the perfect fan gift.
         </p>
         <p style={{
           fontSize: 14,
@@ -294,10 +321,10 @@ export default async function SchoolPage({
           color: 'var(--text-secondary)',
           maxWidth: 720,
         }}>
-          Shopping for {school.name} gear? Browse by sport using the tabs above, filter
-          by category (jerseys, hoodies, hats), or sort by price to find deals that fit
-          your budget. Our product catalog updates every 6 hours with fresh listings
-          from eBay.
+          Our {school.name} fan gear catalog updates every six hours with new listings from eBay,
+          ensuring you always have access to the latest {school.nickname} apparel, vintage finds,
+          and game day essentials. Bookmark this page and check back regularly for new arrivals
+          and deals on {school.mascot} gear.
         </p>
       </section>
 

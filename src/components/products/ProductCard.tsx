@@ -111,7 +111,7 @@ export default function ProductCard({ product, schoolColor }: ProductCardProps) 
           {product.title}
         </div>
 
-        <div style={{
+        <footer style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -156,7 +156,7 @@ export default function ProductCard({ product, schoolColor }: ProductCardProps) 
           >
             View Deal
           </button>
-        </div>
+        </footer>
       </div>
     </article>
   )

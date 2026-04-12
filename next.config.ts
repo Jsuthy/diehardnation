@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '*.ebayimg.com' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.diehardnation.com' }],
+        destination: 'https://diehardnation.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

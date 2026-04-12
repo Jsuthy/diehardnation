@@ -2,8 +2,9 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import HeroSearch from '@/components/home/HeroSearch'
 import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
+import Link from 'next/link'
 import { getPublicClient } from '@/lib/supabase/server'
-import type { Product, NewsPost } from '@/lib/supabase/types'
+import type { Product, NewsPost, School } from '@/lib/supabase/types'
 import { HUB_METADATA } from '@/lib/seo/metadata-templates'
 
 export async function generateMetadata({
@@ -49,6 +50,21 @@ async function getTrendingProducts(): Promise<Product[]> {
   }
 }
 
+async function getActiveSchools(): Promise<School[]> {
+  try {
+    const supabase = getPublicClient()
+    const { data } = await supabase
+      .from('schools')
+      .select('*')
+      .eq('is_active', true)
+      .eq('is_live', true)
+      .order('name', { ascending: true })
+    return (data as School[]) || []
+  } catch {
+    return []
+  }
+}
+
 async function getLatestNews(): Promise<NewsPost[]> {
   try {
     const supabase = getPublicClient()
@@ -67,9 +83,10 @@ async function getLatestNews(): Promise<NewsPost[]> {
 export const revalidate = 600
 
 export default async function HomePage() {
-  const [trendingProducts, latestNews] = await Promise.all([
+  const [trendingProducts, latestNews, allSchools] = await Promise.all([
     getTrendingProducts(),
     getLatestNews(),
+    getActiveSchools(),
   ])
 
   return (
@@ -100,7 +117,7 @@ export default async function HomePage() {
       </section>
 
       {/* Conference tabs + school grid */}
-      <section className="container">
+      <section className="container" aria-label="Browse schools by conference">
         <h2 style={{
           fontSize: 24,
           fontWeight: 900,
@@ -114,7 +131,7 @@ export default async function HomePage() {
 
       {/* Trending gear */}
       {trendingProducts.length > 0 && (
-        <section className="container" style={{ padding: '48px 20px' }}>
+        <section className="container" aria-label="Trending fan gear" style={{ padding: '48px 20px' }}>
           <h2 style={{
             fontSize: 24,
             fontWeight: 900,
@@ -150,7 +167,7 @@ export default async function HomePage() {
 
       {/* Latest news */}
       {latestNews.length > 0 && (
-        <section className="container" style={{ padding: '48px 20px 80px' }}>
+        <section className="container" aria-label="Latest news" style={{ padding: '48px 20px 80px' }}>
           <h2 style={{
             fontSize: 24,
             fontWeight: 900,
@@ -195,6 +212,83 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+      {/* Browse All Schools — internal linking for crawlability */}
+      {allSchools.length > 0 && (
+        <section className="container" aria-label="Browse all schools" style={{ padding: '48px 20px' }}>
+          <h2 style={{
+            fontSize: 24,
+            fontWeight: 900,
+            letterSpacing: '-0.02em',
+            marginBottom: 16,
+          }}>
+            BROWSE ALL SCHOOLS
+          </h2>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
+            Explore fan gear for all {allSchools.length} FBS schools — click any school to shop hoodies, jerseys, hats and more.
+          </p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: 8,
+          }}>
+            {allSchools.map(s => (
+              <Link
+                key={s.slug}
+                href={`/${s.slug}`}
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  padding: '8px 12px',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  transition: 'border-color 0.15s',
+                }}
+              >
+                {s.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* About DieHardNation — SEO text content */}
+      <section style={{ maxWidth: 800, margin: '60px auto', padding: '0 20px' }}>
+        <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
+          The College Fan Gear Hub for Every School
+        </h2>
+        <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          DieHardNation is an independent college fan gear aggregator covering all 130 FBS schools
+          across every conference — SEC, Big Ten, Big 12, ACC, and more. We connect fans with the
+          best hoodies, jerseys, shirts, hats and accessories from trusted sellers on eBay and
+          Amazon, updated every six hours so you always find the freshest deals.
+        </p>
+        <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          Whether you&apos;re shopping for Nebraska Cornhuskers volleyball gear, Alabama Crimson Tide
+          football jerseys, Ohio State Buckeyes hoodies, Penn State Nittany Lions hats, or Tennessee
+          Volunteers sweatshirts — DieHardNation has your school covered. Browse by conference, search
+          for your team, or explore trending gear from fans across the nation.
+        </p>
+        <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 32 }}>
+          DieHardNation is not affiliated with any university, athletic department, conference, or the
+          NCAA. All products are sold by independent third-party retailers. Clicking any product link
+          takes you directly to eBay or Amazon where you can complete your purchase securely. We earn
+          a small affiliate commission at no extra cost to you.
+        </p>
+
+        <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
+          Shop College Fan Gear by Conference
+        </h2>
+        <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+          Browse all 130 FBS schools organized by conference. The SEC features powerhouse fan bases
+          including Alabama, Georgia, Tennessee, LSU, and Auburn. The Big Ten covers Michigan, Ohio
+          State, Penn State, Nebraska, and Wisconsin among others. The Big 12 includes Texas,
+          Oklahoma, Kansas State, and Iowa State. The ACC features Clemson, Notre Dame, Miami, and
+          Florida State. Every school has its own dedicated fan gear hub with sport-specific pages
+          for football, basketball, volleyball, wrestling, baseball, softball, and track.
+        </p>
+      </section>
     </main>
   )
 }

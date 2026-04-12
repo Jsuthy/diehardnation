@@ -191,7 +191,7 @@ export default async function SportPage({
 
       {/* Related sports */}
       {otherSports.length > 0 && (
-        <section className="container" style={{ padding: '32px 20px' }}>
+        <nav aria-label={`Other ${school.name} sports`} className="container" style={{ padding: '32px 20px' }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
             {meta.h2s[3]}
           </h2>
@@ -216,18 +216,18 @@ export default async function SportPage({
               </Link>
             ))}
           </div>
-        </section>
+        </nav>
       )}
 
       {/* About section — SEO text content */}
-      <section className="container" style={{ padding: '16px 20px 48px' }}>
+      <section className="container" aria-label={`About ${school.name} ${sport.name} gear`} style={{ padding: '16px 20px 48px' }}>
         <h2 style={{
           fontSize: 20,
           fontWeight: 900,
           letterSpacing: '-0.02em',
           marginBottom: 12,
         }}>
-          About {school.name} {sport.name} on DieHardNation
+          About {school.name} {sport.name} Gear
         </h2>
         <p style={{
           fontSize: 14,
@@ -236,11 +236,24 @@ export default async function SportPage({
           maxWidth: 720,
           marginBottom: 12,
         }}>
-          DieHardNation is an independent fan gear aggregator — not affiliated
-          with {school.name}, the {conference?.fullName || school.conference} conference,
-          or the NCAA. We connect {school.mascot} {sport.name.toLowerCase()} fans with
-          the best gear from trusted retailers including eBay and Amazon. All products
-          are sold by third-party sellers; clicking View Deal takes you directly to the retailer.
+          Shop the best {school.name} {sport.name.toLowerCase()} gear on DieHardNation — an
+          independent fan aggregator connecting {school.nickname} fans with hoodies, jerseys,
+          shirts, hats and accessories from eBay and Amazon. Our {school.nickname}{' '}
+          {sport.name.toLowerCase()} gear catalog updates daily with fresh listings so you
+          always find current styles and competitive prices.
+        </p>
+        <p style={{
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: 'var(--text-secondary)',
+          maxWidth: 720,
+          marginBottom: 12,
+        }}>
+          Whether you&apos;re shopping for game day, looking for a gift, or adding to your{' '}
+          {school.nickname} collection, browse our full selection of {school.name}{' '}
+          {sport.name.toLowerCase()} apparel. Filter by category to find hoodies and sweatshirts,
+          jerseys and uniforms, t-shirts and shirts, or hats and caps. Sort by price to find deals
+          in your budget — from affordable options under $25 to premium fan gear over $100.
         </p>
         <p style={{
           fontSize: 14,
@@ -248,9 +261,10 @@ export default async function SportPage({
           color: 'var(--text-secondary)',
           maxWidth: 720,
         }}>
-          Looking for {school.name} {sport.name.toLowerCase()} gear? Filter by category
-          (jerseys, hoodies, hats), or sort by price to find deals that fit your budget.
-          Our product catalog updates every 6 hours with fresh listings from eBay.
+          DieHardNation is not affiliated with {school.name}, the{' '}
+          {conference?.fullName || school.conference} conference, or the NCAA. All products are
+          sold by third-party sellers; clicking View Deal takes you directly to the retailer
+          where you can purchase securely.
         </p>
       </section>
     </main>

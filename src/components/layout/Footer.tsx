@@ -55,7 +55,7 @@ export default function Footer() {
           </div>
 
           {/* Top Schools */}
-          <div>
+          <nav aria-label="Top schools">
             <div style={{ fontWeight: 700, marginBottom: 8 }}>Top Schools</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {TOP_SCHOOLS.map(s => (
@@ -64,10 +64,10 @@ export default function Footer() {
                 </Link>
               ))}
             </div>
-          </div>
+          </nav>
 
           {/* Conferences */}
-          <div>
+          <nav aria-label="Conferences">
             <div style={{ fontWeight: 700, marginBottom: 8 }}>Conferences</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {CONFERENCES.map(c => (
@@ -76,10 +76,10 @@ export default function Footer() {
                 </Link>
               ))}
             </div>
-          </div>
+          </nav>
 
           {/* Info */}
-          <div>
+          <nav aria-label="Site information">
             <div style={{ fontWeight: 700, marginBottom: 8 }}>Info</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <Link href="/legal" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Legal &amp; Disclosures</Link>
@@ -87,7 +87,7 @@ export default function Footer() {
               <Link href="/legal#privacy" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Privacy Policy</Link>
               <Link href="/legal#terms" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Terms</Link>
             </div>
-          </div>
+          </nav>
         </div>
 
         {/* Bottom bar */}

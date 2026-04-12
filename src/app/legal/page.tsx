@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Legal & Disclosures',
@@ -79,6 +80,37 @@ export default function LegalPage() {
           <strong>legal@diehardnation.com</strong>.
         </p>
       </section>
+
+      {/* Navigation links — internal linking */}
+      <nav aria-label="Site navigation" style={{ marginTop: 48, paddingTop: 32, borderTop: '1px solid var(--border)' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>Explore DieHardNation</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+          <Link href="/" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Home &mdash; Browse All Schools
+          </Link>
+          <Link href="/trending" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Trending Gear
+          </Link>
+          <Link href="/news" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Latest News
+          </Link>
+          <Link href="/nebraska" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Nebraska
+          </Link>
+          <Link href="/alabama" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Alabama
+          </Link>
+          <Link href="/ohio-state" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Ohio State
+          </Link>
+          <Link href="/michigan" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Michigan
+          </Link>
+          <Link href="/texas" style={{ fontSize: 14, fontWeight: 600, color: 'var(--brand)', textDecoration: 'none' }}>
+            Texas
+          </Link>
+        </div>
+      </nav>
     </main>
   )
 }

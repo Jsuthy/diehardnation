@@ -7,10 +7,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = getPublicClient()
 
   const [schoolsResult, pagesResult, newsResult, productsResult] = await Promise.allSettled([
-    supabase.from('schools').select('slug').eq('is_active', true),
-    supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at').eq('is_active', true).gte('product_count', 3),
+    supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gt('product_count', 0),
+    supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at').eq('is_active', true).gte('product_count', 3).neq('slug', '').not('slug', 'is', null),
     supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
-    supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).neq('slug', '').not('slug', 'is', null).limit(50000),
+    supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).or('is_featured.eq.true,click_count.gt.0').neq('slug', '').not('slug', 'is', null).limit(50000),
   ])
 
   const schools = schoolsResult.status === 'fulfilled' ? schoolsResult.value.data || [] : []
