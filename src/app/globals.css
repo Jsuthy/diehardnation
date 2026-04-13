@@ -17,8 +17,9 @@
   --brand: #CC0000;
   --brand-hover: #AA0000;
 
-  /* School (overridden per school via data-school attribute) */
+  /* School (overridden per school via data-school or inline style) */
   --school-color: #CC0000;
+  --school-secondary: #0A0A0A;
   --school-bg: #0A0A0A;
   --school-text: #FFFFFF;
 
@@ -46,27 +47,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* School theme overrides */
-[data-school="nebraska"]  { --school-color: #D11F3A; --school-bg: #0A0A0A; }
-[data-school="alabama"]   { --school-color: #9E1B32; --school-bg: #FFFFFF; }
-[data-school="michigan"]  { --school-color: #FFCB05; --school-bg: #00274C; }
-[data-school="ohio-state"]{ --school-color: #BB0000; --school-bg: #FFFFFF; }
-[data-school="texas"]     { --school-color: #BF5700; --school-bg: #FFFFFF; }
-[data-school="georgia"]   { --school-color: #BA0C2F; --school-bg: #FFFFFF; }
-[data-school="penn-state"]{ --school-color: #041E42; --school-bg: #FFFFFF; }
-[data-school="lsu"]       { --school-color: #461D7C; --school-bg: #FDD023; }
-[data-school="notre-dame"]{ --school-color: #0C2340; --school-bg: #C99700; }
-[data-school="tennessee"] { --school-color: #FF8200; --school-bg: #FFFFFF; }
-[data-school="oklahoma"]  { --school-color: #841617; --school-bg: #FFFFFF; }
-[data-school="auburn"]    { --school-color: #0C2340; --school-bg: #E87722; }
-[data-school="florida"]   { --school-color: #0021A5; --school-bg: #FA4616; }
-[data-school="clemson"]   { --school-color: #F66733; --school-bg: #522D80; }
-[data-school="wisconsin"] { --school-color: #C5050C; --school-bg: #FFFFFF; }
-[data-school="iowa"]      { --school-color: #FFCD00; --school-bg: #000000; }
-[data-school="michigan-state"] { --school-color: #18453B; --school-bg: #FFFFFF; }
-[data-school="texas-am"]  { --school-color: #500000; --school-bg: #FFFFFF; }
-[data-school="oregon"]    { --school-color: #154733; --school-bg: #FEE123; }
-[data-school="usc"]       { --school-color: #990000; --school-bg: #FFC72C; }
+/* School theme overrides — colors now set via inline CSS vars from layout.tsx */
 
 /* Typography utilities */
 .font-display { font-weight: 900; letter-spacing: -0.02em; }

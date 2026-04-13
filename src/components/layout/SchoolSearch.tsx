@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { searchSchools, type SchoolData } from '@/lib/constants/schools'
+import { getLogoUrl } from '@/lib/schools/logos'
 
 interface SchoolSearchProps {
   placeholder?: string
@@ -21,9 +22,10 @@ export default function SchoolSearch({
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (query.length >= 1) {
+    if (query.length >= 2) {
       setResults(searchSchools(query).slice(0, 8))
       setOpen(true)
       setActiveIndex(-1)
@@ -41,6 +43,18 @@ export default function SchoolSearch({
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Global "/" shortcut to focus search
+  useEffect(() => {
+    function handleSlashKey(e: KeyboardEvent) {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleSlashKey)
+    return () => document.removeEventListener('keydown', handleSlashKey)
   }, [])
 
   function navigate(school: SchoolData) {
@@ -66,11 +80,12 @@ export default function SchoolSearch({
   return (
     <div ref={wrapperRef} style={{ position: 'relative', ...style }}>
       <input
+        ref={inputRef}
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        onFocus={() => query.length >= 1 && setOpen(true)}
+        onFocus={() => query.length >= 2 && setOpen(true)}
         placeholder={placeholder}
         style={{
           width: '100%',
@@ -98,42 +113,69 @@ export default function SchoolSearch({
           zIndex: 200,
           overflow: 'hidden',
         }}>
-          {results.map((school, i) => (
-            <div
-              key={school.slug}
-              onClick={() => navigate(school)}
-              style={{
-                padding: '10px 16px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                background: i === activeIndex ? 'var(--surface)' : 'white',
-                transition: 'background 0.1s',
-              }}
-              onMouseEnter={() => setActiveIndex(i)}
-            >
-              <span style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: school.primary_color,
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 900,
-                flexShrink: 0,
-              }}>
-                {school.short_name.charAt(0)}
-              </span>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{school.short_name}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{school.mascot} &middot; {school.conference.toUpperCase()}</div>
+          {results.map((school, i) => {
+            const logoUrl = getLogoUrl(school.slug)
+            return (
+              <div
+                key={school.slug}
+                onClick={() => navigate(school)}
+                style={{
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  background: i === activeIndex ? 'var(--surface)' : 'white',
+                  transition: 'background 0.1s',
+                }}
+                onMouseEnter={() => setActiveIndex(i)}
+              >
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt={`${school.short_name} logo`}
+                    width={28}
+                    height={28}
+                    style={{ objectFit: 'contain', flexShrink: 0 }}
+                  />
+                ) : (
+                  <span style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: school.primary_color,
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 900,
+                    flexShrink: 0,
+                  }}>
+                    {school.short_name.charAt(0)}
+                  </span>
+                )}
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{school.short_name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{school.mascot} &middot; {school.conference.toUpperCase()}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
+          <div
+            onClick={() => { setOpen(false); router.push('/') }}
+            style={{
+              padding: '10px 16px',
+              cursor: 'pointer',
+              borderTop: '1px solid var(--border)',
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'var(--brand)',
+              textAlign: 'center',
+            }}
+          >
+            Browse all schools &rarr;
+          </div>
         </div>
       )}
     </div>

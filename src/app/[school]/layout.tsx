@@ -17,7 +17,13 @@ export default async function SchoolLayout({
   }
 
   return (
-    <div data-school={school.slug}>
+    <div
+      data-school={school.slug}
+      style={{
+        '--school-color': school.primary_color,
+        '--school-secondary': school.secondary_color,
+      } as React.CSSProperties}
+    >
       <SchoolNav school={school} />
       {children}
     </div>

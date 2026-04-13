@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SCHOOLS, getSchoolsByConference, type SchoolData } from '@/lib/constants/schools'
 import { CONFERENCES } from '@/lib/constants/conferences'
+import { getLogoUrl } from '@/lib/schools/logos'
 
 const TAB_LIST = [
   { slug: 'all', name: 'All' },
@@ -101,14 +102,28 @@ export default function ConferenceSchoolGrid() {
               e.currentTarget.style.boxShadow = 'none'
             }}
           >
-            <div style={{
-              fontSize: 32,
-              fontWeight: 900,
-              color: school.primary_color,
-              lineHeight: 1,
-            }}>
-              {school.short_name.charAt(0)}
-            </div>
+            {(() => {
+              const logoUrl = getLogoUrl(school.slug)
+              return logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt={`${school.short_name} logo`}
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  style={{ objectFit: 'contain' }}
+                />
+              ) : (
+                <div style={{
+                  fontSize: 32,
+                  fontWeight: 900,
+                  color: school.primary_color,
+                  lineHeight: 1,
+                }}>
+                  {school.short_name.charAt(0)}
+                </div>
+              )
+            })()}
             <div style={{
               fontSize: 12,
               fontWeight: 600,
