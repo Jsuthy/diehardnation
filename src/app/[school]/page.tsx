@@ -6,7 +6,6 @@ import { SCHOOLS } from '@/lib/constants/schools'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
 import Link from 'next/link'
 import { getSchoolMetadata } from '@/lib/seo/metadata-templates'
-import { getLogoUrl } from '@/lib/schools/logos'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -163,31 +162,7 @@ export default async function SchoolPage({
         background: school.primary_color,
         padding: '40px 0',
       }}>
-        <div className="container" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          {(() => {
-            const logoUrl = getLogoUrl(school.slug)
-            return logoUrl ? (
-              <div style={{
-                width: 80,
-                height: 80,
-                borderRadius: '50%',
-                background: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}>
-                <img
-                  src={logoUrl}
-                  alt={`${school.name} logo`}
-                  width={64}
-                  height={64}
-                  style={{ objectFit: 'contain' }}
-                />
-              </div>
-            ) : null
-          })()}
-          <div>
+        <div className="container">
           <h1 style={{
             color: 'white',
             fontWeight: 900,
@@ -211,7 +186,6 @@ export default async function SchoolPage({
           }}>
             {stats.productCount} products &middot; {stats.newsCount} news articles &middot; {stats.pageCount} pages
           </p>
-          </div>
         </div>
       </section>
 

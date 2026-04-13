@@ -3,7 +3,6 @@
 import { useRouter, usePathname } from 'next/navigation'
 import type { School } from '@/lib/supabase/types'
 import { SPORTS } from '@/lib/constants/sports'
-import { getLogoUrl } from '@/lib/schools/logos'
 
 interface SchoolNavProps {
   school: School
@@ -26,8 +25,6 @@ export default function SchoolNav({ school }: SchoolNavProps) {
     }
   }
 
-  const logoUrl = getLogoUrl(school.slug)
-
   return (
     <nav style={{
       height: 48,
@@ -43,30 +40,20 @@ export default function SchoolNav({ school }: SchoolNavProps) {
       }}>
         {/* School badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginRight: 12 }}>
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={`${school.name} logo`}
-              width={32}
-              height={32}
-              style={{ objectFit: 'contain' }}
-            />
-          ) : (
-            <div style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: school.primary_color,
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 14,
-              fontWeight: 900,
-            }}>
-              {school.short_name.charAt(0)}
-            </div>
-          )}
+          <div style={{
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            background: school.primary_color,
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 14,
+            fontWeight: 900,
+          }}>
+            {school.short_name.charAt(0)}
+          </div>
           <span style={{
             color: 'white',
             fontWeight: 700,
