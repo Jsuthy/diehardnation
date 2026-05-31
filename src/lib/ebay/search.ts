@@ -42,6 +42,19 @@ export interface EbayProduct {
 }
 
 export async function searchEbayProducts(query: string, limit = 12): Promise<EbayProduct[]> {
+  let products = await runSearch(query, limit)
+  // Fallback: eBay requires ALL keywords, so an over-specific query (e.g.
+  // "Chiefs jersey hoodie") can return nothing. Progressively drop trailing
+  // words until we get results or run out.
+  let words = query.trim().split(/\s+/)
+  while (products.length === 0 && words.length > 2) {
+    words = words.slice(0, -1)
+    products = await runSearch(words.join(' '), limit)
+  }
+  return products
+}
+
+async function runSearch(query: string, limit: number): Promise<EbayProduct[]> {
   const token = await getEbayToken()
   if (!token) return []
 

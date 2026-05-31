@@ -54,7 +54,7 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
         <section style={{ marginBottom: 48 }}>
-          <ProductRail query={`${team.name} jersey hoodie`} title={`Shop ${team.name} Gear`} />
+          <ProductRail query={team.name} title={`Shop ${team.name} Gear`} />
           <GearCTA query={`${team.name} fan gear`} title={`Browse all ${team.name} gear`} teamName={team.name} />
         </section>
 
