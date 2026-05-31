@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getEvent, getSport, getAllEvents, getArticlesByEvent, getUpcomingEvents } from '@/lib/sports/queries'
 import GearCTA from '@/components/affiliate/GearCTA'
+import ProductRail from '@/components/affiliate/ProductRail'
 import EmailSignup from '@/components/email/EmailSignup'
 import Countdown from '@/components/sports/Countdown'
 
@@ -76,8 +77,8 @@ export default async function EventPage({ params }: { params: Promise<{ event: s
         </section>
 
         <section style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>Shop {event.name} Gear</h2>
-          <GearCTA query={`${event.name} gear jersey hoodie`} />
+          <ProductRail query={`${event.name} gear`} title={`Shop ${event.name} Gear`} />
+          <GearCTA query={`${event.name} gear jersey hoodie`} title={`Browse all ${event.name} gear`} />
         </section>
 
         <section style={{ marginBottom: 48 }}>

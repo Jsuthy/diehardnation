@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getTeam, getLeague, getTeamsByLeague, getArticlesByTeam, getTopTeams } from '@/lib/sports/queries'
 import GearCTA from '@/components/affiliate/GearCTA'
+import ProductRail from '@/components/affiliate/ProductRail'
 import EmailSignup from '@/components/email/EmailSignup'
 
 export const revalidate = 3600
@@ -53,8 +54,8 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
         <section style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>Shop {team.name} Gear</h2>
-          <GearCTA query={`${team.name} fan gear jersey hoodie`} teamName={team.name} />
+          <ProductRail query={`${team.name} jersey hoodie`} title={`Shop ${team.name} Gear`} />
+          <GearCTA query={`${team.name} fan gear`} title={`Browse all ${team.name} gear`} teamName={team.name} />
         </section>
 
         <section style={{ marginBottom: 48 }}>

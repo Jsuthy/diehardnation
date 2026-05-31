@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getSport, getTopSports, getLeaguesBySport, getLatestArticles, getUpcomingEvents } from '@/lib/sports/queries'
 import GearCTA from '@/components/affiliate/GearCTA'
+import ProductRail from '@/components/affiliate/ProductRail'
 import EmailSignup from '@/components/email/EmailSignup'
 
 export const revalidate = 86400
@@ -97,8 +98,8 @@ export default async function SportPage({ params }: { params: Promise<{ sport: s
         )}
 
         <section style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>Shop {sport.name} Fan Gear</h2>
-          <GearCTA query={`${sport.name} fan gear`} />
+          <ProductRail query={`${sport.name} fan gear`} title={`Shop ${sport.name} Fan Gear`} />
+          <GearCTA query={`${sport.name} fan gear`} title={`Browse all ${sport.name} gear`} />
         </section>
 
         <EmailSignup source="article" sportSlug={slug} />
