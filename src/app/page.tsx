@@ -1,14 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import HeroShop from '@/components/search/HeroShop'
+import CategoryCarousel from '@/components/home/CategoryCarousel'
+import TeamExplorer from '@/components/home/TeamExplorer'
 import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
 import EmailSignup from '@/components/email/EmailSignup'
 import SectionHeading from '@/components/sports/SectionHeading'
+import Reveal from '@/components/util/Reveal'
 import { getLatestArticles, getUpcomingEvents } from '@/lib/sports/queries'
+import { searchEbayProducts } from '@/lib/ebay/search'
 import type { Article, SportEvent } from '@/lib/sports/types'
-import ProductRail from '@/components/affiliate/ProductRail'
-import { PRO_TEAM_LIST } from '@/lib/sports/pro-data'
-import { contrastText, darken } from '@/lib/sports/color'
+import { darken } from '@/lib/sports/color'
 
 const HOME_TITLE = 'DieHardNation — Fan Gear & Sports News for Every Team'
 const HOME_DESCRIPTION =
@@ -25,13 +27,6 @@ const LEAGUE_TILES = [
   { slug: 'champions-league', name: 'Champions League', color: '#061C57' },
 ]
 
-const POPULAR_TEAM_SLUGS = [
-  'kansas-city-chiefs', 'dallas-cowboys', 'philadelphia-eagles', 'san-francisco-49ers',
-  'los-angeles-lakers', 'boston-celtics', 'golden-state-warriors', 'new-york-knicks',
-  'new-york-yankees', 'los-angeles-dodgers', 'boston-red-sox', 'chicago-cubs',
-  'boston-bruins', 'new-york-rangers', 'detroit-red-wings', 'toronto-maple-leafs',
-]
-
 const SPORT_CARDS = [
   { slug: 'american-football', label: 'NFL & Football' },
   { slug: 'basketball', label: 'NBA & Basketball' },
@@ -46,8 +41,6 @@ const SPORT_CARDS = [
   { slug: 'mma', label: 'MMA' },
   { slug: 'multi-sport', label: 'Olympics' },
 ]
-
-const teamBySlug = Object.fromEntries(PRO_TEAM_LIST.map(t => [t.slug, t]))
 
 export async function generateMetadata({
   searchParams,
@@ -77,127 +70,128 @@ async function getArticlesSafe(): Promise<Article[]> {
 async function getEventsSafe(): Promise<SportEvent[]> {
   try { return await getUpcomingEvents(undefined, 8) } catch { return [] }
 }
+async function getShowcaseSafe() {
+  try { return await searchEbayProducts('jersey', 24) } catch { return [] }
+}
 
 export const revalidate = 600
 
 export default async function HomePage() {
-  const [latestArticles, upcomingEvents] = await Promise.all([getArticlesSafe(), getEventsSafe()])
-  const popularTeams = POPULAR_TEAM_SLUGS.map(s => teamBySlug[s]).filter(Boolean)
+  const [latestArticles, upcomingEvents, showcase] = await Promise.all([
+    getArticlesSafe(), getEventsSafe(), getShowcaseSafe(),
+  ])
 
   return (
     <main>
-      {/* Hero — live product shop search */}
-      <HeroShop />
+      {/* Interactive hero: instant search + live merch wall */}
+      <HeroShop showcase={showcase} />
 
-      {/* Trending — real product photography */}
-      <section className="container" style={{ padding: '40px 20px 8px' }}>
-        <SectionHeading href="/search?q=jersey">Trending Right Now</SectionHeading>
-        <ProductRail query="throwback jersey" limit={12} />
-      </section>
+      {/* Trending — tabbed live product carousel */}
+      <Reveal>
+        <section className="container" style={{ padding: '40px 20px 8px' }}>
+          <SectionHeading href="/search?q=jersey">Trending Gear</SectionHeading>
+          <CategoryCarousel />
+        </section>
+      </Reveal>
+
+      {/* Explore Teams — tabbed league → team picker */}
+      <Reveal>
+        <section className="container" style={{ padding: '24px 20px 8px' }}>
+          <SectionHeading>Explore Teams</SectionHeading>
+          <TeamExplorer />
+        </section>
+      </Reveal>
 
       {/* Shop by League — gradient tiles */}
-      <section className="container" style={{ padding: '24px 20px 8px' }}>
-        <SectionHeading>Shop by League</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
-          {LEAGUE_TILES.map(l => (
-            <Link key={l.slug} href={`/league/${l.slug}`} className="dhn-tile" style={{
-              background: `linear-gradient(135deg, ${l.color} 0%, ${darken(l.color, 0.42)} 100%)`,
-            }}>
-              <span style={{ fontSize: 19, fontWeight: 900, letterSpacing: '-0.01em' }}>{l.name}</span>
-              <span className="dhn-tile-cta">Shop gear →</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Fan Favorites — team gradient tiles with city */}
-      <section className="container" style={{ padding: '24px 20px 8px' }}>
-        <SectionHeading href="/league/nfl" linkLabel="All teams →">Fan Favorites</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
-          {popularTeams.map(t => {
-            const fg = contrastText(t.primary_color)
-            return (
-              <Link key={t.slug} href={`/team/${t.slug}`} className="dhn-tile" style={{
-                background: `linear-gradient(135deg, ${t.primary_color} 0%, ${darken(t.primary_color, 0.42)} 100%)`,
-                color: fg, borderBottom: `4px solid ${t.secondary_color}`,
+      <Reveal>
+        <section className="container" style={{ padding: '24px 20px 8px' }}>
+          <SectionHeading>Shop by League</SectionHeading>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
+            {LEAGUE_TILES.map(l => (
+              <Link key={l.slug} href={`/league/${l.slug}`} className="dhn-tile" style={{
+                background: `linear-gradient(135deg, ${l.color} 0%, ${darken(l.color, 0.42)} 100%)`,
               }}>
-                <span style={{ fontSize: 16, fontWeight: 900, lineHeight: 1.15 }}>{t.name}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.72, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  {t.city?.split(',')[0] || 'Shop gear'}
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* Browse Every Sport */}
-      <section id="sports" className="container" style={{ padding: '24px 20px 8px' }}>
-        <SectionHeading>Browse Every Sport</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
-          {SPORT_CARDS.map(s => (
-            <Link key={s.slug} href={`/sport/${s.slug}`} className="dhn-card" style={{ fontSize: 14, fontWeight: 700, padding: '15px 18px' }}>
-              {s.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Coming Up — events */}
-      {upcomingEvents.length > 0 && (
-        <section className="container" style={{ padding: '32px 20px 8px' }}>
-          <SectionHeading href="/events">Coming Up</SectionHeading>
-          <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
-            {upcomingEvents.map(ev => (
-              <Link key={ev.slug} href={`/events/${ev.slug}`} className="dhn-card" style={{ flex: '0 0 220px', padding: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>{ev.event_type}</div>
-                <div style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.3, marginBottom: 6 }}>{ev.name}</div>
-                {ev.start_date && (
-                  <time style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                    {new Date(ev.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </time>
-                )}
+                <span style={{ fontSize: 19, fontWeight: 900, letterSpacing: '-0.01em' }}>{l.name}</span>
+                <span className="dhn-tile-cta">Shop gear →</span>
               </Link>
             ))}
           </div>
         </section>
+      </Reveal>
+
+      {/* Browse Every Sport */}
+      <Reveal>
+        <section id="sports" className="container" style={{ padding: '24px 20px 8px' }}>
+          <SectionHeading>Browse Every Sport</SectionHeading>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
+            {SPORT_CARDS.map(s => (
+              <Link key={s.slug} href={`/sport/${s.slug}`} className="dhn-card" style={{ fontSize: 14, fontWeight: 700, padding: '15px 18px' }}>
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+      </Reveal>
+
+      {/* Coming Up — events */}
+      {upcomingEvents.length > 0 && (
+        <Reveal>
+          <section className="container" style={{ padding: '24px 20px 8px' }}>
+            <SectionHeading href="/events">Coming Up</SectionHeading>
+            <div className="dhn-hscroll">
+              {upcomingEvents.map(ev => (
+                <Link key={ev.slug} href={`/events/${ev.slug}`} className="dhn-card" style={{ flex: '0 0 230px', padding: 16 }}>
+                  <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>{ev.event_type}</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.3, marginBottom: 6 }}>{ev.name}</div>
+                  {ev.start_date && (
+                    <time style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                      {new Date(ev.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </time>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        </Reveal>
       )}
 
       {/* Latest articles (only when published) */}
       {latestArticles.length > 0 && (
-        <section className="container" style={{ padding: '32px 20px 8px' }}>
-          <SectionHeading href="/news">Latest from DieHardNation</SectionHeading>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16 }}>
-            {latestArticles.map(a => (
-              <Link key={a.slug} href={`/news/${a.slug}`} className="dhn-card" style={{ padding: 16 }}>
-                {a.sport_slug && (
-                  <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>
-                    {a.sport_slug.replace(/-/g, ' ')}
-                  </div>
-                )}
-                <h3 style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.35, marginBottom: 6 }}>{a.title}</h3>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{a.excerpt}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
+        <Reveal>
+          <section className="container" style={{ padding: '24px 20px 8px' }}>
+            <SectionHeading href="/news">Latest from DieHardNation</SectionHeading>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16 }}>
+              {latestArticles.map(a => (
+                <Link key={a.slug} href={`/news/${a.slug}`} className="dhn-card" style={{ padding: 16 }}>
+                  {a.sport_slug && (
+                    <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>{a.sport_slug.replace(/-/g, ' ')}</div>
+                  )}
+                  <h3 style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.35, marginBottom: 6 }}>{a.title}</h3>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{a.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </Reveal>
       )}
 
-      {/* College — demoted to one section */}
-      <section className="container" style={{ padding: '32px 20px 8px' }}>
-        <SectionHeading>College Fan Gear</SectionHeading>
-        <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 16, maxWidth: 640 }}>
-          All 130 FBS programs, organized by conference — find your school for hoodies, jerseys, hats and more.
-        </p>
-        <ConferenceSchoolGrid />
-      </section>
+      {/* College — one compact section */}
+      <Reveal>
+        <section className="container" style={{ padding: '24px 20px 8px' }}>
+          <SectionHeading>College Fan Gear</SectionHeading>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 16, maxWidth: 640 }}>
+            All 130 FBS programs by conference — find your school for hoodies, jerseys, hats and more.
+          </p>
+          <ConferenceSchoolGrid />
+        </section>
+      </Reveal>
 
       {/* Email signup */}
       <section className="container" style={{ padding: '32px 20px 16px', maxWidth: 720 }}>
         <EmailSignup source="homepage" />
       </section>
 
-      {/* Tight SEO line — no walls of text */}
+      {/* Tight SEO line */}
       <section style={{ maxWidth: 820, margin: '24px auto 64px', padding: '0 20px' }}>
         <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)' }}>
           DieHardNation is an independent fan-gear hub covering every sport, league and team — the NFL, NBA, MLB and NHL,

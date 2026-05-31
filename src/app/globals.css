@@ -139,6 +139,58 @@ body {
 .dhn-tile-cta { font-size: 12px; font-weight: 800; opacity: .82; transition: transform .16s ease; }
 .dhn-tile:hover .dhn-tile-cta { transform: translateX(3px); }
 
+/* ── Interactive hero: live product marquee ─────────────────── */
+.dhn-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.dhn-mq-track { display: flex; gap: 14px; width: max-content; will-change: transform; }
+.dhn-mq-track.a { animation: dhn-mq-left 48s linear infinite; }
+.dhn-mq-track.b { animation: dhn-mq-right 60s linear infinite; }
+.dhn-marquee:hover .dhn-mq-track { animation-play-state: paused; }
+@keyframes dhn-mq-left  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+@keyframes dhn-mq-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.dhn-mq-card {
+  flex: 0 0 132px; width: 132px; height: 132px; border-radius: 12px; overflow: hidden;
+  background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,0.28); transition: transform .2s ease;
+}
+.dhn-mq-card:hover { transform: scale(1.06); }
+.dhn-mq-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 640px) { .dhn-mq-card { flex-basis: 104px; width: 104px; height: 104px; } }
+
+/* Search input focus glow */
+.dhn-hero-input { transition: box-shadow .18s ease; }
+.dhn-hero-input:focus { box-shadow: 0 0 0 4px rgba(134,168,214,0.45); }
+
+/* ── Scroll reveal ──────────────────────────────────────────── */
+.dhn-reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.dhn-reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dhn-mq-track { animation: none !important; }
+  .dhn-reveal { opacity: 1 !important; transform: none !important; }
+  .dhn-pop { animation: none !important; }
+}
+
+/* ── Tabs ───────────────────────────────────────────────────── */
+.dhn-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.dhn-tab {
+  padding: 9px 18px; border-radius: 22px; font-size: 14px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--border); background: #fff; color: var(--text-secondary);
+  transition: background .15s ease, color .15s ease, border-color .15s ease, transform .12s ease;
+}
+.dhn-tab:hover { border-color: var(--border-strong); }
+.dhn-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+.dhn-tab:active { transform: scale(0.96); }
+
+/* ── Horizontal scroll rail ─────────────────────────────────── */
+.dhn-hscroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x proximity; }
+.dhn-hscroll > * { scroll-snap-align: start; }
+.dhn-hscroll::-webkit-scrollbar { height: 7px; }
+.dhn-hscroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+.dhn-hscroll::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Staggered pop-in for tiles ─────────────────────────────── */
+@keyframes dhn-pop { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+.dhn-pop { animation: dhn-pop .4s ease both; }
+
 /* Responsive nav: swap desktop links for a hamburger on small screens */
 .nav-desktop-only {
   display: flex;
