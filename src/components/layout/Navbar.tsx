@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
-import SchoolSearch from './SchoolSearch'
+import UniversalSearch from './UniversalSearch'
 import SportsMenu from './SportsMenu'
 
 export default function Navbar() {
@@ -30,10 +30,7 @@ export default function Navbar() {
         </Link>
 
         <Suspense fallback={<div style={{ width: 320 }} />}>
-          <SchoolSearch
-            style={{ width: 320 }}
-            placeholder="Search teams, sports, events..."
-          />
+          <UniversalSearch style={{ width: 320 }} />
         </Suspense>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>

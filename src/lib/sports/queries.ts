@@ -1,6 +1,7 @@
 import { getPublicClient } from '@/lib/supabase/server'
 import type { Sport, League, Team, SportEvent, Article } from './types'
 import { STATIC_SPORTS, STATIC_EVENTS, findStaticSport, findStaticEvent } from './static'
+import { findProLeague, findProTeam, proTeamsByLeague, proLeaguesBySport, PRO_TEAM_LIST } from './pro-data'
 
 // All queries are wrapped in try/catch and return empty/null on failure so pages
 // render gracefully before the migration + ingestion have run.
@@ -28,8 +29,8 @@ export async function getLeague(slug: string): Promise<League | null> {
   try {
     const supabase = getPublicClient()
     const { data } = await supabase.from('leagues').select('*').eq('slug', slug).maybeSingle()
-    return (data as League) || null
-  } catch { return null }
+    return (data as League) || findProLeague(slug)
+  } catch { return findProLeague(slug) }
 }
 
 export async function getLeaguesBySport(sportSlug: string, limit = 30): Promise<League[]> {
@@ -38,16 +39,17 @@ export async function getLeaguesBySport(sportSlug: string, limit = 30): Promise<
     const { data } = await supabase
       .from('leagues').select('*').eq('sport_slug', sportSlug).eq('is_active', true)
       .order('fan_size_rank', { ascending: true }).limit(limit)
-    return (data as League[]) || []
-  } catch { return [] }
+    if (data && data.length) return data as League[]
+    return proLeaguesBySport(sportSlug).slice(0, limit)
+  } catch { return proLeaguesBySport(sportSlug).slice(0, limit) }
 }
 
 export async function getTeam(slug: string): Promise<Team | null> {
   try {
     const supabase = getPublicClient()
     const { data } = await supabase.from('teams').select('*').eq('slug', slug).maybeSingle()
-    return (data as Team) || null
-  } catch { return null }
+    return (data as Team) || findProTeam(slug)
+  } catch { return findProTeam(slug) }
 }
 
 export async function getTeamsByLeague(leagueSlug: string, limit = 30): Promise<Team[]> {
@@ -56,8 +58,9 @@ export async function getTeamsByLeague(leagueSlug: string, limit = 30): Promise<
     const { data } = await supabase
       .from('teams').select('*').eq('league_slug', leagueSlug).eq('is_active', true)
       .order('fan_size_rank', { ascending: true }).limit(limit)
-    return (data as Team[]) || []
-  } catch { return [] }
+    if (data && data.length) return data as Team[]
+    return proTeamsByLeague(leagueSlug).slice(0, limit)
+  } catch { return proTeamsByLeague(leagueSlug).slice(0, limit) }
 }
 
 export async function getTopTeams(limit = 100): Promise<Team[]> {
@@ -66,8 +69,9 @@ export async function getTopTeams(limit = 100): Promise<Team[]> {
     const { data } = await supabase
       .from('teams').select('slug').eq('is_active', true)
       .order('fan_size_rank', { ascending: true }).limit(limit)
-    return (data as Team[]) || []
-  } catch { return [] }
+    if (data && data.length) return data as Team[]
+    return PRO_TEAM_LIST.slice(0, limit)
+  } catch { return PRO_TEAM_LIST.slice(0, limit) }
 }
 
 export async function getEvent(slug: string): Promise<SportEvent | null> {

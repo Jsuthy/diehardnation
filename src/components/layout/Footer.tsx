@@ -13,13 +13,13 @@ const TOP_SCHOOLS = [
   { slug: 'tennessee', name: 'Tennessee' },
 ]
 
-const CONFERENCES = [
-  { slug: 'sec', name: 'SEC' },
-  { slug: 'big-ten', name: 'Big Ten' },
-  { slug: 'big-12', name: 'Big 12' },
-  { slug: 'acc', name: 'ACC' },
-  { slug: 'american', name: 'American' },
-  { slug: 'mountain-west', name: 'Mtn West' },
+const BROWSE_SPORTS = [
+  { href: '/sport/american-football', name: 'NFL & Football' },
+  { href: '/sport/basketball', name: 'NBA & Basketball' },
+  { href: '/sport/baseball', name: 'MLB & Baseball' },
+  { href: '/sport/ice-hockey', name: 'NHL & Hockey' },
+  { href: '/sport/soccer', name: 'Soccer' },
+  { href: '/events', name: 'Upcoming Events' },
 ]
 
 export default function Footer() {
@@ -49,7 +49,7 @@ export default function Footer() {
               DIEHARDNATION
             </div>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 8 }}>
-              Independent college fan gear aggregator. Not affiliated with any university or NCAA.
+              Independent fan gear &amp; sports news hub for every team. Not affiliated with any league, team or the NCAA.
             </p>
             <p style={{ color: 'var(--text-muted)' }}>&copy; 2026 DieHardNation</p>
           </div>
@@ -66,13 +66,13 @@ export default function Footer() {
             </div>
           </nav>
 
-          {/* Conferences */}
-          <nav aria-label="Conferences">
-            <div style={{ fontWeight: 700, marginBottom: 8 }}>Conferences</div>
+          {/* Browse Sports */}
+          <nav aria-label="Browse sports">
+            <div style={{ fontWeight: 700, marginBottom: 8 }}>Browse Sports</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {CONFERENCES.map(c => (
-                <Link key={c.slug} href={`/?conference=${c.slug}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
-                  {c.name}
+              {BROWSE_SPORTS.map(s => (
+                <Link key={s.href} href={s.href} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
+                  {s.name}
                 </Link>
               ))}
             </div>

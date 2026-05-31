@@ -13,10 +13,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'DieHardNation \u2014 College Fan Gear for Every School',
+    default: 'DieHardNation \u2014 Fan Gear & Sports News for Every Team',
     template: '%s | DieHardNation',
   },
-  description: 'Shop college fan gear for all 130 FBS schools. Nebraska, Alabama, Michigan, Ohio State and more. Find jerseys, hoodies, hats and accessories from eBay and Amazon.',
+  description: 'Shop fan gear and follow the latest sports news for every team, league and sport \u2014 NFL, NBA, MLB, NHL, soccer, college and more. Jerseys, hoodies, hats and accessories, updated daily.',
   metadataBase: new URL('https://diehardnation.com'),
 }
 
@@ -53,7 +53,7 @@ export default function RootLayout({
               '@type': 'Organization',
               name: 'DieHardNation',
               url: 'https://diehardnation.com',
-              description: 'Independent college fan gear aggregator covering all 130 FBS schools.',
+              description: 'Independent fan gear and sports news hub covering every sport, league and team — pro and college.',
               sameAs: ['https://twitter.com/diehardnation']
             })
           }}

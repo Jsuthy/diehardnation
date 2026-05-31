@@ -1,11 +1,11 @@
 'use client'
 
-import SchoolSearch from '@/components/layout/SchoolSearch'
+import UniversalSearch from '@/components/layout/UniversalSearch'
 
 export default function HeroSearch() {
   return (
-    <SchoolSearch
-      placeholder="Nebraska, Alabama, Michigan..."
+    <UniversalSearch
+      placeholder="Search any team, sport, event or school…"
       style={{ width: '100%', maxWidth: 480 }}
       inputStyle={{
         width: '100%',
