@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getSport, getTopSports, getLeaguesBySport, getLatestArticles, getUpcomingEvents } from '@/lib/sports/queries'
 import GearCTA from '@/components/affiliate/GearCTA'
 import ProductRail from '@/components/affiliate/ProductRail'
+import SoccerGarageCTA from '@/components/affiliate/SoccerGarageCTA'
 import EmailSignup from '@/components/email/EmailSignup'
 import PageHero from '@/components/sports/PageHero'
 import SectionHeading from '@/components/sports/SectionHeading'
@@ -62,6 +63,7 @@ export default async function SportPage({ params }: { params: Promise<{ sport: s
         <section style={{ marginBottom: 56 }}>
           <ProductRail query={`${sport.name} fan gear`} title={`Shop ${sport.name} Fan Gear`} />
           <GearCTA query={`${sport.name} fan gear`} title={`Browse all ${sport.name} gear`} />
+          {slug === 'soccer' && <SoccerGarageCTA query="soccer jersey" />}
         </section>
 
         {leagues.length > 0 && (

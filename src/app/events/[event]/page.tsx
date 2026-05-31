@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getEvent, getSport, getAllEvents, getArticlesByEvent, getUpcomingEvents } from '@/lib/sports/queries'
 import GearCTA from '@/components/affiliate/GearCTA'
 import ProductRail from '@/components/affiliate/ProductRail'
+import SoccerGarageCTA from '@/components/affiliate/SoccerGarageCTA'
 import EmailSignup from '@/components/email/EmailSignup'
 import Countdown from '@/components/sports/Countdown'
 import PageHero from '@/components/sports/PageHero'
@@ -75,6 +76,7 @@ export default async function EventPage({ params }: { params: Promise<{ event: s
         <section style={{ marginBottom: 56 }}>
           <ProductRail query={event.name} title={`Shop ${event.name} Gear`} />
           <GearCTA query={`${event.name} gear jersey hoodie`} title={`Browse all ${event.name} gear`} />
+          {event.sport_slug === 'soccer' && <SoccerGarageCTA query={`${event.name} jersey`} />}
         </section>
 
         <section style={{ marginBottom: 56 }}>
