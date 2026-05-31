@@ -98,8 +98,10 @@ export default function Footer() {
           lineHeight: 1.6,
         }}>
           DieHardNation is an independent fan site. All trademarks are property of their
-          respective owners. We earn affiliate commissions from qualifying purchases
-          from eBay and Amazon.
+          respective owners. We earn affiliate commissions from qualifying purchases via
+          eBay, Amazon and other retailers, at no extra cost to you.
+          <br />
+          As an Amazon Associate I earn from qualifying purchases.
         </div>
       </div>
     </footer>
