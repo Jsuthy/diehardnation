@@ -1,6 +1,5 @@
-// Live eBay Browse API product search for the global team/event/league/sport pages.
-// Reuses the same OAuth2 client-credentials flow as the college ingestion.
-// Called from server components; results are cached by each page's ISR revalidate.
+// eBay Browse API search — powers both the team/event product rails and the
+// PicClick-style /search product engine. Reuses the college OAuth2 flow.
 
 let cachedToken: { token: string; expires: number } | null = null
 
@@ -39,31 +38,41 @@ export interface EbayProduct {
   currency: string
   imageUrl: string
   url: string
+  condition?: string
+  seller?: string
 }
 
-export async function searchEbayProducts(query: string, limit = 12): Promise<EbayProduct[]> {
-  let products = await runSearch(query, limit)
-  // Fallback: eBay requires ALL keywords, so an over-specific query (e.g.
-  // "Chiefs jersey hoodie") can return nothing. Progressively drop trailing
-  // words until we get results or run out.
-  let words = query.trim().split(/\s+/)
-  while (products.length === 0 && words.length > 2) {
-    words = words.slice(0, -1)
-    products = await runSearch(words.join(' '), limit)
-  }
-  return products
+export type EbaySort = 'best' | 'price' | '-price' | 'newlyListed' | 'endingSoonest'
+
+export interface SearchOpts {
+  limit?: number
+  offset?: number
+  sort?: EbaySort
+  category?: string
+  minPrice?: number
+  maxPrice?: number
 }
 
-async function runSearch(query: string, limit: number): Promise<EbayProduct[]> {
+export interface SearchResult {
+  products: EbayProduct[]
+  total: number
+}
+
+async function runSearch(query: string, opts: SearchOpts): Promise<SearchResult> {
   const token = await getEbayToken()
-  if (!token) return []
+  if (!token) return { products: [], total: 0 }
 
+  const limit = Math.min(Math.max(opts.limit ?? 24, 1), 50)
+  const min = opts.minPrice ?? 5
+  const max = opts.maxPrice ?? 1000
   const params = new URLSearchParams({
     q: query,
-    category_ids: '15687', // Sports Mem, Cards & Fan Shop
-    limit: String(Math.min(limit * 2, 50)),
-    filter: 'price:[10..300],priceCurrency:USD,conditions:{NEW}',
+    limit: String(limit),
+    offset: String(Math.max(opts.offset ?? 0, 0)),
+    filter: `price:[${min}..${max}],priceCurrency:USD,conditions:{NEW|USED}`,
   })
+  if (opts.category) params.set('category_ids', opts.category)
+  if (opts.sort && opts.sort !== 'best') params.set('sort', opts.sort)
 
   try {
     const res = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?${params}`, {
@@ -72,14 +81,13 @@ async function runSearch(query: string, limit: number): Promise<EbayProduct[]> {
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
         'X-EBAY-C-ENDUSERCTX': `affiliateCampaignId=${CAMPAIGN_ID}`,
       },
-      // Let Next cache this fetch for the page's revalidate window.
-      next: { revalidate: 3600 },
+      next: { revalidate: 1800 },
     })
-    if (!res.ok) return []
+    if (!res.ok) return { products: [], total: 0 }
     const data = await res.json()
     const items = (data.itemSummaries || []) as Record<string, unknown>[]
 
-    const out: EbayProduct[] = []
+    const products: EbayProduct[] = []
     const seen = new Set<string>()
     for (const item of items) {
       const id = String(item.itemId || '')
@@ -89,18 +97,37 @@ async function runSearch(query: string, limit: number): Promise<EbayProduct[]> {
       const title = String(item.title || '')
       if (!id || seen.has(id) || !image || price <= 0 || !title) continue
       seen.add(id)
-      out.push({
+      products.push({
         id,
         title,
         price,
         currency: String((item.price as Record<string, unknown>)?.currency || 'USD'),
         imageUrl: image.replace(/s-l\d+/, 's-l500'),
         url: (item.itemAffiliateWebUrl as string) || (item.itemWebUrl as string) || `https://www.ebay.com/itm/${id}`,
+        condition: item.condition as string | undefined,
+        seller: (item.seller as Record<string, unknown>)?.username as string | undefined,
       })
-      if (out.length >= limit) break
     }
-    return out
+    return { products, total: Number(data.total) || products.length }
   } catch {
-    return []
+    return { products: [], total: 0 }
   }
+}
+
+// Rail helper: returns just the array, with a keyword-drop fallback so an
+// over-specific query never yields an empty rail.
+export async function searchEbayProducts(query: string, limit = 12): Promise<EbayProduct[]> {
+  let { products } = await runSearch(query, { limit })
+  let words = query.trim().split(/\s+/)
+  while (products.length === 0 && words.length > 2) {
+    words = words.slice(0, -1)
+    products = (await runSearch(words.join(' '), { limit })).products
+  }
+  return products
+}
+
+// Search-page helper: paginated + sortable, returns total for the result count.
+export async function searchEbayPaged(query: string, opts: SearchOpts = {}): Promise<SearchResult> {
+  if (!query.trim()) return { products: [], total: 0 }
+  return runSearch(query, opts)
 }

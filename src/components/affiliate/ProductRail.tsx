@@ -25,7 +25,7 @@ export default function ProductRail({ query, title, limit = 12 }: Props) {
   useEffect(() => {
     let active = true
     setProducts(null)
-    fetch(`/api/ebay/search?q=${encodeURIComponent(query)}&limit=${limit}`)
+    fetch(`/api/ebay/search?q=${encodeURIComponent(query)}&limit=${limit}&mode=rail`)
       .then(r => r.json())
       .then(d => { if (active) setProducts(d.products || []) })
       .catch(() => { if (active) setProducts([]) })

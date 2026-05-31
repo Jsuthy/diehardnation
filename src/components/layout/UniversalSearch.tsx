@@ -59,10 +59,21 @@ export default function UniversalSearch({ placeholder = 'Search teams, sports, e
     router.push(r.href)
   }
 
+  function shopAll() {
+    setOpen(false)
+    const qq = query.trim()
+    setQuery('')
+    router.push(`/search?q=${encodeURIComponent(qq)}`)
+  }
+
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIndex(i => Math.min(i + 1, results.length - 1)) }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIndex(i => Math.max(i - 1, 0)) }
-    else if (e.key === 'Enter' && activeIndex >= 0 && results[activeIndex]) go(results[activeIndex])
+    else if (e.key === 'Enter') {
+      e.preventDefault()
+      if (activeIndex >= 0 && results[activeIndex]) go(results[activeIndex])
+      else if (query.trim().length >= 2) shopAll()
+    }
     else if (e.key === 'Escape') setOpen(false)
   }
 
@@ -83,12 +94,28 @@ export default function UniversalSearch({ placeholder = 'Search teams, sports, e
           color: 'var(--text-primary)', ...inputStyle,
         }}
       />
-      {open && results.length > 0 && (
+      {open && query.trim().length >= 2 && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, right: 0, background: 'white',
           border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
           boxShadow: 'var(--shadow-lg)', marginTop: 4, zIndex: 200, overflow: 'hidden',
         }}>
+          {/* Shop-all (product search) row — always first */}
+          <div
+            onClick={shopAll}
+            onMouseEnter={() => setActiveIndex(-1)}
+            style={{
+              padding: '11px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+              background: activeIndex === -1 ? 'var(--surface)' : 'white', borderBottom: results.length ? '1px solid var(--border)' : 'none',
+            }}
+          >
+            <span style={{ width: 26, height: 26, borderRadius: 6, background: 'var(--brand,#CC0000)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>⚲</span>
+            <div style={{ flex: 1, fontSize: 14, fontWeight: 700 }}>
+              Shop all gear for “{query.trim()}”
+            </div>
+            <span style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand,#CC0000)' }}>Search</span>
+          </div>
+
           {results.map((r, i) => (
             <div
               key={`${r.type}-${r.href}`}

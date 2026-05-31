@@ -34,6 +34,7 @@ export default function Navbar() {
         </Suspense>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <Link href="/search" style={navLinkStyle}>Shop</Link>
           <SportsMenu />
           <Link href="/events" style={navLinkStyle}>Events</Link>
           <Link href="/news" style={navLinkStyle}>News</Link>
