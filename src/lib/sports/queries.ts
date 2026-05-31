@@ -1,5 +1,6 @@
 import { getPublicClient } from '@/lib/supabase/server'
 import type { Sport, League, Team, SportEvent, Article } from './types'
+import { STATIC_SPORTS, STATIC_EVENTS, findStaticSport, findStaticEvent } from './static'
 
 // All queries are wrapped in try/catch and return empty/null on failure so pages
 // render gracefully before the migration + ingestion have run.
@@ -8,8 +9,8 @@ export async function getSport(slug: string): Promise<Sport | null> {
   try {
     const supabase = getPublicClient()
     const { data } = await supabase.from('sports').select('*').eq('slug', slug).maybeSingle()
-    return (data as Sport) || null
-  } catch { return null }
+    return (data as Sport) || findStaticSport(slug)
+  } catch { return findStaticSport(slug) }
 }
 
 export async function getTopSports(limit = 20): Promise<Sport[]> {
@@ -18,8 +19,9 @@ export async function getTopSports(limit = 20): Promise<Sport[]> {
     const { data } = await supabase
       .from('sports').select('*').eq('is_active', true)
       .order('fan_size_rank', { ascending: true }).limit(limit)
-    return (data as Sport[]) || []
-  } catch { return [] }
+    if (data && data.length) return data as Sport[]
+    return STATIC_SPORTS.slice(0, limit)
+  } catch { return STATIC_SPORTS.slice(0, limit) }
 }
 
 export async function getLeague(slug: string): Promise<League | null> {
@@ -72,8 +74,8 @@ export async function getEvent(slug: string): Promise<SportEvent | null> {
   try {
     const supabase = getPublicClient()
     const { data } = await supabase.from('events').select('*').eq('slug', slug).maybeSingle()
-    return (data as SportEvent) || null
-  } catch { return null }
+    return (data as SportEvent) || findStaticEvent(slug)
+  } catch { return findStaticEvent(slug) }
 }
 
 export async function getAllEvents(): Promise<SportEvent[]> {
@@ -82,18 +84,21 @@ export async function getAllEvents(): Promise<SportEvent[]> {
     const { data } = await supabase
       .from('events').select('*').eq('is_active', true)
       .order('search_surge_rank', { ascending: true })
-    return (data as SportEvent[]) || []
-  } catch { return [] }
+    if (data && data.length) return data as SportEvent[]
+    return STATIC_EVENTS
+  } catch { return STATIC_EVENTS }
 }
 
 export async function getUpcomingEvents(sportSlug?: string, limit = 12): Promise<SportEvent[]> {
+  const fallback = (sportSlug ? STATIC_EVENTS.filter(e => e.sport_slug === sportSlug) : STATIC_EVENTS).slice(0, limit)
   try {
     const supabase = getPublicClient()
     let q = supabase.from('events').select('*').eq('is_active', true)
     if (sportSlug) q = q.eq('sport_slug', sportSlug)
     const { data } = await q.order('search_surge_rank', { ascending: true }).limit(limit)
-    return (data as SportEvent[]) || []
-  } catch { return [] }
+    if (data && data.length) return data as SportEvent[]
+    return fallback
+  } catch { return fallback }
 }
 
 export async function getLatestArticles(limit = 20, sportSlug?: string): Promise<Article[]> {

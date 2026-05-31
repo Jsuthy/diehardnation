@@ -4,15 +4,15 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const US_SPORTS = [
-  { label: 'NFL', href: '/league/nfl' },
-  { label: 'NBA', href: '/league/nba' },
-  { label: 'MLB', href: '/league/mlb' },
-  { label: 'NHL', href: '/league/nhl' },
-  { label: 'College Football', href: '/sport/american-football' },
-  { label: 'College Basketball', href: '/sport/basketball' },
+  { label: 'NFL & Football', href: '/sport/american-football' },
+  { label: 'NBA & Basketball', href: '/sport/basketball' },
+  { label: 'MLB & Baseball', href: '/sport/baseball' },
+  { label: 'NHL & Hockey', href: '/sport/ice-hockey' },
   { label: 'MMA', href: '/sport/mma' },
   { label: 'Golf', href: '/sport/golf' },
   { label: 'Tennis', href: '/sport/tennis' },
+  { label: 'Wrestling', href: '/sport/wrestling' },
+  { label: 'Volleyball', href: '/sport/volleyball' },
 ]
 
 const GLOBAL_SPORTS = [
@@ -49,7 +49,7 @@ export default function SportsMenu() {
           <div>
             <div style={colHeader}>Global</div>
             {GLOBAL_SPORTS.map(s => <Link key={s.label} href={s.href} style={itemStyle}>{s.label}</Link>)}
-            <Link href="/sport/soccer" style={{ ...itemStyle, color: 'var(--brand,#CC0000)', fontWeight: 700, marginTop: 8 }}>All Sports →</Link>
+            <Link href="/#sports" style={{ ...itemStyle, color: 'var(--brand,#CC0000)', fontWeight: 700, marginTop: 8 }}>All Sports →</Link>
           </div>
         </div>
       )}

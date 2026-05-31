@@ -5,10 +5,13 @@ import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
 import Link from 'next/link'
 import { getPublicClient } from '@/lib/supabase/server'
 import type { Product, NewsPost, School } from '@/lib/supabase/types'
-import { HUB_METADATA } from '@/lib/seo/metadata-templates'
-import { getLatestArticles } from '@/lib/sports/queries'
-import type { Article } from '@/lib/sports/types'
+import { getLatestArticles, getUpcomingEvents } from '@/lib/sports/queries'
+import type { Article, SportEvent } from '@/lib/sports/types'
 import EmailSignup from '@/components/email/EmailSignup'
+
+const HOME_TITLE = 'DieHardNation — Fan Gear & Sports News for Every Team'
+const HOME_DESCRIPTION =
+  'Shop fan gear and follow the latest sports news for every team in every sport. NFL, NBA, soccer, college, cricket, F1 and more. Updated daily by fans, for fans.'
 
 const SPORT_CARDS = [
   { slug: 'american-football', label: 'NFL & Football' },
@@ -35,20 +38,20 @@ export async function generateMetadata({
   const hasConference = !!params.conference
 
   return {
-    title: HUB_METADATA.title,
-    description: HUB_METADATA.description,
+    title: { absolute: HOME_TITLE },
+    description: HOME_DESCRIPTION,
     alternates: { canonical: 'https://diehardnation.com' },
     ...(hasConference && { robots: { index: false, follow: true } }),
     openGraph: {
-      title: HUB_METADATA.title,
-      description: HUB_METADATA.description,
+      title: HOME_TITLE,
+      description: HOME_DESCRIPTION,
       url: 'https://diehardnation.com',
       siteName: 'DieHardNation',
       images: [{
         url: 'https://diehardnation.com/og-default.png',
         width: 1200,
         height: 630,
-        alt: HUB_METADATA.title,
+        alt: HOME_TITLE,
       }],
     },
   }
@@ -103,52 +106,103 @@ async function getLatestArticlesSafe(): Promise<Article[]> {
   try { return await getLatestArticles(3) } catch { return [] }
 }
 
+async function getUpcomingEventsSafe(): Promise<SportEvent[]> {
+  try { return await getUpcomingEvents(undefined, 8) } catch { return [] }
+}
+
 export const revalidate = 600
 
 export default async function HomePage() {
-  const [trendingProducts, latestNews, allSchools, latestArticles] = await Promise.all([
+  const [trendingProducts, latestNews, allSchools, latestArticles, upcomingEvents] = await Promise.all([
     getTrendingProducts(),
     getLatestNews(),
     getActiveSchools(),
     getLatestArticlesSafe(),
+    getUpcomingEventsSafe(),
   ])
 
   return (
     <main>
-      {/* Hero */}
-      <section className="container" style={{ padding: '80px 20px 60px' }}>
+      {/* Hero — global */}
+      <section className="container" style={{ padding: '80px 20px 48px' }}>
         <h1 style={{
-          fontSize: 'clamp(48px, 8vw, 96px)',
+          fontSize: 'clamp(44px, 7vw, 88px)',
           fontWeight: 900,
           letterSpacing: '-0.04em',
           lineHeight: 0.95,
           color: 'var(--text-primary)',
         }}>
-          {HUB_METADATA.h1}
+          Fan Gear &amp; Sports News for Every Team
         </h1>
         <p style={{
-          fontSize: 'clamp(20px, 3vw, 28px)',
+          fontSize: 'clamp(18px, 3vw, 26px)',
           fontWeight: 700,
           color: 'var(--text-secondary)',
           marginTop: 12,
-          marginBottom: 32,
+          marginBottom: 28,
+          maxWidth: 760,
         }}>
-          Find your school. Shop your team.
+          Every sport, every league, every team — worldwide. Shop the gear, follow the action.
         </p>
         <Suspense fallback={<div style={{ height: 52, maxWidth: 480 }} />}>
           <HeroSearch />
         </Suspense>
       </section>
 
-      {/* Conference tabs + school grid */}
-      <section className="container" aria-label="Browse schools by conference">
+      {/* Browse Every Sport — primary entry point */}
+      <section id="sports" className="container" aria-label="Browse every sport" style={{ padding: '24px 20px 16px' }}>
+        <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
+          BROWSE EVERY SPORT
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10 }}>
+          {SPORT_CARDS.map(s => (
+            <Link key={s.slug} href={`/sport/${s.slug}`} style={{
+              display: 'block', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)',
+              textDecoration: 'none', padding: '14px 16px', border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-md)', background: '#fff',
+            }}>
+              {s.label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Upcoming events strip */}
+      {upcomingEvents.length > 0 && (
+        <section className="container" aria-label="Upcoming events" style={{ padding: '32px 20px 16px' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
+            COMING UP
+          </h2>
+          <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+            {upcomingEvents.map(ev => (
+              <Link key={ev.slug} href={`/events/${ev.slug}`} style={{
+                flex: '0 0 220px', textDecoration: 'none', color: 'inherit', background: '#fff',
+                border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 16,
+              }}>
+                <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>
+                  {ev.event_type}
+                </div>
+                <div style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.3, marginBottom: 6 }}>{ev.name}</div>
+                {ev.start_date && (
+                  <time style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    {new Date(ev.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </time>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* College Fan Gear — conference grid */}
+      <section className="container" aria-label="Browse schools by conference" style={{ paddingTop: 16 }}>
         <h2 style={{
           fontSize: 24,
           fontWeight: 900,
           letterSpacing: '-0.02em',
           padding: '32px 20px 16px',
         }}>
-          {HUB_METADATA.h2s[2]}
+          COLLEGE FAN GEAR — BROWSE BY CONFERENCE
         </h2>
         <ConferenceSchoolGrid />
       </section>
@@ -162,7 +216,7 @@ export default async function HomePage() {
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            {HUB_METADATA.h2s[3].toUpperCase()}
+            TRENDING FAN GEAR
           </h2>
           <div style={{
             display: 'grid',
@@ -198,7 +252,7 @@ export default async function HomePage() {
             letterSpacing: '-0.02em',
             marginBottom: 24,
           }}>
-            {HUB_METADATA.h2s[4].toUpperCase()}
+            LATEST COLLEGE NEWS
           </h2>
           <div style={{
             display: 'grid',
@@ -277,24 +331,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Browse Every Sport */}
-      <section className="container" aria-label="Browse every sport" style={{ padding: '48px 20px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
-          BROWSE EVERY SPORT
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10 }}>
-          {SPORT_CARDS.map(s => (
-            <Link key={s.slug} href={`/sport/${s.slug}`} style={{
-              display: 'block', fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)',
-              textDecoration: 'none', padding: '14px 16px', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)', background: '#fff',
-            }}>
-              {s.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Latest Articles */}
       {latestArticles.length > 0 && (
         <section className="container" aria-label="Latest articles" style={{ padding: '0 20px 48px' }}>
@@ -328,13 +364,14 @@ export default async function HomePage() {
       {/* About DieHardNation — SEO text content */}
       <section style={{ maxWidth: 800, margin: '60px auto', padding: '0 20px' }}>
         <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
-          The College Fan Gear Hub for Every School
+          The Fan Gear &amp; Sports News Hub for Every Team
         </h2>
         <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 16 }}>
-          DieHardNation is an independent college fan gear aggregator covering all 130 FBS schools
-          across every conference — SEC, Big Ten, Big 12, ACC, and more. We connect fans with the
-          best hoodies, jerseys, shirts, hats and accessories from trusted sellers on eBay and
-          Amazon, updated every six hours so you always find the freshest deals.
+          DieHardNation is an independent fan gear and sports news hub covering every sport, league
+          and team in the world — the NFL, NBA, MLB and NHL, global soccer, cricket, rugby, Formula 1,
+          tennis, golf, MMA, the Olympics and more, alongside all 130 college FBS programs. We connect
+          fans with the best hoodies, jerseys, shirts, hats and accessories from trusted retailers, and
+          publish fresh coverage daily.
         </p>
         <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 16 }}>
           Whether you&apos;re shopping for Nebraska Cornhuskers volleyball gear, Alabama Crimson Tide
