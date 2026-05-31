@@ -40,7 +40,7 @@ export default function ProductRail({ query, title, limit = 12 }: Props) {
       {title && (
         <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>{title}</h2>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 14 }}>
         {products === null
           ? Array.from({ length: 6 }).map((_, i) => (
               <div key={i} style={{ border: '1px solid var(--border,#E8E8E8)', borderRadius: 8, overflow: 'hidden' }}>

@@ -31,7 +31,7 @@ export default function Footer() {
       fontSize: 13,
     }}>
       <div className="container">
-        <div style={{
+        <div className="footer-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 32,

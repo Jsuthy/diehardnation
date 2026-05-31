@@ -88,7 +88,7 @@ export default function SearchResults({ query, sort, initial, total }: Props) {
         </label>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(170px,1fr))', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
         {products.map(p => (
           <a key={p.id} href={p.url} target="_blank" rel="nofollow sponsored noopener" className="dhn-prod">
             <div style={{ position: 'relative', aspectRatio: '1 / 1', background: '#F5F5F5', overflow: 'hidden' }}>

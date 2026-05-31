@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import UniversalSearch from './UniversalSearch'
 import SportsMenu from './SportsMenu'
+import MobileMenu from './MobileMenu'
 
 export default function Navbar() {
   return (
@@ -18,21 +19,29 @@ export default function Navbar() {
         alignItems: 'center',
         justifyContent: 'space-between',
         height: '100%',
+        gap: 12,
       }}>
-        <Link href="/" aria-label="DieHardNation home" style={{ display: 'flex', alignItems: 'center' }}>
+        <Link href="/" aria-label="DieHardNation home" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.jpg" alt="DieHardNation" style={{ height: 46, width: 'auto', display: 'block' }} />
+          <img src="/logo.jpg" alt="DieHardNation" style={{ height: 44, width: 'auto', display: 'block' }} />
         </Link>
 
-        <Suspense fallback={<div style={{ width: 320 }} />}>
-          <UniversalSearch style={{ width: 320 }} />
-        </Suspense>
+        {/* Desktop */}
+        <div className="nav-desktop-only">
+          <Suspense fallback={<div style={{ flex: 1 }} />}>
+            <UniversalSearch style={{ flex: 1, maxWidth: 420 }} />
+          </Suspense>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexShrink: 0 }}>
+            <Link href="/search" style={navLinkStyle}>Shop</Link>
+            <SportsMenu />
+            <Link href="/events" style={navLinkStyle}>Events</Link>
+            <Link href="/news" style={navLinkStyle}>News</Link>
+          </div>
+        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link href="/search" style={navLinkStyle}>Shop</Link>
-          <SportsMenu />
-          <Link href="/events" style={navLinkStyle}>Events</Link>
-          <Link href="/news" style={navLinkStyle}>News</Link>
+        {/* Mobile */}
+        <div className="nav-mobile-only">
+          <MobileMenu />
         </div>
       </div>
     </nav>

@@ -8,13 +8,14 @@ interface Props {
   placeholder?: string
   style?: React.CSSProperties
   inputStyle?: React.CSSProperties
+  onNavigate?: () => void
 }
 
 const TYPE_COLOR: Record<string, string> = {
   Team: '#CC0000', League: '#0A0A0A', Sport: '#0080C6', Event: '#D50032', School: '#014A86',
 }
 
-export default function UniversalSearch({ placeholder = 'Search teams, sports, events…', style, inputStyle }: Props) {
+export default function UniversalSearch({ placeholder = 'Search teams, sports, events…', style, inputStyle, onNavigate }: Props) {
   const router = useRouter()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
@@ -56,6 +57,7 @@ export default function UniversalSearch({ placeholder = 'Search teams, sports, e
   function go(r: SearchResult) {
     setOpen(false)
     setQuery('')
+    onNavigate?.()
     router.push(r.href)
   }
 
@@ -63,6 +65,7 @@ export default function UniversalSearch({ placeholder = 'Search teams, sports, e
     setOpen(false)
     const qq = query.trim()
     setQuery('')
+    onNavigate?.()
     router.push(`/search?q=${encodeURIComponent(qq)}`)
   }
 

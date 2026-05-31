@@ -120,3 +120,19 @@ body {
 }
 .dhn-chip:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .dhn-dot { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
+
+/* Responsive nav: swap desktop links for a hamburger on small screens */
+.nav-desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: space-between;
+  margin-left: 24px;
+}
+.nav-mobile-only { display: none; }
+
+@media (max-width: 880px) {
+  .nav-desktop-only { display: none; }
+  .nav-mobile-only { display: flex; align-items: center; }
+}

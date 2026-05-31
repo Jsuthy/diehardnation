@@ -112,7 +112,7 @@ export default async function HomePage() {
       {/* Shop by League */}
       <section className="container" style={{ padding: '32px 20px 8px' }}>
         <SectionHeading>Shop by League</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
           {LEAGUE_TILES.map(l => (
             <Link key={l.slug} href={`/league/${l.slug}`} className="dhn-prod" style={{
               background: l.color, color: '#fff', padding: '22px 18px', minHeight: 92,
@@ -128,7 +128,7 @@ export default async function HomePage() {
       {/* Popular Teams */}
       <section className="container" style={{ padding: '32px 20px 8px' }}>
         <SectionHeading href="/sport/american-football" linkLabel="More teams →">Popular Teams</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
           {popularTeams.map(t => {
             const fg = contrastText(t.primary_color)
             return (
@@ -148,7 +148,7 @@ export default async function HomePage() {
       {/* Browse Every Sport */}
       <section id="sports" className="container" style={{ padding: '32px 20px 8px' }}>
         <SectionHeading>Browse Every Sport</SectionHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(170px,1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
           {SPORT_CARDS.map(s => (
             <Link key={s.slug} href={`/sport/${s.slug}`} className="dhn-card" style={{ fontSize: 14, fontWeight: 700, padding: '15px 18px' }}>
               {s.label}
