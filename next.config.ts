@@ -1,10 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Disable the in-memory ISR cache (current Next key for experimental.isrMemoryCacheSize).
+  // ISR pages render only when visited and persist to the filesystem — no bill for
+  // pages that never get traffic.
+  cacheMaxMemorySize: 0,
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'i.ebayimg.com' },
       { protocol: 'https', hostname: '*.ebayimg.com' },
+      { protocol: 'https', hostname: 'www.thesportsdb.com' },
+      { protocol: 'https', hostname: 'r2.thesportsdb.com' },
     ],
   },
   async redirects() {

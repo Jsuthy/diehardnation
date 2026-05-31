@@ -6,6 +6,25 @@ import Link from 'next/link'
 import { getPublicClient } from '@/lib/supabase/server'
 import type { Product, NewsPost, School } from '@/lib/supabase/types'
 import { HUB_METADATA } from '@/lib/seo/metadata-templates'
+import { getLatestArticles } from '@/lib/sports/queries'
+import type { Article } from '@/lib/sports/types'
+import EmailSignup from '@/components/email/EmailSignup'
+
+const SPORT_CARDS = [
+  { slug: 'american-football', label: 'NFL & Football' },
+  { slug: 'basketball', label: 'NBA & Basketball' },
+  { slug: 'baseball', label: 'MLB & Baseball' },
+  { slug: 'ice-hockey', label: 'NHL & Hockey' },
+  { slug: 'soccer', label: 'Soccer' },
+  { slug: 'rugby', label: 'Rugby' },
+  { slug: 'cricket', label: 'Cricket' },
+  { slug: 'tennis', label: 'Tennis' },
+  { slug: 'golf', label: 'Golf' },
+  { slug: 'motorsport', label: 'Formula 1' },
+  { slug: 'mma', label: 'MMA' },
+  { slug: 'multi-sport', label: 'Olympics' },
+  { slug: 'cycling', label: 'Cycling' },
+]
 
 export async function generateMetadata({
   searchParams,
@@ -80,13 +99,18 @@ async function getLatestNews(): Promise<NewsPost[]> {
   }
 }
 
+async function getLatestArticlesSafe(): Promise<Article[]> {
+  try { return await getLatestArticles(3) } catch { return [] }
+}
+
 export const revalidate = 600
 
 export default async function HomePage() {
-  const [trendingProducts, latestNews, allSchools] = await Promise.all([
+  const [trendingProducts, latestNews, allSchools, latestArticles] = await Promise.all([
     getTrendingProducts(),
     getLatestNews(),
     getActiveSchools(),
+    getLatestArticlesSafe(),
   ])
 
   return (
@@ -252,6 +276,54 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Browse Every Sport */}
+      <section className="container" aria-label="Browse every sport" style={{ padding: '48px 20px' }}>
+        <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
+          BROWSE EVERY SPORT
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10 }}>
+          {SPORT_CARDS.map(s => (
+            <Link key={s.slug} href={`/sport/${s.slug}`} style={{
+              display: 'block', fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)',
+              textDecoration: 'none', padding: '14px 16px', border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-md)', background: '#fff',
+            }}>
+              {s.label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Latest Articles */}
+      {latestArticles.length > 0 && (
+        <section className="container" aria-label="Latest articles" style={{ padding: '0 20px 48px' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 24 }}>
+            LATEST FROM DIEHARDNATION
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16 }}>
+            {latestArticles.map(a => (
+              <Link key={a.slug} href={`/news/${a.slug}`} style={{
+                textDecoration: 'none', color: 'inherit', background: '#fff',
+                border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 16,
+              }}>
+                {a.sport_slug && (
+                  <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>
+                    {a.sport_slug.replace(/-/g, ' ')}
+                  </div>
+                )}
+                <h3 style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.35, marginBottom: 6 }}>{a.title}</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{a.excerpt}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Email signup */}
+      <section className="container" style={{ padding: '0 20px 48px', maxWidth: 720 }}>
+        <EmailSignup source="homepage" />
+      </section>
 
       {/* About DieHardNation — SEO text content */}
       <section style={{ maxWidth: 800, margin: '60px auto', padding: '0 20px' }}>

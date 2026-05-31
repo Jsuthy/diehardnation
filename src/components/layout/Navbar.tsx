@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import SchoolSearch from './SchoolSearch'
+import SportsMenu from './SportsMenu'
 
 export default function Navbar() {
   return (
@@ -18,7 +19,6 @@ export default function Navbar() {
         justifyContent: 'space-between',
         height: '100%',
       }}>
-        {/* Logo */}
         <Link href="/" style={{
           fontWeight: 900,
           fontSize: 20,
@@ -29,34 +29,26 @@ export default function Navbar() {
           DIEHARDNATION
         </Link>
 
-        {/* Center search — desktop only */}
         <Suspense fallback={<div style={{ width: 320 }} />}>
           <SchoolSearch
             style={{ width: 320 }}
-            placeholder="Find your school..."
+            placeholder="Search teams, sports, events..."
           />
         </Suspense>
 
-        {/* Right nav */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link href="/trending" style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'var(--text-secondary)',
-            textDecoration: 'none',
-          }}>
-            Trending
-          </Link>
-          <Link href="/news" style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'var(--text-secondary)',
-            textDecoration: 'none',
-          }}>
-            News
-          </Link>
+          <SportsMenu />
+          <Link href="/events" style={navLinkStyle}>Events</Link>
+          <Link href="/news" style={navLinkStyle}>News</Link>
         </div>
       </div>
     </nav>
   )
 }
+
+const navLinkStyle = {
+  fontSize: 14,
+  fontWeight: 600,
+  color: 'var(--text-secondary)',
+  textDecoration: 'none',
+} as const

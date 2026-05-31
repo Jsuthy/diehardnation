@@ -423,3 +423,35 @@ curl -X POST https://diehardnation.vercel.app/api/schools/build \
   -H "Content-Type: application/json" \
   -d '{"school_slug": "alabama"}'
 ```
+
+---
+
+## Workflow: DieHardNation — Sports Data Sync
+
+Keeps sports / leagues / teams / events current without manual intervention.
+
+**Schedule:** Weekly, Sunday 2am CT — cron `0 8 * * 0` (UTC)
+
+**Node 1 — HTTP Request**
+- Method: `POST`
+- URL: `https://diehardnation.com/api/sports/sync`
+- Header: `Authorization: Bearer diehardnation_ingest_2026`
+- Timeout: 3600000 ms (1 hour — this is a long job)
+
+The route seeds core sports + all events immediately, then performs an
+incremental upsert of sports/leagues/teams from TheSportsDB. Returns:
+
+```json
+{ "sports": 0, "leagues": 0, "teams": 0, "events": 0, "duration_ms": 0 }
+```
+
+> A full ingestion (50k–100k teams) exceeds the Vercel 60s function limit.
+> For the full overnight run, execute the CLI script on the Mac Mini instead:
+>
+> ```bash
+> npx tsx src/scripts/ingest-sports-data.ts          # full run (rate limited, hours)
+> npx tsx src/scripts/ingest-sports-data.ts --seed   # fast: core sports + events only
+> ```
+>
+> The `?seed=1` query param on the route does the same fast seed without API calls:
+> `POST https://diehardnation.com/api/sports/sync?seed=1`

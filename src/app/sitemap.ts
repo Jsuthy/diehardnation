@@ -6,17 +6,27 @@ const SITE_URL = 'https://diehardnation.com'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = getPublicClient()
 
-  const [schoolsResult, pagesResult, newsResult, productsResult] = await Promise.allSettled([
+  const [schoolsResult, pagesResult, newsResult, productsResult, sportsResult, leaguesResult, teamsResult, eventsResult, articlesResult] = await Promise.allSettled([
     supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gt('product_count', 0),
     supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at').eq('is_active', true).gte('product_count', 3).neq('slug', '').not('slug', 'is', null),
     supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
     supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).or('is_featured.eq.true,click_count.gt.0').neq('slug', '').not('slug', 'is', null).limit(50000),
+    supabase.from('sports').select('slug').eq('is_active', true),
+    supabase.from('leagues').select('slug').eq('is_active', true),
+    supabase.from('teams').select('slug').eq('is_active', true).limit(100000),
+    supabase.from('events').select('slug, updated_at').eq('is_active', true),
+    supabase.from('articles').select('slug, updated_at').eq('is_published', true).limit(50000),
   ])
 
   const schools = schoolsResult.status === 'fulfilled' ? schoolsResult.value.data || [] : []
   const pages = pagesResult.status === 'fulfilled' ? pagesResult.value.data || [] : []
   const news = newsResult.status === 'fulfilled' ? newsResult.value.data || [] : []
   const products = productsResult.status === 'fulfilled' ? productsResult.value.data || [] : []
+  const sports = sportsResult.status === 'fulfilled' ? sportsResult.value.data || [] : []
+  const leagues = leaguesResult.status === 'fulfilled' ? leaguesResult.value.data || [] : []
+  const teams = teamsResult.status === 'fulfilled' ? teamsResult.value.data || [] : []
+  const events = eventsResult.status === 'fulfilled' ? eventsResult.value.data || [] : []
+  const articles = articlesResult.status === 'fulfilled' ? articlesResult.value.data || [] : []
 
   const entries: MetadataRoute.Sitemap = []
 
@@ -78,7 +88,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   }
 
-  // News posts
+  // News posts (school system)
   for (const post of news) {
     entries.push({
       url: `${SITE_URL}/${post.school_slug}/news/${post.slug}`,
@@ -86,6 +96,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.7,
     })
+  }
+
+  // Global sports expansion
+  entries.push({ url: `${SITE_URL}/events`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 })
+
+  for (const s of sports) {
+    entries.push({ url: `${SITE_URL}/sport/${s.slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 })
+  }
+  for (const l of leagues) {
+    entries.push({ url: `${SITE_URL}/league/${l.slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 })
+  }
+  for (const t of teams) {
+    entries.push({ url: `${SITE_URL}/team/${t.slug}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 })
+  }
+  // Events get the highest priority — Google must index these months ahead.
+  for (const ev of events) {
+    entries.push({ url: `${SITE_URL}/events/${ev.slug}`, lastModified: ev.updated_at ? new Date(ev.updated_at) : new Date(), changeFrequency: 'daily', priority: 0.95 })
+  }
+  for (const a of articles) {
+    entries.push({ url: `${SITE_URL}/news/${a.slug}`, lastModified: a.updated_at ? new Date(a.updated_at) : new Date(), changeFrequency: 'weekly', priority: 0.85 })
   }
 
   return entries
