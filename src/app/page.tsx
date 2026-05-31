@@ -6,18 +6,13 @@ import EmailSignup from '@/components/email/EmailSignup'
 import SectionHeading from '@/components/sports/SectionHeading'
 import { getLatestArticles, getUpcomingEvents } from '@/lib/sports/queries'
 import type { Article, SportEvent } from '@/lib/sports/types'
+import ProductRail from '@/components/affiliate/ProductRail'
 import { PRO_TEAM_LIST } from '@/lib/sports/pro-data'
-import { contrastText } from '@/lib/sports/color'
+import { contrastText, darken } from '@/lib/sports/color'
 
 const HOME_TITLE = 'DieHardNation — Fan Gear & Sports News for Every Team'
 const HOME_DESCRIPTION =
   'Shop fan gear for every team in every sport — NFL, NBA, MLB, NHL, soccer, college and more. Search live jerseys, hoodies and hats from top retailers, updated constantly.'
-
-const VALUE_PROPS = [
-  { icon: '🌍', title: 'Every Team, Every Sport', body: 'NFL, NBA, MLB, NHL, global soccer, college and more — all in one place.' },
-  { icon: '🔥', title: 'Live Deals, Updated Constantly', body: 'Real-time listings from top retailers, sorted so you find the best price fast.' },
-  { icon: '🏷️', title: 'Your Team in Seconds', body: 'Jerseys, hoodies, hats and collectibles — search and shop in a couple clicks.' },
-]
 
 const LEAGUE_TILES = [
   { slug: 'nfl', name: 'NFL', color: '#013369' },
@@ -94,51 +89,42 @@ export default async function HomePage() {
       {/* Hero — live product shop search */}
       <HeroShop />
 
-      {/* Value props */}
-      <section className="container" style={{ padding: '44px 20px 12px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 20 }}>
-          {VALUE_PROPS.map(v => (
-            <div key={v.title} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }}>{v.icon}</div>
-              <div>
-                <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>{v.title}</h3>
-                <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{v.body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Trending — real product photography */}
+      <section className="container" style={{ padding: '40px 20px 8px' }}>
+        <SectionHeading href="/search?q=jersey">Trending Right Now</SectionHeading>
+        <ProductRail query="throwback jersey" limit={12} />
       </section>
 
-      {/* Shop by League */}
-      <section className="container" style={{ padding: '32px 20px 8px' }}>
+      {/* Shop by League — gradient tiles */}
+      <section className="container" style={{ padding: '24px 20px 8px' }}>
         <SectionHeading>Shop by League</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
           {LEAGUE_TILES.map(l => (
-            <Link key={l.slug} href={`/league/${l.slug}`} className="dhn-prod" style={{
-              background: l.color, color: '#fff', padding: '22px 18px', minHeight: 92,
-              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            <Link key={l.slug} href={`/league/${l.slug}`} className="dhn-tile" style={{
+              background: `linear-gradient(135deg, ${l.color} 0%, ${darken(l.color, 0.42)} 100%)`,
             }}>
-              <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.01em' }}>{l.name}</span>
-              <span style={{ fontSize: 12, fontWeight: 700, opacity: 0.8 }}>Shop gear ›</span>
+              <span style={{ fontSize: 19, fontWeight: 900, letterSpacing: '-0.01em' }}>{l.name}</span>
+              <span className="dhn-tile-cta">Shop gear →</span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Popular Teams */}
-      <section className="container" style={{ padding: '32px 20px 8px' }}>
-        <SectionHeading href="/sport/american-football" linkLabel="More teams →">Popular Teams</SectionHeading>
+      {/* Fan Favorites — team gradient tiles with city */}
+      <section className="container" style={{ padding: '24px 20px 8px' }}>
+        <SectionHeading href="/league/nfl" linkLabel="All teams →">Fan Favorites</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
           {popularTeams.map(t => {
             const fg = contrastText(t.primary_color)
             return (
-              <Link key={t.slug} href={`/team/${t.slug}`} className="dhn-prod" style={{
-                background: t.primary_color, color: fg, padding: 16, minHeight: 88,
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                borderLeft: `5px solid ${t.secondary_color}`,
+              <Link key={t.slug} href={`/team/${t.slug}`} className="dhn-tile" style={{
+                background: `linear-gradient(135deg, ${t.primary_color} 0%, ${darken(t.primary_color, 0.42)} 100%)`,
+                color: fg, borderBottom: `4px solid ${t.secondary_color}`,
               }}>
-                <span style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.2 }}>{t.name}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.78 }}>Shop gear ›</span>
+                <span style={{ fontSize: 16, fontWeight: 900, lineHeight: 1.15 }}>{t.name}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.72, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  {t.city?.split(',')[0] || 'Shop gear'}
+                </span>
               </Link>
             )
           })}
@@ -146,7 +132,7 @@ export default async function HomePage() {
       </section>
 
       {/* Browse Every Sport */}
-      <section id="sports" className="container" style={{ padding: '32px 20px 8px' }}>
+      <section id="sports" className="container" style={{ padding: '24px 20px 8px' }}>
         <SectionHeading>Browse Every Sport</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 12 }}>
           {SPORT_CARDS.map(s => (
