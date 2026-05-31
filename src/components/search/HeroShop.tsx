@@ -61,9 +61,15 @@ export default function HeroShop() {
     <>
       {/* Hero */}
       <section style={{ background: 'linear-gradient(155deg, #0C1428 0%, #1C2C4E 100%)', color: '#fff' }}>
-        <div className="container" style={{ padding: '64px 20px 40px' }}>
-          <h1 style={{ fontSize: 'clamp(38px, 6vw, 76px)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 0.95 }}>
-            Shop Fan Gear for <span style={{ color: 'var(--brand)' }}>Every Team</span>
+        <div className="container" style={{ padding: '44px 20px 40px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-mark.png"
+            alt="DieHardNation"
+            style={{ height: 'clamp(88px, 13vw, 136px)', width: 'auto', display: 'block', marginBottom: 22, filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.35))' }}
+          />
+          <h1 style={{ fontSize: 'clamp(30px, 5vw, 58px)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1 }}>
+            Shop Fan Gear for <span style={{ color: '#86A8D6' }}>Every Team</span>
           </h1>
           <p style={{ fontSize: 'clamp(16px, 2.4vw, 22px)', fontWeight: 600, color: 'rgba(255,255,255,0.72)', marginTop: 14, marginBottom: 24, maxWidth: 680 }}>
             Search live jerseys, hoodies and hats across every sport — start typing.
