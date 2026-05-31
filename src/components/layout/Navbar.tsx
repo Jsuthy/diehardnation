@@ -19,14 +19,9 @@ export default function Navbar() {
         justifyContent: 'space-between',
         height: '100%',
       }}>
-        <Link href="/" style={{
-          fontWeight: 900,
-          fontSize: 20,
-          letterSpacing: '-0.03em',
-          color: 'var(--text-primary)',
-          textDecoration: 'none',
-        }}>
-          DIEHARDNATION
+        <Link href="/" aria-label="DieHardNation home" style={{ display: 'flex', alignItems: 'center' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.jpg" alt="DieHardNation" style={{ height: 46, width: 'auto', display: 'block' }} />
         </Link>
 
         <Suspense fallback={<div style={{ width: 320 }} />}>

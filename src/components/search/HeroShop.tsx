@@ -60,7 +60,7 @@ export default function HeroShop() {
   return (
     <>
       {/* Hero */}
-      <section style={{ background: 'linear-gradient(160deg, #0A0A0A 0%, #1A0606 100%)', color: '#fff' }}>
+      <section style={{ background: 'linear-gradient(155deg, #0C1428 0%, #1C2C4E 100%)', color: '#fff' }}>
         <div className="container" style={{ padding: '64px 20px 40px' }}>
           <h1 style={{ fontSize: 'clamp(38px, 6vw, 76px)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 0.95 }}>
             Shop Fan Gear for <span style={{ color: 'var(--brand)' }}>Every Team</span>

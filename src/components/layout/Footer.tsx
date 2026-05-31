@@ -45,9 +45,8 @@ export default function Footer() {
 
           {/* Brand */}
           <div>
-            <div style={{ fontWeight: 900, fontSize: 16, letterSpacing: '-0.03em', marginBottom: 8 }}>
-              DIEHARDNATION
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.jpg" alt="DieHardNation" style={{ height: 64, width: 'auto', display: 'block', marginBottom: 10 }} />
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 8 }}>
               Independent fan gear &amp; sports news hub for every team. Not affiliated with any league, team or the NCAA.
             </p>

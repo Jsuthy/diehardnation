@@ -18,7 +18,7 @@ interface Props {
 // Themed hero with a color gradient, a large ghosted monogram watermark,
 // breadcrumb, eyebrow pill, title and badge row. Server component.
 export default function PageHero({
-  title, baseColor = '#CC0000', accentColor, eyebrow, subtitle, breadcrumb, badges, children,
+  title, baseColor = '#1C2C4E', accentColor, eyebrow, subtitle, breadcrumb, badges, children,
 }: Props) {
   const fg = contrastText(baseColor)
   const muted = fg === '#FFFFFF' ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.6)'

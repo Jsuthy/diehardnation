@@ -13,9 +13,10 @@
   --text-secondary: #6B6B6B;
   --text-muted: #9B9B9B;
 
-  /* Brand */
-  --brand: #CC0000;
-  --brand-hover: #AA0000;
+  /* Brand — DieHardNation navy (from crest logo) */
+  --brand: #1C2C4E;
+  --brand-hover: #14203A;
+  --brand-ink: #0E1830;
 
   /* School (overridden per school via data-school or inline style) */
   --school-color: #CC0000;
