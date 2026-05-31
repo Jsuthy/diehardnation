@@ -8,6 +8,7 @@ import type { Product, NewsPost, School } from '@/lib/supabase/types'
 import { getLatestArticles, getUpcomingEvents } from '@/lib/sports/queries'
 import type { Article, SportEvent } from '@/lib/sports/types'
 import EmailSignup from '@/components/email/EmailSignup'
+import SectionHeading from '@/components/sports/SectionHeading'
 
 const HOME_TITLE = 'DieHardNation — Fan Gear & Sports News for Every Team'
 const HOME_DESCRIPTION =
@@ -124,43 +125,39 @@ export default async function HomePage() {
   return (
     <main>
       {/* Hero — global */}
-      <section className="container" style={{ padding: '80px 20px 48px' }}>
-        <h1 style={{
-          fontSize: 'clamp(44px, 7vw, 88px)',
-          fontWeight: 900,
-          letterSpacing: '-0.04em',
-          lineHeight: 0.95,
-          color: 'var(--text-primary)',
-        }}>
-          Fan Gear &amp; Sports News for Every Team
-        </h1>
-        <p style={{
-          fontSize: 'clamp(18px, 3vw, 26px)',
-          fontWeight: 700,
-          color: 'var(--text-secondary)',
-          marginTop: 12,
-          marginBottom: 28,
-          maxWidth: 760,
-        }}>
-          Every sport, every league, every team — worldwide. Shop the gear, follow the action.
-        </p>
-        <Suspense fallback={<div style={{ height: 52, maxWidth: 480 }} />}>
-          <HeroSearch />
-        </Suspense>
+      <section style={{ background: 'linear-gradient(160deg, #0A0A0A 0%, #1A0606 100%)', color: '#fff' }}>
+        <div className="container" style={{ padding: '72px 20px 56px' }}>
+          <h1 style={{
+            fontSize: 'clamp(42px, 7vw, 84px)',
+            fontWeight: 900,
+            letterSpacing: '-0.04em',
+            lineHeight: 0.95,
+          }}>
+            Fan Gear &amp; Sports News<br />for <span style={{ color: 'var(--brand)' }}>Every Team</span>
+          </h1>
+          <p style={{
+            fontSize: 'clamp(17px, 3vw, 24px)',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.72)',
+            marginTop: 14,
+            marginBottom: 28,
+            maxWidth: 720,
+          }}>
+            Every sport, every league, every team — worldwide. Shop the gear, follow the action.
+          </p>
+          <Suspense fallback={<div style={{ height: 52, maxWidth: 480 }} />}>
+            <HeroSearch />
+          </Suspense>
+        </div>
+        <div style={{ height: 6, background: 'var(--brand)' }} />
       </section>
 
       {/* Browse Every Sport — primary entry point */}
-      <section id="sports" className="container" aria-label="Browse every sport" style={{ padding: '24px 20px 16px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
-          BROWSE EVERY SPORT
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10 }}>
+      <section id="sports" className="container" aria-label="Browse every sport" style={{ padding: '40px 20px 16px' }}>
+        <SectionHeading>Browse Every Sport</SectionHeading>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
           {SPORT_CARDS.map(s => (
-            <Link key={s.slug} href={`/sport/${s.slug}`} style={{
-              display: 'block', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)',
-              textDecoration: 'none', padding: '14px 16px', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)', background: '#fff',
-            }}>
+            <Link key={s.slug} href={`/sport/${s.slug}`} className="dhn-card" style={{ fontSize: 14, fontWeight: 700, padding: '16px 18px' }}>
               {s.label}
             </Link>
           ))}
@@ -169,16 +166,11 @@ export default async function HomePage() {
 
       {/* Upcoming events strip */}
       {upcomingEvents.length > 0 && (
-        <section className="container" aria-label="Upcoming events" style={{ padding: '32px 20px 16px' }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 16 }}>
-            COMING UP
-          </h2>
+        <section className="container" aria-label="Upcoming events" style={{ padding: '36px 20px 16px' }}>
+          <SectionHeading href="/events">Coming Up</SectionHeading>
           <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
             {upcomingEvents.map(ev => (
-              <Link key={ev.slug} href={`/events/${ev.slug}`} style={{
-                flex: '0 0 220px', textDecoration: 'none', color: 'inherit', background: '#fff',
-                border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 16,
-              }}>
+              <Link key={ev.slug} href={`/events/${ev.slug}`} className="dhn-card" style={{ flex: '0 0 220px', padding: 16 }}>
                 <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>
                   {ev.event_type}
                 </div>
@@ -195,46 +187,22 @@ export default async function HomePage() {
       )}
 
       {/* College Fan Gear — conference grid */}
-      <section className="container" aria-label="Browse schools by conference" style={{ paddingTop: 16 }}>
-        <h2 style={{
-          fontSize: 24,
-          fontWeight: 900,
-          letterSpacing: '-0.02em',
-          padding: '32px 20px 16px',
-        }}>
-          COLLEGE FAN GEAR — BROWSE BY CONFERENCE
-        </h2>
+      <section className="container" aria-label="Browse schools by conference" style={{ padding: '36px 20px 16px' }}>
+        <SectionHeading>College Fan Gear — Browse by Conference</SectionHeading>
         <ConferenceSchoolGrid />
       </section>
 
       {/* Trending gear */}
       {trendingProducts.length > 0 && (
-        <section className="container" aria-label="Trending fan gear" style={{ padding: '48px 20px' }}>
-          <h2 style={{
-            fontSize: 24,
-            fontWeight: 900,
-            letterSpacing: '-0.02em',
-            marginBottom: 24,
-          }}>
-            TRENDING FAN GEAR
-          </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 16,
-          }}>
+        <section className="container" aria-label="Trending fan gear" style={{ padding: '40px 20px' }}>
+          <SectionHeading>Trending Fan Gear</SectionHeading>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 16 }}>
             {trendingProducts.map(p => (
-              <div key={p.id} style={{
-                background: 'white',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
-                overflow: 'hidden',
-                padding: 12,
-              }}>
+              <div key={p.id} className="dhn-card" style={{ padding: 14 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, lineHeight: 1.4 }}>
                   {p.title}
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 700 }}>
+                <div style={{ fontSize: 16, fontWeight: 800 }}>
                   ${p.price.toFixed(2)}
                 </div>
               </div>
@@ -245,27 +213,15 @@ export default async function HomePage() {
 
       {/* Latest news */}
       {latestNews.length > 0 && (
-        <section className="container" aria-label="Latest news" style={{ padding: '48px 20px 80px' }}>
-          <h2 style={{
-            fontSize: 24,
-            fontWeight: 900,
-            letterSpacing: '-0.02em',
-            marginBottom: 24,
-          }}>
-            LATEST COLLEGE NEWS
-          </h2>
+        <section className="container" aria-label="Latest news" style={{ padding: '40px 20px 64px' }}>
+          <SectionHeading href="/news">Latest College News</SectionHeading>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))',
             gap: 16,
           }}>
             {latestNews.map(post => (
-              <article key={post.id} style={{
-                background: 'white',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
-                padding: 16,
-              }}>
+              <article key={post.id} className="dhn-card" style={{ padding: 16 }}>
                 <div style={{
                   fontSize: 11,
                   fontWeight: 700,
@@ -292,15 +248,8 @@ export default async function HomePage() {
       )}
       {/* Browse All Schools — internal linking for crawlability */}
       {allSchools.length > 0 && (
-        <section className="container" aria-label="Browse all schools" style={{ padding: '48px 20px' }}>
-          <h2 style={{
-            fontSize: 24,
-            fontWeight: 900,
-            letterSpacing: '-0.02em',
-            marginBottom: 16,
-          }}>
-            BROWSE ALL SCHOOLS
-          </h2>
+        <section className="container" aria-label="Browse all schools" style={{ padding: '40px 20px' }}>
+          <SectionHeading>Browse All Schools</SectionHeading>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
             Explore fan gear for all {allSchools.length} FBS schools — click any school to shop hoodies, jerseys, hats and more.
           </p>
@@ -334,15 +283,10 @@ export default async function HomePage() {
       {/* Latest Articles */}
       {latestArticles.length > 0 && (
         <section className="container" aria-label="Latest articles" style={{ padding: '0 20px 48px' }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 24 }}>
-            LATEST FROM DIEHARDNATION
-          </h2>
+          <SectionHeading href="/news">Latest from DieHardNation</SectionHeading>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16 }}>
             {latestArticles.map(a => (
-              <Link key={a.slug} href={`/news/${a.slug}`} style={{
-                textDecoration: 'none', color: 'inherit', background: '#fff',
-                border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 16,
-              }}>
+              <Link key={a.slug} href={`/news/${a.slug}`} className="dhn-card" style={{ padding: 16 }}>
                 {a.sport_slug && (
                   <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand)', marginBottom: 6 }}>
                     {a.sport_slug.replace(/-/g, ' ')}

@@ -12,7 +12,7 @@ export const revalidate = 3600
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const teams = await getTopTeams(100)
+  const teams = await getTopTeams(200)
   return teams.map(t => ({ team: t.slug }))
 }
 

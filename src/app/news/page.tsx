@@ -47,7 +47,7 @@ export default async function NewsPage() {
       {articles.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 18 }}>
           {articles.map(a => (
-            <Link key={a.slug} href={`/news/${a.slug}`} style={{ textDecoration: 'none', color: 'inherit', background: '#fff', border: '1px solid var(--border,#E8E8E8)', borderRadius: 'var(--radius-md,8px)', padding: 18 }}>
+            <Link key={a.slug} href={`/news/${a.slug}`} className="dhn-card" style={{ padding: 18 }}>
               {a.sport_slug && (
                 <span style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand,#CC0000)' }}>{a.sport_slug.replace(/-/g, ' ')}</span>
               )}
