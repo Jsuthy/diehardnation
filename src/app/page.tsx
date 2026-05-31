@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import HeroSearch from '@/components/home/HeroSearch'
+import HeroShop from '@/components/search/HeroShop'
 import ConferenceSchoolGrid from '@/components/home/ConferenceSchoolGrid'
 import Link from 'next/link'
 import { getPublicClient } from '@/lib/supabase/server'
@@ -124,33 +123,8 @@ export default async function HomePage() {
 
   return (
     <main>
-      {/* Hero — global */}
-      <section style={{ background: 'linear-gradient(160deg, #0A0A0A 0%, #1A0606 100%)', color: '#fff' }}>
-        <div className="container" style={{ padding: '72px 20px 56px' }}>
-          <h1 style={{
-            fontSize: 'clamp(42px, 7vw, 84px)',
-            fontWeight: 900,
-            letterSpacing: '-0.04em',
-            lineHeight: 0.95,
-          }}>
-            Fan Gear &amp; Sports News<br />for <span style={{ color: 'var(--brand)' }}>Every Team</span>
-          </h1>
-          <p style={{
-            fontSize: 'clamp(17px, 3vw, 24px)',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.72)',
-            marginTop: 14,
-            marginBottom: 28,
-            maxWidth: 720,
-          }}>
-            Every sport, every league, every team — worldwide. Shop the gear, follow the action.
-          </p>
-          <Suspense fallback={<div style={{ height: 52, maxWidth: 480 }} />}>
-            <HeroSearch />
-          </Suspense>
-        </div>
-        <div style={{ height: 6, background: 'var(--brand)' }} />
-      </section>
+      {/* Hero — live product shop search */}
+      <HeroShop />
 
       {/* Browse Every Sport — primary entry point */}
       <section id="sports" className="container" aria-label="Browse every sport" style={{ padding: '40px 20px 16px' }}>
