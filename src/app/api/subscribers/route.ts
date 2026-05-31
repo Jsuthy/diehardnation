@@ -34,10 +34,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Could not save' }, { status: 500 })
   }
 
-  // Resend integration (wire later):
-  // await resend.contacts.create({ email, firstName: first_name, audienceId: process.env.RESEND_AUDIENCE_ID })
-  // Google Sheets via n8n webhook (wire later):
-  // await fetch(process.env.SHEETS_WEBHOOK_URL!, { method: 'POST', body: JSON.stringify({ email, first_name, source }) })
+  // Mirror to Google Sheets (fire-and-forget; never block the response).
+  if (process.env.SHEETS_WEBHOOK_URL) {
+    fetch(process.env.SHEETS_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, first_name, source, sport_slug, school_slug }),
+    }).catch(() => {})
+  }
+
+  // Add to Resend audience (activates automatically once the env vars are set).
+  if (process.env.RESEND_API_KEY && process.env.RESEND_AUDIENCE_ID) {
+    try {
+      const { Resend } = await import('resend')
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      await resend.contacts.create({
+        email,
+        firstName: first_name || undefined,
+        unsubscribed: false,
+        audienceId: process.env.RESEND_AUDIENCE_ID,
+      })
+    } catch {
+      // Don't fail the signup if Resend is down.
+    }
+  }
 
   return NextResponse.json({ success: true })
 }
