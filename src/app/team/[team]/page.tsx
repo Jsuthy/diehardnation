@@ -5,6 +5,8 @@ import { getTeam, getLeague, getTeamsByLeague, getArticlesByTeam, getTopTeams } 
 import GearCTA from '@/components/affiliate/GearCTA'
 import ProductRail from '@/components/affiliate/ProductRail'
 import EmailSignup from '@/components/email/EmailSignup'
+import PageHero from '@/components/sports/PageHero'
+import SectionHeading from '@/components/sports/SectionHeading'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -38,52 +40,62 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
     ? (await getTeamsByLeague(team.league_slug, 8)).filter(t => t.slug !== slug).slice(0, 6)
     : []
 
+  const breadcrumb = [
+    { label: 'Home', href: '/' },
+    ...(team.sport_slug ? [{ label: team.sport_slug.replace(/-/g, ' '), href: `/sport/${team.sport_slug}` }] : []),
+    ...(league ? [{ label: league.name, href: `/league/${league.slug}` }] : []),
+    { label: team.name },
+  ]
+
   return (
     <main>
-      <section style={{ background: team.primary_color || 'var(--brand,#CC0000)', color: '#fff', padding: '56px 20px' }}>
-        <div className="container">
-          <h1 style={{ fontSize: 'clamp(34px,6vw,64px)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1 }}>
-            {team.name} Fan Gear
-          </h1>
-          <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {team.city && <span style={badgeStyle}>{team.city}</span>}
-            {league && <Link href={`/league/${league.slug}`} style={{ ...badgeStyle, textDecoration: 'none', color: '#fff' }}>{league.name}</Link>}
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={`${team.name} Fan Gear`}
+        baseColor={team.primary_color || '#CC0000'}
+        accentColor={team.secondary_color}
+        eyebrow={league ? `${league.name} · Fan Shop` : 'Fan Shop'}
+        breadcrumb={breadcrumb}
+        badges={[
+          ...(team.city ? [{ label: team.city }] : []),
+          ...(league ? [{ label: league.name, href: `/league/${league.slug}` }] : []),
+        ]}
+      />
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
-        <section style={{ marginBottom: 48 }}>
+        <section style={{ marginBottom: 56 }}>
           <ProductRail query={team.name} title={`Shop ${team.name} Gear`} />
           <GearCTA query={`${team.name} fan gear`} title={`Browse all ${team.name} gear`} teamName={team.name} />
         </section>
 
-        <section style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>Latest {team.name} News</h2>
+        <section style={{ marginBottom: 56 }}>
+          <SectionHeading href="/news">Latest {team.name} News</SectionHeading>
           {articles.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 16 }}>
               {articles.map(a => (
-                <Link key={a.slug} href={`/news/${a.slug}`} style={{ ...cardStyle, padding: 16 }}>
+                <Link key={a.slug} href={`/news/${a.slug}`} className="dhn-card" style={{ padding: 16 }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.4, marginBottom: 6 }}>{a.title}</h3>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary,#555)', lineHeight: 1.5 }}>{a.excerpt}</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{a.excerpt}</p>
                 </Link>
               ))}
             </div>
           ) : (
-            <Link href="/admin/publish" style={{ color: 'var(--brand,#CC0000)', fontWeight: 700, textDecoration: 'none' }}>
-              Be the first to cover {team.name} →
-            </Link>
+            <div style={{ padding: '24px', background: 'var(--surface)', borderRadius: 'var(--radius-md)', fontSize: 14, color: 'var(--text-secondary)' }}>
+              No coverage yet.{' '}
+              <Link href="/admin/publish" style={{ color: 'var(--brand)', fontWeight: 700, textDecoration: 'none' }}>
+                Be the first to cover {team.name} →
+              </Link>
+            </div>
           )}
         </section>
 
         {related.length > 0 && league && (
-          <section style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>More {league.name} Teams</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
+          <section style={{ marginBottom: 56 }}>
+            <SectionHeading href={`/league/${league.slug}`}>More {league.name} Teams</SectionHeading>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12 }}>
               {related.map(t => (
-                <Link key={t.slug} href={`/team/${t.slug}`} style={cardStyle}>
-                  <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 2, background: t.primary_color, marginRight: 8, verticalAlign: 'middle' }} />
-                  <strong style={{ fontSize: 14 }}>{t.name}</strong>
+                <Link key={t.slug} href={`/team/${t.slug}`} className="dhn-chip">
+                  <span className="dhn-dot" style={{ background: t.primary_color }} />
+                  {t.name}
                 </Link>
               ))}
             </div>
@@ -92,28 +104,10 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
 
         <EmailSignup source="team" sportSlug={team.sport_slug || undefined} />
 
-        <p style={{ fontSize: 12, color: 'var(--text-muted,#999)', marginTop: 32 }}>
+        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 32 }}>
           Affiliate links — commission earned at no cost to you. DieHardNation is not affiliated with any team, league or governing body.
         </p>
       </div>
     </main>
   )
 }
-
-const cardStyle = {
-  display: 'block',
-  background: '#fff',
-  border: '1px solid var(--border,#E8E8E8)',
-  borderRadius: 'var(--radius-md,8px)',
-  padding: '14px 16px',
-  textDecoration: 'none',
-  color: 'inherit',
-} as const
-
-const badgeStyle = {
-  fontSize: 13,
-  fontWeight: 700,
-  background: 'rgba(255,255,255,0.2)',
-  padding: '4px 12px',
-  borderRadius: 20,
-} as const

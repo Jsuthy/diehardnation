@@ -64,3 +64,58 @@ body {
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
 }
+
+/* ── Global sports design system ───────────────────────────── */
+
+.dhn-section { padding: 40px 20px; }
+@media (max-width: 768px) { .dhn-section { padding: 28px 16px; } }
+
+/* Generic linkable card */
+.dhn-card {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.dhn-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Product card */
+.dhn-prod {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.dhn-prod:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.dhn-prod img { transition: transform .25s ease; }
+.dhn-prod:hover img { transform: scale(1.04); }
+
+/* Team/league chip with a color dot */
+.dhn-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.dhn-chip:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.dhn-dot { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }

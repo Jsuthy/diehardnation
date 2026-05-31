@@ -6,6 +6,9 @@ import GearCTA from '@/components/affiliate/GearCTA'
 import ProductRail from '@/components/affiliate/ProductRail'
 import EmailSignup from '@/components/email/EmailSignup'
 import Countdown from '@/components/sports/Countdown'
+import PageHero from '@/components/sports/PageHero'
+import SectionHeading from '@/components/sports/SectionHeading'
+import { sportColor } from '@/lib/sports/color'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -53,62 +56,67 @@ export default async function EventPage({ params }: { params: Promise<{ event: s
         sport: sport?.name, url: `https://diehardnation.com/events/${slug}`,
       }) }} />
 
-      <section style={{ background: 'var(--brand,#CC0000)', color: '#fff', padding: '56px 20px' }}>
-        <div className="container">
-          <span style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', background: 'rgba(255,255,255,0.2)', padding: '4px 12px', borderRadius: 20 }}>
-            {event.event_type}
-          </span>
-          <h1 style={{ fontSize: 'clamp(34px,6vw,64px)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1, marginTop: 14 }}>
-            {event.name} — Fan Gear &amp; Coverage
-          </h1>
-          {event.start_date && <p style={{ fontSize: 16, marginTop: 12, opacity: 0.9 }}>Starting {formatDate(event.start_date)}</p>}
-          <Countdown date={event.start_date} />
-        </div>
-      </section>
+      <PageHero
+        title={`${event.name} — Fan Gear & Coverage`}
+        baseColor={sportColor(event.sport_slug)}
+        eyebrow={event.event_type}
+        subtitle={event.start_date ? `Starting ${formatDate(event.start_date)}` : undefined}
+        breadcrumb={[
+          { label: 'Home', href: '/' },
+          { label: 'Events', href: '/events' },
+          ...(sport ? [{ label: sport.name, href: `/sport/${sport.slug}` }] : []),
+          { label: event.name },
+        ]}
+      >
+        <Countdown date={event.start_date} />
+      </PageHero>
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
-        <section style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 12 }}>About {event.name}</h2>
-          {event.description && <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary,#555)', marginBottom: 16 }}>{event.description}</p>}
-          <ul style={{ fontSize: 14, color: 'var(--text-secondary,#555)', lineHeight: 1.8, listStyle: 'none', padding: 0 }}>
-            {sport && <li><strong>Sport:</strong> <Link href={`/sport/${sport.slug}`} style={{ color: 'var(--brand,#CC0000)' }}>{sport.name}</Link></li>}
-            {event.start_date && <li><strong>Dates:</strong> {formatDate(event.start_date)}{event.end_date ? ` – ${formatDate(event.end_date)}` : ''}</li>}
-          </ul>
-        </section>
-
-        <section style={{ marginBottom: 48 }}>
+        <section style={{ marginBottom: 56 }}>
           <ProductRail query={event.name} title={`Shop ${event.name} Gear`} />
           <GearCTA query={`${event.name} gear jersey hoodie`} title={`Browse all ${event.name} gear`} />
         </section>
 
-        <section style={{ marginBottom: 48 }}>
+        <section style={{ marginBottom: 56 }}>
+          <SectionHeading>About {event.name}</SectionHeading>
+          {event.description && <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 16 }}>{event.description}</p>}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, fontSize: 14, color: 'var(--text-secondary)' }}>
+            {sport && <div><strong style={{ color: 'var(--text-primary)' }}>Sport:</strong> <Link href={`/sport/${sport.slug}`} style={{ color: 'var(--brand)', textDecoration: 'none' }}>{sport.name}</Link></div>}
+            {event.start_date && <div><strong style={{ color: 'var(--text-primary)' }}>Dates:</strong> {formatDate(event.start_date)}{event.end_date ? ` – ${formatDate(event.end_date)}` : ''}</div>}
+            <div><strong style={{ color: 'var(--text-primary)' }}>Type:</strong> {event.event_type}</div>
+          </div>
+        </section>
+
+        <section style={{ marginBottom: 56 }}>
           <EmailSignup source="event" sportSlug={event.sport_slug || undefined} variant="dark" />
         </section>
 
-        <section style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>{event.name} News &amp; Coverage</h2>
+        <section style={{ marginBottom: 56 }}>
+          <SectionHeading>{event.name} News &amp; Coverage</SectionHeading>
           {articles.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 16 }}>
               {articles.map(a => (
-                <Link key={a.slug} href={`/news/${a.slug}`} style={{ ...cardStyle, padding: 16 }}>
+                <Link key={a.slug} href={`/news/${a.slug}`} className="dhn-card" style={{ padding: 16 }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.4, marginBottom: 6 }}>{a.title}</h3>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary,#555)', lineHeight: 1.5 }}>{a.excerpt}</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{a.excerpt}</p>
                 </Link>
               ))}
             </div>
           ) : (
-            <p style={{ color: 'var(--text-muted,#999)' }}>Coverage coming soon — check back as {event.name} approaches.</p>
+            <div style={{ padding: 24, background: 'var(--surface)', borderRadius: 'var(--radius-md)', fontSize: 14, color: 'var(--text-secondary)' }}>
+              Coverage coming soon — check back as {event.name} approaches.
+            </div>
           )}
         </section>
 
         {related.length > 0 && (
           <section>
-            <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16 }}>Related Events</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 10 }}>
+            <SectionHeading href="/events">Related Events</SectionHeading>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 12 }}>
               {related.map(e => (
-                <Link key={e.slug} href={`/events/${e.slug}`} style={cardStyle}>
+                <Link key={e.slug} href={`/events/${e.slug}`} className="dhn-card" style={{ padding: 16 }}>
                   <strong style={{ fontSize: 14 }}>{e.name}</strong>
-                  {e.start_date && <span style={{ fontSize: 12, color: 'var(--text-muted,#999)', display: 'block' }}>{formatDate(e.start_date)}</span>}
+                  {e.start_date && <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'block', marginTop: 4 }}>{formatDate(e.start_date)}</span>}
                 </Link>
               ))}
             </div>
@@ -118,13 +126,3 @@ export default async function EventPage({ params }: { params: Promise<{ event: s
     </main>
   )
 }
-
-const cardStyle = {
-  display: 'block',
-  background: '#fff',
-  border: '1px solid var(--border,#E8E8E8)',
-  borderRadius: 'var(--radius-md,8px)',
-  padding: '14px 16px',
-  textDecoration: 'none',
-  color: 'inherit',
-} as const

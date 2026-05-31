@@ -57,11 +57,7 @@ export default function ProductRail({ query, title, limit = 12 }: Props) {
                 href={p.url}
                 target="_blank"
                 rel="nofollow sponsored noopener"
-                style={{
-                  display: 'flex', flexDirection: 'column', background: '#fff',
-                  border: '1px solid var(--border,#E8E8E8)', borderRadius: 'var(--radius-md,8px)',
-                  overflow: 'hidden', textDecoration: 'none', color: 'inherit',
-                }}
+                className="dhn-prod"
               >
                 <div style={{ aspectRatio: '1 / 1', background: '#F5F5F5', overflow: 'hidden' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
