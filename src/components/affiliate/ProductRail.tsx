@@ -76,7 +76,7 @@ export default function ProductRail({ query, title, limit = 12 }: Props) {
             ))}
       </div>
       <p style={{ fontSize: 11, color: 'var(--text-muted,#999)', marginTop: 12 }}>
-        Live listings from eBay. Affiliate links — we earn a commission at no cost to you.
+        Live listings from eBay.
       </p>
     </section>
   )

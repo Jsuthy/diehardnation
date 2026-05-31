@@ -102,9 +102,6 @@ export default function GearCTA({ query, title }: GearCTAProps) {
         <p style={{ fontSize: 13, color: 'var(--text-muted, #999)' }}>Gear links loading…</p>
       )}
 
-      <p style={{ fontSize: 11, color: 'var(--text-muted, #999)', marginTop: 14 }}>
-        Affiliate links — commission earned at no cost to you.
-      </p>
     </section>
   )
 }

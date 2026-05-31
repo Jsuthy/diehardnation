@@ -37,7 +37,7 @@ export default function SoccerGarageCTA({ query, title }: { query: string; title
         Shop SoccerGarage →
       </a>
       <p style={{ fontSize: 11, color: 'var(--text-muted, #999)', marginTop: 14 }}>
-        Cleats, jerseys, balls and keeper gear. Affiliate link — commission earned at no cost to you.
+        Cleats, jerseys, balls and keeper gear.
       </p>
     </section>
   )

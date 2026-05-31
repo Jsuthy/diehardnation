@@ -105,7 +105,7 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
         <EmailSignup source="team" sportSlug={team.sport_slug || undefined} />
 
         <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 32 }}>
-          Affiliate links — commission earned at no cost to you. DieHardNation is not affiliated with any team, league or governing body.
+          DieHardNation is not affiliated with any team, league or governing body.
         </p>
       </div>
     </main>

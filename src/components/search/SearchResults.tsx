@@ -129,7 +129,7 @@ export default function SearchResults({ query, sort, initial, total }: Props) {
       )}
 
       <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 24 }}>
-        Live listings from eBay. Affiliate links — DieHardNation earns a commission at no cost to you.
+        Live listings from eBay.
       </p>
     </div>
   )

@@ -196,7 +196,7 @@ export default async function HomePage() {
         <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)' }}>
           DieHardNation is an independent fan-gear hub covering every sport, league and team — the NFL, NBA, MLB and NHL,
           global soccer, college and more. Search live jerseys, hoodies, hats and collectibles from trusted retailers.
-          We&apos;re not affiliated with any league, team or the NCAA, and we earn a small affiliate commission at no extra cost to you.
+          We&apos;re not affiliated with any league, team or the NCAA.
         </p>
       </section>
     </main>
