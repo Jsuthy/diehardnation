@@ -25,8 +25,22 @@ export default function PageHero({
   const chipBg = fg === '#FFFFFF' ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.08)'
   const accent = accentColor || lighten(baseColor, 0.35)
 
+  const crumbLd = breadcrumb && breadcrumb.length > 1 ? {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumb.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.label,
+      ...(c.href ? { item: `https://diehardnation.com${c.href}` } : {}),
+    })),
+  } : null
+
   return (
     <section style={{ position: 'relative', background: heroGradient(baseColor), color: fg, overflow: 'hidden' }}>
+      {crumbLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbLd) }} />
+      )}
       {/* Monogram watermark */}
       <span aria-hidden style={{
         position: 'absolute', right: '-2%', top: '50%', transform: 'translateY(-50%)',

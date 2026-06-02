@@ -1,17 +1,18 @@
 import type { MetadataRoute } from 'next'
 import { getPublicClient } from '@/lib/supabase/server'
+import { STATIC_SPORTS, STATIC_EVENTS } from '@/lib/sports/static'
+import { PRO_LEAGUE_LIST, PRO_TEAM_LIST } from '@/lib/sports/pro-data'
 
 const SITE_URL = 'https://diehardnation.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = getPublicClient()
 
-  const [schoolsResult, pagesResult, newsResult, productsResult, sportsResult, leaguesResult, teamsResult, eventsResult, articlesResult] = await Promise.allSettled([
+  const [schoolsResult, pagesResult, newsResult, productsResult, leaguesResult, teamsResult, eventsResult, articlesResult] = await Promise.allSettled([
     supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gt('product_count', 0),
     supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at').eq('is_active', true).gte('product_count', 3).neq('slug', '').not('slug', 'is', null),
     supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
     supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).or('is_featured.eq.true,click_count.gt.0').neq('slug', '').not('slug', 'is', null).limit(50000),
-    supabase.from('sports').select('slug').eq('is_active', true),
     supabase.from('leagues').select('slug').eq('is_active', true),
     supabase.from('teams').select('slug').eq('is_active', true).limit(100000),
     supabase.from('events').select('slug, updated_at').eq('is_active', true),
@@ -22,10 +23,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = pagesResult.status === 'fulfilled' ? pagesResult.value.data || [] : []
   const news = newsResult.status === 'fulfilled' ? newsResult.value.data || [] : []
   const products = productsResult.status === 'fulfilled' ? productsResult.value.data || [] : []
-  const sports = sportsResult.status === 'fulfilled' ? sportsResult.value.data || [] : []
   const leagues = leaguesResult.status === 'fulfilled' ? leaguesResult.value.data || [] : []
   const teams = teamsResult.status === 'fulfilled' ? teamsResult.value.data || [] : []
-  const events = eventsResult.status === 'fulfilled' ? eventsResult.value.data || [] : []
+  const events = eventsResult.status === 'fulfilled' ? (eventsResult.value.data || []) as { slug: string; updated_at?: string }[] : []
   const articles = articlesResult.status === 'fulfilled' ? articlesResult.value.data || [] : []
 
   const entries: MetadataRoute.Sitemap = []
@@ -98,21 +98,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   }
 
-  // Global sports expansion
+  // Global sports expansion. Pages render from curated static data merged with
+  // the DB, so the sitemap merges both (deduped) to match what actually resolves.
   entries.push({ url: `${SITE_URL}/events`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 })
+  entries.push({ url: `${SITE_URL}/search`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 })
 
-  for (const s of sports) {
+  // Sports — curated set only (skips thin legacy college-sport rows).
+  for (const s of STATIC_SPORTS) {
     entries.push({ url: `${SITE_URL}/sport/${s.slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 })
   }
-  for (const l of leagues) {
-    entries.push({ url: `${SITE_URL}/league/${l.slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 })
+  // Leagues — DB ∪ curated.
+  const leagueSlugs = new Set<string>([...leagues.map(l => l.slug), ...PRO_LEAGUE_LIST.map(l => l.slug)])
+  for (const slug of leagueSlugs) {
+    entries.push({ url: `${SITE_URL}/league/${slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 })
   }
-  for (const t of teams) {
-    entries.push({ url: `${SITE_URL}/team/${t.slug}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 })
+  // Teams — DB ∪ curated (the highest-value commercial pages).
+  const teamSlugs = new Set<string>([...teams.map(t => t.slug), ...PRO_TEAM_LIST.map(t => t.slug)])
+  for (const slug of teamSlugs) {
+    entries.push({ url: `${SITE_URL}/team/${slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 })
   }
-  // Events get the highest priority — Google must index these months ahead.
-  for (const ev of events) {
-    entries.push({ url: `${SITE_URL}/events/${ev.slug}`, lastModified: ev.updated_at ? new Date(ev.updated_at) : new Date(), changeFrequency: 'daily', priority: 0.95 })
+  // Events — DB ∪ curated. Highest priority: index months before the surge.
+  const eventUpdated = new Map(events.map(e => [e.slug, e.updated_at]))
+  const eventSlugs = new Set<string>([...events.map(e => e.slug), ...STATIC_EVENTS.map(e => e.slug)])
+  for (const slug of eventSlugs) {
+    const u = eventUpdated.get(slug)
+    entries.push({ url: `${SITE_URL}/events/${slug}`, lastModified: u ? new Date(u) : new Date(), changeFrequency: 'daily', priority: 0.95 })
   }
   for (const a of articles) {
     entries.push({ url: `${SITE_URL}/news/${a.slug}`, lastModified: a.updated_at ? new Date(a.updated_at) : new Date(), changeFrequency: 'weekly', priority: 0.85 })

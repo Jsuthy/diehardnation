@@ -68,7 +68,7 @@ export default function RootLayout({
               url: 'https://diehardnation.com',
               potentialAction: {
                 '@type': 'SearchAction',
-                target: 'https://diehardnation.com/?q={search_term_string}',
+                target: 'https://diehardnation.com/search?q={search_term_string}',
                 'query-input': 'required name=search_term_string'
               }
             })
