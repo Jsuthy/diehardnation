@@ -6,6 +6,16 @@ import { SCHOOLS } from '@/lib/constants/schools'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
 import Link from 'next/link'
 import { getSchoolMetadata } from '@/lib/seo/metadata-templates'
+import {
+  buildBuyingGuide,
+  buildLicensedGuidance,
+  buildSchoolFAQ,
+  buildFaqSchema,
+  computePriceStat,
+  wordCountOf,
+} from '@/lib/seo/content-blocks'
+import { ContentSection, FaqSection } from '@/components/seo/ValueContent'
+import { evaluatePageQuality, robotsForQuality } from '@/lib/seo/quality-gate'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -27,9 +37,15 @@ export async function generateMetadata({
 
   const meta = getSchoolMetadata(school)
 
+  // Quality gate: thin school hubs (too few live products) stay crawlable but
+  // are kept out of the index so they never drag down sitewide quality signals.
+  const stats = await getSchoolStats(slug)
+  const quality = evaluatePageQuality({ productCount: stats.productCount, uniqueWordCount: 300 })
+
   return {
     title: meta.title,
     description: meta.description,
+    robots: robotsForQuality(quality),
     alternates: { canonical: `https://diehardnation.com/${slug}` },
     openGraph: {
       title: meta.title,
@@ -63,6 +79,13 @@ export default async function SchoolPage({
 
   const conference = CONFERENCES.find(c => c.slug === school.conference)
   const meta = getSchoolMetadata(school)
+
+  // Value-add content (data-driven, varies per school) + matching FAQ schema.
+  const priceStat = computePriceStat(initialProducts.map(p => p.price))
+  const buyingGuide = buildBuyingGuide(school, { priceStat })
+  const licensedGuidance = buildLicensedGuidance(school)
+  const faqs = buildSchoolFAQ(school, { productCount: stats.productCount, priceStat })
+  void wordCountOf(buyingGuide, licensedGuidance, faqs)
 
   return (
     <main>
@@ -112,49 +135,10 @@ export default async function SchoolPage({
         />
       )}
 
-      {/* JSON-LD: FAQPage */}
+      {/* JSON-LD: FAQPage — generated from the same source as the on-page FAQ */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: [
-              {
-                '@type': 'Question',
-                name: `Where can I buy ${school.name} fan gear?`,
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: `DieHardNation aggregates ${school.name} ${school.mascot} fan gear from trusted retailers like eBay and Amazon. Browse ${stats.productCount}+ products including jerseys, hoodies, hats, and more — all in one place.`,
-                },
-              },
-              {
-                '@type': 'Question',
-                name: `What are the best ${school.name} gifts for fans?`,
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: `Popular ${school.mascot} gifts include game day apparel, vintage-style tees, and officially licensed accessories. Check our ${school.short_name} gift guides for curated picks across every budget.`,
-                },
-              },
-              {
-                '@type': 'Question',
-                name: `Does DieHardNation ship ${school.name} gear?`,
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: `DieHardNation is an affiliate aggregator — we link you directly to retailers like eBay and Amazon who handle shipping. This means you get their shipping speeds, return policies, and buyer protection.`,
-                },
-              },
-              {
-                '@type': 'Question',
-                name: `What ${school.name} sports gear is available?`,
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: `We carry ${school.mascot} gear across football, basketball, baseball, and more. Browse by sport to find ${school.short_name} apparel for any season. Currently ${stats.productCount} products available across ${stats.pageCount} categories.`,
-                },
-              },
-            ],
-          })
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqSchema(faqs)) }}
       />
 
       {/* School hero */}
@@ -278,55 +262,10 @@ export default async function SchoolPage({
         </section>
       )}
 
-      {/* About section — SEO text content */}
-      <section className="container" style={{ padding: '32px 20px' }}>
-        <h2 style={{
-          fontSize: 20,
-          fontWeight: 900,
-          letterSpacing: '-0.02em',
-          marginBottom: 12,
-        }}>
-          About {school.name} Fan Gear on DieHardNation
-        </h2>
-        <p style={{
-          fontSize: 14,
-          lineHeight: 1.7,
-          color: 'var(--text-secondary)',
-          maxWidth: 720,
-          marginBottom: 12,
-        }}>
-          DieHardNation is an independent fan gear aggregator — not affiliated
-          with {school.name}, the {conference?.fullName || school.conference} conference,
-          or the NCAA. We connect {school.mascot} fans with the best gear from trusted
-          retailers including eBay and Amazon. All products are sold by third-party
-          sellers; clicking View Deal takes you directly to the retailer where you
-          can purchase securely.
-        </p>
-        <p style={{
-          fontSize: 14,
-          lineHeight: 1.7,
-          color: 'var(--text-secondary)',
-          maxWidth: 720,
-          marginBottom: 12,
-        }}>
-          Looking for specific {school.name} gear? Use the sport tabs to browse {school.nickname}
-          football jerseys and hoodies, basketball apparel, volleyball sweatshirts, wrestling gear,
-          baseball jerseys, and softball apparel. Filter by category to find exactly what you need
-          — whether that&apos;s a {school.nickname} hoodie under $25, a premium {school.name} jersey,
-          or the perfect fan gift.
-        </p>
-        <p style={{
-          fontSize: 14,
-          lineHeight: 1.7,
-          color: 'var(--text-secondary)',
-          maxWidth: 720,
-        }}>
-          Our {school.name} fan gear catalog updates every six hours with new listings from eBay,
-          ensuring you always have access to the latest {school.nickname} apparel, vintage finds,
-          and game day essentials. Bookmark this page and check back regularly for new arrivals
-          and deals on {school.mascot} gear.
-        </p>
-      </section>
+      {/* Value-add content — data-driven, varies per school */}
+      <ContentSection block={buyingGuide} />
+      <ContentSection block={licensedGuidance} />
+      <FaqSection faqs={faqs} heading={`${school.short_name} Fan Gear FAQ`} />
 
       {/* Disclaimer */}
       <section className="container" style={{ padding: '16px 20px 64px' }}>

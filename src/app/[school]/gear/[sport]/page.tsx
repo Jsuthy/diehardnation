@@ -7,6 +7,15 @@ import { SCHOOLS } from '@/lib/constants/schools'
 import { CONFERENCES } from '@/lib/constants/conferences'
 import SchoolShopClient from '@/components/school/SchoolShopClient'
 import { getSportMetadata } from '@/lib/seo/metadata-templates'
+import {
+  buildBuyingGuide,
+  buildLicensedGuidance,
+  buildSchoolFAQ,
+  buildFaqSchema,
+  computePriceStat,
+} from '@/lib/seo/content-blocks'
+import { ContentSection, FaqSection } from '@/components/seo/ValueContent'
+import { evaluatePageQuality, robotsForQuality } from '@/lib/seo/quality-gate'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -31,9 +40,14 @@ export async function generateMetadata({
 
   const meta = getSportMetadata(school, sportSlug)
 
+  // Quality gate: thin sport pages stay crawlable but out of the index.
+  const { total } = await getProducts({ schoolSlug: slug, sport: sportSlug, limit: 1 })
+  const quality = evaluatePageQuality({ productCount: total, uniqueWordCount: 250 })
+
   return {
     title: meta.title,
     description: meta.description,
+    robots: robotsForQuality(quality),
     alternates: { canonical: `https://diehardnation.com/${slug}/gear/${sportSlug}` },
     openGraph: {
       title: meta.title,
@@ -71,6 +85,12 @@ export default async function SportPage({
 
   const conference = CONFERENCES.find(c => c.slug === school.conference)
   const meta = getSportMetadata(school, sportSlug)
+
+  // Value-add content (sport-aware, data-driven) + matching FAQ schema.
+  const priceStat = computePriceStat(products.map(p => p.price))
+  const buyingGuide = buildBuyingGuide(school, { sportLabel: sport.name, priceStat })
+  const licensedGuidance = buildLicensedGuidance(school)
+  const faqs = buildSchoolFAQ(school, { productCount: total, priceStat })
 
   return (
     <main>
@@ -219,52 +239,24 @@ export default async function SportPage({
         </nav>
       )}
 
-      {/* About section — SEO text content */}
-      <section className="container" aria-label={`About ${school.name} ${sport.name} gear`} style={{ padding: '16px 20px 48px' }}>
-        <h2 style={{
-          fontSize: 20,
-          fontWeight: 900,
-          letterSpacing: '-0.02em',
-          marginBottom: 12,
-        }}>
-          About {school.name} {sport.name} Gear
-        </h2>
-        <p style={{
-          fontSize: 14,
-          lineHeight: 1.7,
-          color: 'var(--text-secondary)',
-          maxWidth: 720,
-          marginBottom: 12,
-        }}>
-          Shop the best {school.name} {sport.name.toLowerCase()} gear on DieHardNation — an
-          independent fan aggregator connecting {school.nickname} fans with hoodies, jerseys,
-          shirts, hats and accessories from eBay and Amazon. Our {school.nickname}{' '}
-          {sport.name.toLowerCase()} gear catalog updates daily with fresh listings so you
-          always find current styles and competitive prices.
-        </p>
-        <p style={{
-          fontSize: 14,
-          lineHeight: 1.7,
-          color: 'var(--text-secondary)',
-          maxWidth: 720,
-          marginBottom: 12,
-        }}>
-          Whether you&apos;re shopping for game day, looking for a gift, or adding to your{' '}
-          {school.nickname} collection, browse our full selection of {school.name}{' '}
-          {sport.name.toLowerCase()} apparel. Filter by category to find hoodies and sweatshirts,
-          jerseys and uniforms, t-shirts and shirts, or hats and caps. Sort by price to find deals
-          in your budget — from affordable options under $25 to premium fan gear over $100.
-        </p>
-        <p style={{
-          fontSize: 14,
-          lineHeight: 1.7,
-          color: 'var(--text-secondary)',
-          maxWidth: 720,
-        }}>
+      {/* JSON-LD: FAQPage — matches the on-page FAQ below */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqSchema(faqs)) }}
+      />
+
+      {/* Value-add content — sport-aware, data-driven */}
+      <ContentSection block={buyingGuide} />
+      <ContentSection block={licensedGuidance} />
+      <FaqSection faqs={faqs} heading={`${school.short_name} ${sport.name} Gear FAQ`} />
+
+      {/* Disclaimer */}
+      <section className="container" style={{ padding: '0 20px 48px' }}>
+        <p style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 720 }}>
           DieHardNation is not affiliated with {school.name}, the{' '}
           {conference?.fullName || school.conference} conference, or the NCAA. All products are
           sold by third-party sellers; clicking View Deal takes you directly to the retailer
-          where you can purchase securely.
+          where you can purchase securely. We earn affiliate commissions from qualifying purchases.
         </p>
       </section>
     </main>
