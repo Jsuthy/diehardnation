@@ -1,6 +1,7 @@
 {
   "crons": [
-    { "path": "/api/ingest", "schedule": "0 */6 * * *" }
+    { "path": "/api/ingest", "schedule": "0 */6 * * *" },
+    { "path": "/api/trending/ingest", "schedule": "0 */4 * * *" }
   ],
   "functions": {
     "src/app/api/**": {

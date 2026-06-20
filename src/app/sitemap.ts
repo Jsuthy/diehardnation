@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { getPublicClient } from '@/lib/supabase/server'
 import { STATIC_SPORTS, STATIC_EVENTS } from '@/lib/sports/static'
 import { PRO_LEAGUE_LIST, PRO_TEAM_LIST } from '@/lib/sports/pro-data'
+import { MIN_INDEX_PRODUCTS, scorePage, sitemapPriority } from '@/lib/seo/quality-gate'
 
 const SITE_URL = 'https://diehardnation.com'
 
@@ -9,8 +10,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = getPublicClient()
 
   const [schoolsResult, pagesResult, newsResult, productsResult, leaguesResult, teamsResult, eventsResult, articlesResult] = await Promise.allSettled([
-    supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gt('product_count', 0),
-    supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at').eq('is_active', true).gte('product_count', 3).neq('slug', '').not('slug', 'is', null),
+    supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gte('product_count', MIN_INDEX_PRODUCTS),
+    supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at, product_count').eq('is_active', true).gte('product_count', MIN_INDEX_PRODUCTS).neq('slug', '').not('slug', 'is', null),
     supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
     supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).or('is_featured.eq.true,click_count.gt.0').neq('slug', '').not('slug', 'is', null).limit(50000),
     supabase.from('leagues').select('slug').eq('is_active', true),
@@ -47,12 +48,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     )
   }
 
-  // Programmatic pages
+  // Programmatic pages — priority driven by the same quality score that gates
+  // indexing, so Google spends crawl budget on the deepest catalogs first.
   for (const page of pages) {
-    let priority = 0.75
-    if (page.page_type === 'sport') priority = 0.85
-    else if (page.page_type === 'sport-price') priority = 0.65
-    else if (page.page_type === 'gift-guide') priority = 0.7
+    const score = scorePage({ productCount: (page as { product_count?: number }).product_count ?? MIN_INDEX_PRODUCTS, uniqueWordCount: 250 })
+    const ceiling = page.page_type === 'sport' ? 0.9 : page.page_type === 'sport-price' ? 0.7 : 0.8
+    const priority = sitemapPriority(score, ceiling)
 
     const frequency: 'daily' | 'weekly' = page.page_type === 'sport-price' || page.page_type === 'gift-guide' ? 'weekly' : 'daily'
 
