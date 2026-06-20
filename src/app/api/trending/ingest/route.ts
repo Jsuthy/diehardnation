@@ -72,11 +72,13 @@ async function run() {
 }
 
 function authorized(request: NextRequest): boolean {
-  const secret = process.env.INGEST_SECRET
-  if (!secret) return false
+  // Vercel cron auto-sends `Bearer ${CRON_SECRET}`; manual runs use INGEST_SECRET
+  // (matching /api/ingest) via header or ?token=. Accept any configured secret.
+  const secrets = [process.env.CRON_SECRET, process.env.INGEST_SECRET].filter(Boolean) as string[]
+  if (!secrets.length) return false
   const auth = request.headers.get('authorization')
-  if (auth === `Bearer ${secret}`) return true
-  return new URL(request.url).searchParams.get('token') === secret
+  const token = new URL(request.url).searchParams.get('token')
+  return secrets.some(s => auth === `Bearer ${s}` || token === s)
 }
 
 export async function GET(request: NextRequest) {
