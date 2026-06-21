@@ -34,6 +34,10 @@ export const PRO_LEAGUES: SeedLeague[] = [
   { slug: 'premier-league', name: 'Premier League', short_name: 'EPL', sport_slug: 'soccer', country: 'England', fan_size_rank: 5 },
   { slug: 'la-liga', name: 'La Liga', short_name: 'La Liga', sport_slug: 'soccer', country: 'Spain', fan_size_rank: 6 },
   { slug: 'champions-league', name: 'UEFA Champions League', short_name: 'UCL', sport_slug: 'soccer', country: 'Europe', fan_size_rank: 7 },
+  { slug: 'serie-a', name: 'Serie A', short_name: 'Serie A', sport_slug: 'soccer', country: 'Italy', fan_size_rank: 9 },
+  { slug: 'bundesliga', name: 'Bundesliga', short_name: 'Bundesliga', sport_slug: 'soccer', country: 'Germany', fan_size_rank: 10 },
+  { slug: 'ligue-1', name: 'Ligue 1', short_name: 'Ligue 1', sport_slug: 'soccer', country: 'France', fan_size_rank: 11 },
+  { slug: 'liga-mx', name: 'Liga MX', short_name: 'Liga MX', sport_slug: 'soccer', country: 'Mexico', fan_size_rank: 12 },
 ]
 
 const NFL: Omit<SeedTeam, 'league_slug' | 'sport_slug'>[] = [
@@ -172,11 +176,87 @@ const NHL: Omit<SeedTeam, 'league_slug' | 'sport_slug'>[] = [
   { name: 'Vegas Golden Knights', city: 'Las Vegas, NV', primary: '#B4975A', secondary: '#333F42' },
 ]
 
+// ─── Soccer clubs (curated) ────────────────────────────────────────────────
+// Soccer is the highest-demand global vertical (World Cup live now). These flow
+// into /team/[slug] + /league/[slug] via the curated fallback in queries.ts and
+// monetize through live eBay search on the team page — no DB/ingestion needed.
+type SoccerSeed = { name: string; city: string; primary: string; secondary: string }
+
+const EPL: SoccerSeed[] = [
+  { name: 'Manchester United', city: 'Manchester, England', primary: '#DA291C', secondary: '#FBE122' },
+  { name: 'Manchester City', city: 'Manchester, England', primary: '#6CABDD', secondary: '#1C2C5B' },
+  { name: 'Liverpool FC', city: 'Liverpool, England', primary: '#C8102E', secondary: '#00B2A9' },
+  { name: 'Arsenal FC', city: 'London, England', primary: '#EF0107', secondary: '#FFFFFF' },
+  { name: 'Chelsea FC', city: 'London, England', primary: '#034694', secondary: '#FFFFFF' },
+  { name: 'Tottenham Hotspur', city: 'London, England', primary: '#132257', secondary: '#FFFFFF' },
+  { name: 'Newcastle United', city: 'Newcastle, England', primary: '#241F20', secondary: '#FFFFFF' },
+  { name: 'Aston Villa', city: 'Birmingham, England', primary: '#95BFE5', secondary: '#670E36' },
+  { name: 'West Ham United', city: 'London, England', primary: '#7A263A', secondary: '#1BB1E7' },
+  { name: 'Everton FC', city: 'Liverpool, England', primary: '#003399', secondary: '#FFFFFF' },
+]
+
+const LALIGA: SoccerSeed[] = [
+  { name: 'Real Madrid', city: 'Madrid, Spain', primary: '#FEBE10', secondary: '#00529F' },
+  { name: 'FC Barcelona', city: 'Barcelona, Spain', primary: '#A50044', secondary: '#004D98' },
+  { name: 'Atletico Madrid', city: 'Madrid, Spain', primary: '#CB3524', secondary: '#272E61' },
+  { name: 'Sevilla FC', city: 'Seville, Spain', primary: '#D8001A', secondary: '#FFFFFF' },
+  { name: 'Valencia CF', city: 'Valencia, Spain', primary: '#F18E00', secondary: '#000000' },
+  { name: 'Real Betis', city: 'Seville, Spain', primary: '#00954C', secondary: '#FFFFFF' },
+]
+
+const SERIE_A: SoccerSeed[] = [
+  { name: 'Juventus', city: 'Turin, Italy', primary: '#000000', secondary: '#FFFFFF' },
+  { name: 'AC Milan', city: 'Milan, Italy', primary: '#FB090B', secondary: '#000000' },
+  { name: 'Inter Milan', city: 'Milan, Italy', primary: '#0068A8', secondary: '#000000' },
+  { name: 'AS Roma', city: 'Rome, Italy', primary: '#8E1F2F', secondary: '#F0BC42' },
+  { name: 'SSC Napoli', city: 'Naples, Italy', primary: '#0080C8', secondary: '#FFFFFF' },
+  { name: 'SS Lazio', city: 'Rome, Italy', primary: '#87D8F7', secondary: '#FFFFFF' },
+]
+
+const BUNDESLIGA: SoccerSeed[] = [
+  { name: 'Bayern Munich', city: 'Munich, Germany', primary: '#DC052D', secondary: '#0066B2' },
+  { name: 'Borussia Dortmund', city: 'Dortmund, Germany', primary: '#FDE100', secondary: '#000000' },
+  { name: 'RB Leipzig', city: 'Leipzig, Germany', primary: '#DD0741', secondary: '#001F47' },
+  { name: 'Bayer Leverkusen', city: 'Leverkusen, Germany', primary: '#E32221', secondary: '#000000' },
+]
+
+const LIGUE_1: SoccerSeed[] = [
+  { name: 'Paris Saint-Germain', city: 'Paris, France', primary: '#004170', secondary: '#DA291C' },
+  { name: 'Olympique de Marseille', city: 'Marseille, France', primary: '#2FAEE0', secondary: '#FFFFFF' },
+  { name: 'AS Monaco', city: 'Monaco', primary: '#E63329', secondary: '#FFFFFF' },
+  { name: 'Olympique Lyonnais', city: 'Lyon, France', primary: '#1B458F', secondary: '#DA001A' },
+]
+
+const MLS_CLUBS: SoccerSeed[] = [
+  { name: 'Inter Miami CF', city: 'Miami, FL', primary: '#F7B5CD', secondary: '#231F20' },
+  { name: 'LA Galaxy', city: 'Los Angeles, CA', primary: '#00245D', secondary: '#FFD200' },
+  { name: 'Los Angeles FC', city: 'Los Angeles, CA', primary: '#000000', secondary: '#C39E6D' },
+  { name: 'Atlanta United FC', city: 'Atlanta, GA', primary: '#80000B', secondary: '#221F1F' },
+  { name: 'Seattle Sounders FC', city: 'Seattle, WA', primary: '#5D9741', secondary: '#005595' },
+  { name: 'Austin FC', city: 'Austin, TX', primary: '#00B140', secondary: '#000000' },
+  { name: 'New York City FC', city: 'New York, NY', primary: '#6CACE4', secondary: '#041E42' },
+]
+
+const LIGA_MX: SoccerSeed[] = [
+  { name: 'Club América', city: 'Mexico City, Mexico', primary: '#FFE600', secondary: '#002D62' },
+  { name: 'Chivas Guadalajara', city: 'Guadalajara, Mexico', primary: '#C8102E', secondary: '#0033A0' },
+  { name: 'Cruz Azul', city: 'Mexico City, Mexico', primary: '#003DA5', secondary: '#FFFFFF' },
+  { name: 'Tigres UANL', city: 'Monterrey, Mexico', primary: '#FFB81C', secondary: '#00205B' },
+  { name: 'CF Monterrey', city: 'Monterrey, Mexico', primary: '#00337F', secondary: '#FFFFFF' },
+]
+
 export const PRO_TEAMS: SeedTeam[] = [
   ...NFL.map(t => ({ ...t, league_slug: 'nfl', sport_slug: 'american-football' })),
   ...NBA.map(t => ({ ...t, league_slug: 'nba', sport_slug: 'basketball' })),
   ...MLB.map(t => ({ ...t, league_slug: 'mlb', sport_slug: 'baseball' })),
   ...NHL.map(t => ({ ...t, league_slug: 'nhl', sport_slug: 'ice-hockey' })),
+  ...EPL.map(t => ({ ...t, league_slug: 'premier-league', sport_slug: 'soccer' })),
+  ...LALIGA.map(t => ({ ...t, league_slug: 'la-liga', sport_slug: 'soccer' })),
+  ...SERIE_A.map(t => ({ ...t, league_slug: 'serie-a', sport_slug: 'soccer' })),
+  ...BUNDESLIGA.map(t => ({ ...t, league_slug: 'bundesliga', sport_slug: 'soccer' })),
+  ...LIGUE_1.map(t => ({ ...t, league_slug: 'ligue-1', sport_slug: 'soccer' })),
+  ...MLS_CLUBS.map(t => ({ ...t, league_slug: 'mls', sport_slug: 'soccer' })),
+  ...LIGA_MX.map(t => ({ ...t, league_slug: 'liga-mx', sport_slug: 'soccer' })),
 ]
 
 function toTeam(t: SeedTeam): Team {

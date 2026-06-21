@@ -3,6 +3,7 @@ import { getPublicClient } from '@/lib/supabase/server'
 import { STATIC_SPORTS, STATIC_EVENTS } from '@/lib/sports/static'
 import { PRO_LEAGUE_LIST, PRO_TEAM_LIST } from '@/lib/sports/pro-data'
 import { MIN_INDEX_PRODUCTS, scorePage, sitemapPriority } from '@/lib/seo/quality-gate'
+import { PLAYERS } from '@/lib/sports/players'
 
 const SITE_URL = 'https://diehardnation.com'
 
@@ -130,6 +131,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const a of articles) {
     entries.push({ url: `${SITE_URL}/news/${a.slug}`, lastModified: a.updated_at ? new Date(a.updated_at) : new Date(), changeFrequency: 'weekly', priority: 0.85 })
+  }
+
+  // Player gear pages (curated) + the players index.
+  entries.push({ url: `${SITE_URL}/players`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 })
+  for (const p of PLAYERS) {
+    entries.push({ url: `${SITE_URL}/player/${p.slug}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 })
   }
 
   // Moment pages — trend-driven, time-sensitive; crawl often while fresh.
