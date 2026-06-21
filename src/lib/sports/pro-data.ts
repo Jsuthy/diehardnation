@@ -6,6 +6,7 @@
 
 import type { League, Team } from './types'
 import { slugify } from './utils'
+import { WC_NATIONS, WC_LEAGUE_SLUG } from './world-cup'
 
 interface SeedLeague {
   slug: string
@@ -38,6 +39,7 @@ export const PRO_LEAGUES: SeedLeague[] = [
   { slug: 'bundesliga', name: 'Bundesliga', short_name: 'Bundesliga', sport_slug: 'soccer', country: 'Germany', fan_size_rank: 10 },
   { slug: 'ligue-1', name: 'Ligue 1', short_name: 'Ligue 1', sport_slug: 'soccer', country: 'France', fan_size_rank: 11 },
   { slug: 'liga-mx', name: 'Liga MX', short_name: 'Liga MX', sport_slug: 'soccer', country: 'Mexico', fan_size_rank: 12 },
+  { slug: WC_LEAGUE_SLUG, name: 'World Cup National Teams', short_name: 'World Cup', sport_slug: 'soccer', country: 'International', fan_size_rank: 1 },
 ]
 
 const NFL: Omit<SeedTeam, 'league_slug' | 'sport_slug'>[] = [
@@ -257,6 +259,15 @@ export const PRO_TEAMS: SeedTeam[] = [
   ...LIGUE_1.map(t => ({ ...t, league_slug: 'ligue-1', sport_slug: 'soccer' })),
   ...MLS_CLUBS.map(t => ({ ...t, league_slug: 'mls', sport_slug: 'soccer' })),
   ...LIGA_MX.map(t => ({ ...t, league_slug: 'liga-mx', sport_slug: 'soccer' })),
+  // World Cup national teams — name drives the slug (e.g. "argentina-national-team").
+  ...WC_NATIONS.map(n => ({
+    name: `${n.country} National Team`,
+    city: n.country,
+    league_slug: WC_LEAGUE_SLUG,
+    sport_slug: 'soccer',
+    primary: n.primary,
+    secondary: n.secondary,
+  })),
 ]
 
 function toTeam(t: SeedTeam): Team {
