@@ -9,7 +9,8 @@ const SITE_URL = 'https://diehardnation.com'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = getPublicClient()
 
-  const [schoolsResult, pagesResult, newsResult, productsResult, leaguesResult, teamsResult, eventsResult, articlesResult] = await Promise.allSettled([
+  const nowIso = new Date().toISOString()
+  const [schoolsResult, pagesResult, newsResult, productsResult, leaguesResult, teamsResult, eventsResult, articlesResult, momentsResult] = await Promise.allSettled([
     supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gte('product_count', MIN_INDEX_PRODUCTS),
     supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at, product_count').eq('is_active', true).gte('product_count', MIN_INDEX_PRODUCTS).neq('slug', '').not('slug', 'is', null),
     supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
@@ -18,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase.from('teams').select('slug').eq('is_active', true).limit(100000),
     supabase.from('events').select('slug, updated_at').eq('is_active', true),
     supabase.from('articles').select('slug, updated_at').eq('is_published', true).limit(50000),
+    supabase.from('moment_pages').select('slug, updated_at, product_count').eq('is_active', true).eq('indexable', true).or(`expires_at.is.null,expires_at.gt.${nowIso}`).limit(50000),
   ])
 
   const schools = schoolsResult.status === 'fulfilled' ? schoolsResult.value.data || [] : []
@@ -28,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const teams = teamsResult.status === 'fulfilled' ? teamsResult.value.data || [] : []
   const events = eventsResult.status === 'fulfilled' ? (eventsResult.value.data || []) as { slug: string; updated_at?: string }[] : []
   const articles = articlesResult.status === 'fulfilled' ? articlesResult.value.data || [] : []
+  const moments = momentsResult.status === 'fulfilled' ? (momentsResult.value.data || []) as { slug: string; updated_at?: string; product_count?: number }[] : []
 
   const entries: MetadataRoute.Sitemap = []
 
@@ -127,6 +130,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const a of articles) {
     entries.push({ url: `${SITE_URL}/news/${a.slug}`, lastModified: a.updated_at ? new Date(a.updated_at) : new Date(), changeFrequency: 'weekly', priority: 0.85 })
+  }
+
+  // Moment pages — trend-driven, time-sensitive; crawl often while fresh.
+  for (const mom of moments) {
+    const score = scorePage({ productCount: mom.product_count ?? MIN_INDEX_PRODUCTS, uniqueWordCount: 200, isTimeSensitive: true })
+    entries.push({
+      url: `${SITE_URL}/trending/${mom.slug}`,
+      lastModified: mom.updated_at ? new Date(mom.updated_at) : new Date(),
+      changeFrequency: 'daily',
+      priority: sitemapPriority(score, 0.85),
+    })
   }
 
   return entries

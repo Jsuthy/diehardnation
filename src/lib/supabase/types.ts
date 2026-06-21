@@ -79,3 +79,21 @@ export interface NewsPost {
   is_published: boolean
   published_at: string
 }
+
+export interface MomentPage {
+  id: string
+  slug: string
+  term: string
+  title: string
+  description: string
+  gear_query: string
+  sport_slug: string | null
+  context: string[]
+  traffic: string | null
+  product_count: number
+  indexable: boolean
+  is_active: boolean
+  expires_at: string | null
+  created_at: string
+  updated_at: string
+}
