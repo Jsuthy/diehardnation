@@ -10,6 +10,8 @@ import Countdown from '@/components/sports/Countdown'
 import PageHero from '@/components/sports/PageHero'
 import SectionHeading from '@/components/sports/SectionHeading'
 import { sportColor } from '@/lib/sports/color'
+import { WC_EVENT_SLUG, WC_NATIONS, wcTeamSlug, WC_FEATURED_PLAYERS } from '@/lib/sports/world-cup'
+import { findPlayer } from '@/lib/sports/players'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -78,6 +80,41 @@ export default async function EventPage({ params }: { params: Promise<{ event: s
           <GearCTA query={`${event.name} gear jersey hoodie`} title={`Browse all ${event.name} gear`} />
           {event.sport_slug === 'soccer' && <SoccerGarageCTA query={`${event.name} jersey`} />}
         </section>
+
+        {slug === WC_EVENT_SLUG && (
+          <>
+            <section style={{ marginBottom: 56 }}>
+              <SectionHeading href="/league/world-cup">Shop by National Team</SectionHeading>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 16px', maxWidth: 720 }}>
+                Get behind your country at World Cup 2026. Shop official-style home and away kits,
+                jerseys and fan gear for all the top national teams — updated daily.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 10 }}>
+                {WC_NATIONS.map(n => (
+                  <Link key={n.country} href={`/team/${wcTeamSlug(n.country)}`} className="dhn-chip">
+                    <span className="dhn-dot" style={{ background: n.primary }} />
+                    {n.country}
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section style={{ marginBottom: 56 }}>
+              <SectionHeading href="/players">World Cup Stars</SectionHeading>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 16px', maxWidth: 720 }}>
+                Shop jerseys for the biggest names heading into the tournament.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12 }}>
+                {WC_FEATURED_PLAYERS.map(findPlayer).filter(Boolean).map(p => (
+                  <Link key={p!.slug} href={`/player/${p!.slug}`} className="dhn-card" style={{ padding: 16 }}>
+                    <strong style={{ fontSize: 14 }}>{p!.name}</strong>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)', display: 'block', marginTop: 4 }}>{p!.team}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
 
         <section style={{ marginBottom: 56 }}>
           <SectionHeading>About {event.name}</SectionHeading>

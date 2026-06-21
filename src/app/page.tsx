@@ -86,6 +86,18 @@ export default async function HomePage() {
       {/* Interactive hero: instant search + live merch wall */}
       <HeroShop showcase={showcase} />
 
+      {/* World Cup 2026 banner — flagship event, flows equity to the hub */}
+      <Link
+        href="/events/world-cup-2026"
+        style={{
+          display: 'block', background: 'linear-gradient(90deg,#002868,#006847)', color: 'white',
+          textDecoration: 'none', textAlign: 'center', padding: '12px 20px', fontSize: 14, fontWeight: 700,
+          letterSpacing: '0.01em',
+        }}
+      >
+        🏆 World Cup 2026 is here — shop national team jerseys &amp; fan gear by country →
+      </Link>
+
       {/* Trending — tabbed live product carousel */}
       <Reveal>
         <section className="container" style={{ padding: '40px 20px 8px' }}>

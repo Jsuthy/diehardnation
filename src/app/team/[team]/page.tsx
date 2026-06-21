@@ -7,6 +7,7 @@ import ProductRail from '@/components/affiliate/ProductRail'
 import EmailSignup from '@/components/email/EmailSignup'
 import PageHero from '@/components/sports/PageHero'
 import SectionHeading from '@/components/sports/SectionHeading'
+import { WC_EVENT_SLUG, WC_LEAGUE_SLUG } from '@/lib/sports/world-cup'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -66,6 +67,17 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
           <ProductRail query={team.name} title={`Shop ${team.name} Gear`} />
           <GearCTA query={`${team.name} fan gear`} title={`Browse all ${team.name} gear`} teamName={team.name} />
         </section>
+
+        {team.league_slug === WC_LEAGUE_SLUG && (
+          <section style={{ marginBottom: 56 }}>
+            <Link href={`/events/${WC_EVENT_SLUG}`} className="dhn-card" style={{ display: 'block', padding: 20, textAlign: 'center' }}>
+              <strong style={{ fontSize: 16 }}>🏆 World Cup 2026 Hub</strong>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginTop: 6 }}>
+                Shop every national team, star-player jerseys and tournament coverage →
+              </span>
+            </Link>
+          </section>
+        )}
 
         <section style={{ marginBottom: 56 }}>
           <SectionHeading href="/news">Latest {team.name} News</SectionHeading>
