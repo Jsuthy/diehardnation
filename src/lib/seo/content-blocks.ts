@@ -405,6 +405,93 @@ export function buildMomentFaq(
   return faqs
 }
 
+// ─── Player-page content (evergreen, athlete-driven) ───────────────────────
+
+export function buildPlayerQuickAnswer(
+  name: string,
+  opts: { team?: string; productCount?: number; priceStat?: PriceStat | null } = {}
+): QuickAnswer {
+  const { team, productCount = 0, priceStat } = opts
+  const asOf = monthYear()
+  const priceClause =
+    priceStat && priceStat.count >= 3
+      ? ` Prices range from $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}.`
+      : ''
+  const teamClause = team ? ` ${team}` : ''
+
+  const answer =
+    `To buy ${name} jerseys and fan gear, DieHardNation aggregates ` +
+    `${productCount > 0 ? `${productCount}+ ` : ''}live${teamClause} listings — home and away ` +
+    `jerseys, shirts, hoodies and merch — from eBay into one place so you can compare ` +
+    `and buy directly from the seller.${priceClause} ` +
+    `Listings update daily; last reviewed ${asOf}.`
+
+  const facts: { label: string; value: string }[] = [
+    { label: 'Player', value: name },
+    ...(team ? [{ label: 'Team', value: team }] : []),
+    { label: 'Gear', value: 'Jerseys, shirts, hoodies, merch' },
+    { label: 'Source', value: 'Live eBay listings via DieHardNation' },
+  ]
+  if (productCount > 0) facts.push({ label: 'Live listings', value: `${productCount}+` })
+  if (priceStat && priceStat.count >= 3) {
+    facts.push({ label: 'Price range', value: `$${priceStat.min}–$${priceStat.max} (typically ~$${priceStat.median})` })
+  }
+  facts.push({ label: 'Updated', value: `Daily · reviewed ${asOf}` })
+  return { answer, facts, asOf }
+}
+
+export function buildPlayerGuide(
+  name: string,
+  opts: { team?: string; priceStat?: PriceStat | null } = {}
+): ContentBlock {
+  const { team, priceStat } = opts
+  const paras: string[] = [
+    `${name} is one of the most popular names in the game, and fans want the jersey to ` +
+    `match${team ? `, whether it's the current ${team} kit or a throwback` : ''}. This page ` +
+    `pulls live ${name} listings from eBay — authentic and replica jerseys, shirts, hoodies ` +
+    `and collectibles — and refreshes daily so you always see what's available right now.`,
+  ]
+  if (priceStat && priceStat.count >= 3) {
+    paras.push(
+      `Across the ${priceStat.count} listings we're tracking, ${name} gear runs from $${priceStat.min} ` +
+      `to $${priceStat.max} (typically ~$${priceStat.median}). Authentic on-field jerseys sit at the top ` +
+      `of the range; replicas, tees and youth sizes are the most affordable. Check seller feedback and ` +
+      `look for brand and "authentic" wording to avoid counterfeits.`
+    )
+  }
+  return { heading: `About ${name} Jerseys & Gear`, paragraphs: paras }
+}
+
+export function buildPlayerFaq(
+  name: string,
+  opts: { team?: string; productCount?: number; priceStat?: PriceStat | null } = {}
+): { question: string; answer: string }[] {
+  const { team, productCount, priceStat } = opts
+  const faqs: { question: string; answer: string }[] = [
+    {
+      question: `Where can I buy a ${name} jersey?`,
+      answer:
+        `DieHardNation aggregates live ${name} jerseys and gear${productCount ? ` (${productCount}+ right now)` : ''} ` +
+        `from eBay${team ? ` — ${team} home, away and alternate kits` : ''} — so you can compare in one ` +
+        `place and check out directly with the seller.`,
+    },
+  ]
+  if (priceStat && priceStat.count >= 3) {
+    faqs.push({
+      question: `How much is a ${name} jersey?`,
+      answer: `Current ${name} listings range from about $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}. Replicas and tees are cheapest; authentic jerseys cost the most.`,
+    })
+  }
+  faqs.push({
+    question: `Are ${name} jerseys authentic?`,
+    answer:
+      `Authenticity varies by seller on open marketplaces. Buy from high-feedback sellers with original ` +
+      `photos, look for the brand (Nike, Fanatics, adidas) and "authentic" or "official" wording, and ` +
+      `treat unusually low prices as a counterfeit warning sign.`,
+  })
+  return faqs
+}
+
 /** Rough word count of a content block, for the quality gate. */
 export function wordCountOf(...blocks: (ContentBlock | { question: string; answer: string }[])[]): number {
   let n = 0
