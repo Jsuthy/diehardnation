@@ -35,11 +35,17 @@ interface AliasEntry {
   path: string
 }
 
-// Generic words that must never become aliases (too ambiguous to match on).
+// Generic words that must never become standalone aliases (too ambiguous —
+// e.g. "draft" must not let "nhl draft" match the NFL Draft event). Multi-word
+// aliases that merely contain these are unaffected.
 const STOPWORDS = new Set([
   'the', 'state', 'city', 'tech', 'a&m', 'university', 'college', 'tigers',
   'bulldogs', 'wildcats', 'eagles', 'cardinals', 'south', 'north', 'east', 'west',
   'union', 'fc', 'sc', 'club', 'red', 'blue', 'green', 'gold',
+  // generic event words
+  'draft', 'season', 'playoff', 'playoffs', 'final', 'finals', 'championship',
+  'championships', 'tournament', 'cup', 'series', 'open', 'classic', 'game',
+  'games', 'bowl', 'weekend', 'ceremony', 'day', 'derby', 'masters',
 ])
 
 function norm(s: string): string {
