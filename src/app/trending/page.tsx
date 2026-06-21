@@ -2,6 +2,26 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTrendingProducts } from '@/lib/supabase/queries'
 import { getSchoolBySlug } from '@/lib/constants/schools'
+import { getPublicClient } from '@/lib/supabase/server'
+import type { MomentPage } from '@/lib/supabase/types'
+
+async function getActiveMoments(): Promise<Pick<MomentPage, 'slug' | 'term'>[]> {
+  try {
+    const supabase = getPublicClient()
+    const nowIso = new Date().toISOString()
+    const { data } = await supabase
+      .from('moment_pages')
+      .select('slug, term')
+      .eq('is_active', true)
+      .eq('indexable', true)
+      .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+      .order('created_at', { ascending: false })
+      .limit(24)
+    return (data as Pick<MomentPage, 'slug' | 'term'>[]) ?? []
+  } catch {
+    return []
+  }
+}
 
 const POPULAR_SCHOOLS = [
   { slug: 'nebraska', name: 'Nebraska' },
@@ -26,7 +46,7 @@ export const metadata: Metadata = {
 export const revalidate = 600
 
 export default async function TrendingPage() {
-  const products = await getTrendingProducts(48)
+  const [products, moments] = await Promise.all([getTrendingProducts(48), getActiveMoments()])
 
   return (
     <main className="container" style={{ padding: '48px 20px 64px' }}>
@@ -41,6 +61,30 @@ export default async function TrendingPage() {
       <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 32 }}>
         The most-clicked college fan gear across all schools right now.
       </p>
+
+      {/* Trending topics — auto-generated moment pages from live search trends */}
+      {moments.length > 0 && (
+        <section aria-label="Trending topics" style={{ marginBottom: 36 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.01em', marginBottom: 12 }}>
+            Trending Topics
+          </h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {moments.map(m => (
+              <Link
+                key={m.slug}
+                href={`/trending/${m.slug}`}
+                style={{
+                  fontSize: 13, fontWeight: 600, padding: '7px 14px', borderRadius: 20,
+                  border: '1px solid var(--border)', color: 'var(--text-secondary)',
+                  textDecoration: 'none', whiteSpace: 'nowrap',
+                }}
+              >
+                {m.term}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {products.length > 0 ? (
         <div>

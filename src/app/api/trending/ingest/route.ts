@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminClient } from '@/lib/supabase/server'
 import { fetchAllTrends } from '@/lib/trending/sources'
 import { matchEntity, isSportsRelated } from '@/lib/trending/match'
+import { generateMomentPages } from '@/lib/trending/generate-moments'
 
 // Real-time trending capture (Phase 2).
 //
@@ -59,12 +60,22 @@ async function run() {
   const matched = rows.filter(r => r.matched_type)
   const candidates = rows.filter(r => r.is_candidate)
 
+  // Generate quality-gated moment pages from the strongest candidates.
+  // Failures here must not fail capture, so swallow and report.
+  let moments: Awaited<ReturnType<typeof generateMomentPages>> | { error: string }
+  try {
+    moments = await generateMomentPages({ limit: 8 })
+  } catch (err) {
+    moments = { error: String(err) }
+  }
+
   return {
     fetched: trends.length,
     sportsRelated: sports.length,
     matched: matched.length,
     candidates: candidates.length,
     upserted,
+    moments,
     // Surface the top boosts + candidates so the cron log is actionable.
     topBoosts: matched.slice(0, 10).map(r => ({ term: r.term, type: r.matched_type, path: r.matched_path, traffic: r.traffic })),
     topCandidates: candidates.slice(0, 10).map(r => ({ term: r.term, traffic: r.traffic })),

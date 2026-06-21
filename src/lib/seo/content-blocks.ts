@@ -310,6 +310,101 @@ export function buildFaqSchema(faqs: { question: string; answer: string }[]) {
   }
 }
 
+// ─── Moment-page content (trend-driven, not school-driven) ─────────────────
+
+function titleCase(s: string): string {
+  return s.trim().replace(/\b\w/g, c => c.toUpperCase())
+}
+
+export function buildMomentQuickAnswer(
+  term: string,
+  opts: { productCount?: number; priceStat?: PriceStat | null } = {}
+): QuickAnswer {
+  const { productCount = 0, priceStat } = opts
+  const subject = titleCase(term)
+  const asOf = monthYear()
+  const priceClause =
+    priceStat && priceStat.count >= 3
+      ? ` Prices range from $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}.`
+      : ''
+
+  const answer =
+    `${subject} is trending, and DieHardNation aggregates ` +
+    `${productCount > 0 ? `${productCount}+ ` : ''}live ${term} fan-gear listings ` +
+    `— jerseys, shirts, hoodies and merch — from eBay into one place so you can ` +
+    `compare and buy directly from the seller.${priceClause} ` +
+    `Listings refresh continuously; last reviewed ${asOf}.`
+
+  const facts: { label: string; value: string }[] = [
+    { label: 'Trend', value: subject },
+    { label: 'Gear', value: 'Jerseys, shirts, hoodies, merch' },
+    { label: 'Source', value: 'Live eBay listings via DieHardNation' },
+  ]
+  if (productCount > 0) facts.push({ label: 'Live listings', value: `${productCount}+` })
+  if (priceStat && priceStat.count >= 3) {
+    facts.push({ label: 'Price range', value: `$${priceStat.min}–$${priceStat.max} (typically ~$${priceStat.median})` })
+  }
+  facts.push({ label: 'Updated', value: `Continuously · reviewed ${asOf}` })
+  return { answer, facts, asOf }
+}
+
+export function buildMomentGuide(
+  term: string,
+  opts: { context?: string[]; priceStat?: PriceStat | null } = {}
+): ContentBlock {
+  const { context = [], priceStat } = opts
+  const subject = titleCase(term)
+  const paras: string[] = []
+
+  paras.push(
+    `${subject} is having a moment in search right now, and fans are looking for ` +
+    `the gear to match. This page pulls live ${term} listings from eBay — jerseys, ` +
+    `shirts, hoodies, hats and other merch — and keeps them updated as the trend moves, ` +
+    `so you can grab what you want before it sells out or prices climb.`
+  )
+  if (context.length) {
+    paras.push(`What's driving it: ${context.slice(0, 3).join('; ')}.`)
+  }
+  if (priceStat && priceStat.count >= 3) {
+    paras.push(
+      `Across the ${priceStat.count} listings we're tracking, prices run from $${priceStat.min} ` +
+      `to $${priceStat.max} (typically ~$${priceStat.median}). Sort by price to find the best value, ` +
+      `and check seller feedback and item photos before buying to make sure you're getting authentic gear.`
+    )
+  }
+  return { heading: `About ${subject} Fan Gear`, paragraphs: paras }
+}
+
+export function buildMomentFaq(
+  term: string,
+  opts: { productCount?: number; priceStat?: PriceStat | null } = {}
+): { question: string; answer: string }[] {
+  const { productCount, priceStat } = opts
+  const subject = titleCase(term)
+  const faqs: { question: string; answer: string }[] = [
+    {
+      question: `Where can I buy ${term} fan gear?`,
+      answer:
+        `DieHardNation aggregates live ${term} listings${productCount ? ` (${productCount}+ right now)` : ''} ` +
+        `from eBay — jerseys, shirts, hoodies and merch — so you can compare in one place and ` +
+        `check out directly with the seller.`,
+    },
+  ]
+  if (priceStat && priceStat.count >= 3) {
+    faqs.push({
+      question: `How much does ${term} gear cost?`,
+      answer: `Current ${term} listings range from about $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}.`,
+    })
+  }
+  faqs.push({
+    question: `Is ${subject} gear authentic?`,
+    answer:
+      `Authenticity varies by seller on open marketplaces. Buy from high-feedback sellers with original ` +
+      `photos, look for brand and "officially licensed" wording, and treat unusually low prices as a red flag.`,
+  })
+  return faqs
+}
+
 /** Rough word count of a content block, for the quality gate. */
 export function wordCountOf(...blocks: (ContentBlock | { question: string; answer: string }[])[]): number {
   let n = 0
