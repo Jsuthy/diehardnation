@@ -330,7 +330,7 @@ export function buildMomentQuickAnswer(
 
   const answer =
     `${subject} is trending, and DieHardNation aggregates ` +
-    `${productCount > 0 ? `${productCount}+ ` : ''}live ${term} fan-gear listings ` +
+    `${productCount > 0 ? `${productCount}+ ` : ''}live ${subject} fan-gear listings ` +
     `— jerseys, shirts, hoodies and merch — from eBay into one place so you can ` +
     `compare and buy directly from the seller.${priceClause} ` +
     `Listings refresh continuously; last reviewed ${asOf}.`
@@ -358,7 +358,7 @@ export function buildMomentGuide(
 
   paras.push(
     `${subject} is having a moment in search right now, and fans are looking for ` +
-    `the gear to match. This page pulls live ${term} listings from eBay — jerseys, ` +
+    `the gear to match. This page pulls live ${subject} listings from eBay — jerseys, ` +
     `shirts, hoodies, hats and other merch — and keeps them updated as the trend moves, ` +
     `so you can grab what you want before it sells out or prices climb.`
   )
@@ -383,17 +383,17 @@ export function buildMomentFaq(
   const subject = titleCase(term)
   const faqs: { question: string; answer: string }[] = [
     {
-      question: `Where can I buy ${term} fan gear?`,
+      question: `Where can I buy ${subject} fan gear?`,
       answer:
-        `DieHardNation aggregates live ${term} listings${productCount ? ` (${productCount}+ right now)` : ''} ` +
+        `DieHardNation aggregates live ${subject} listings${productCount ? ` (${productCount}+ right now)` : ''} ` +
         `from eBay — jerseys, shirts, hoodies and merch — so you can compare in one place and ` +
         `check out directly with the seller.`,
     },
   ]
   if (priceStat && priceStat.count >= 3) {
     faqs.push({
-      question: `How much does ${term} gear cost?`,
-      answer: `Current ${term} listings range from about $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}.`,
+      question: `How much does ${subject} gear cost?`,
+      answer: `Current ${subject} listings range from about $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}.`,
     })
   }
   faqs.push({

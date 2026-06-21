@@ -82,6 +82,7 @@ export default async function MomentPageRoute({
   const priceStat = computePriceStat(products.map(p => p.price))
   const count = products.length || m.product_count
 
+  const display = m.term.replace(/\b\w/g, c => c.toUpperCase())
   const quickAnswer = buildMomentQuickAnswer(m.term, { productCount: count, priceStat })
   const guide = buildMomentGuide(m.term, { context: m.context, priceStat })
   const faqs = buildMomentFaq(m.term, { productCount: count, priceStat })
@@ -124,7 +125,7 @@ export default async function MomentPageRoute({
           <li style={{ margin: '0 6px' }}>/</li>
           <li><Link href="/trending" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Trending</Link></li>
           <li style={{ margin: '0 6px' }}>/</li>
-          <li style={{ color: 'var(--text-secondary)' }}>{m.term}</li>
+          <li style={{ color: 'var(--text-secondary)' }}>{display}</li>
         </ol>
       </nav>
 
@@ -144,14 +145,14 @@ export default async function MomentPageRoute({
       </section>
 
       {/* Quick Answer — answer-engine extract block */}
-      <QuickAnswerBox qa={quickAnswer} label={`${m.term} fan gear`} />
+      <QuickAnswerBox qa={quickAnswer} label={`${display} fan gear`} />
 
       {/* Server-rendered products */}
       <MomentProductGrid products={products} />
 
       {/* Value-add content + FAQ */}
       <ContentSection block={guide} />
-      <FaqSection faqs={faqs} heading={`${m.term} Fan Gear FAQ`} />
+      <FaqSection faqs={faqs} heading={`${display} Fan Gear FAQ`} />
 
       {/* Disclaimer */}
       <section className="container" style={{ padding: '0 20px 48px' }}>
