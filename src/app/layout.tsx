@@ -51,10 +51,20 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
+              '@id': 'https://diehardnation.com/#organization',
               name: 'DieHardNation',
               url: 'https://diehardnation.com',
-              description: 'Independent fan gear and sports news hub covering every sport, league and team — pro and college.',
-              sameAs: ['https://twitter.com/diehardnation']
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://diehardnation.com/logo-mark.png',
+              },
+              description: 'Independent fan gear aggregator and sports hub. DieHardNation compares officially licensable jerseys, hoodies, hats and apparel from eBay and Amazon across college and pro teams, leagues and major events.',
+              knowsAbout: [
+                'college football fan gear', 'NFL fan gear', 'NBA fan gear',
+                'MLB fan gear', 'NHL fan gear', 'soccer kits', 'sports apparel',
+                'team jerseys', 'fan hoodies', 'officially licensed sports merchandise',
+              ],
+              sameAs: ['https://twitter.com/diehardnation'],
             })
           }}
         />

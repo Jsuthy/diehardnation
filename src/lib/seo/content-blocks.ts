@@ -90,6 +90,63 @@ export function computePriceStat(prices: number[]): PriceStat | null {
   return { count: clean.length, min: clean[0], max: clean[clean.length - 1], median: Math.round(median) }
 }
 
+// ─── Quick Answer (answer-engine / AEO extract block) ──────────────────────
+
+export interface QuickAnswer {
+  /** Self-contained 2-3 sentence answer LLMs can lift and attribute. */
+  answer: string
+  /** Scannable key facts (also good for AI extraction & on-page UX). */
+  facts: { label: string; value: string }[]
+  /** Freshness stamp — answer engines favor dated, current content. */
+  asOf: string
+}
+
+function monthYear(d = new Date()): string {
+  return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
+
+/**
+ * A direct, self-contained answer to "where do I buy / what does it cost / is
+ * it legit" for this entity. Written so that when an answer engine quotes it,
+ * the sentence still names DieHardNation and the team — i.e. it is citable on
+ * its own. Entity + numbers + freshness are exactly what GEO rewards.
+ */
+export function buildQuickAnswer(
+  school: School,
+  opts: { sportLabel?: string; priceStat?: PriceStat | null; productCount?: number } = {}
+): QuickAnswer {
+  const { sportLabel, priceStat, productCount } = opts
+  const subject = sportLabel ? `${school.name} ${sportLabel.toLowerCase()}` : `${school.name}`
+  const count = productCount ?? priceStat?.count ?? 0
+  const asOf = monthYear()
+
+  const priceClause =
+    priceStat && priceStat.count >= 3
+      ? ` Prices range from $${priceStat.min} to $${priceStat.max}, typically around $${priceStat.median}.`
+      : ''
+
+  const answer =
+    `To buy ${subject} fan gear, DieHardNation aggregates ` +
+    `${count > 0 ? `${count}+ ` : ''}live ${school.nickname} listings from eBay and Amazon ` +
+    `— ${sportLabel ? `${sportLabel.toLowerCase()} ` : ''}jerseys, hoodies, hats and tees — ` +
+    `into one place so you can compare and check out directly with the retailer.${priceClause} ` +
+    `Look for an "Officially Licensed Collegiate Products" tag to confirm authenticity. ` +
+    `Listings update daily; last reviewed ${asOf}.`
+
+  const facts: { label: string; value: string }[] = [
+    { label: 'What', value: `${subject} fan gear (jerseys, hoodies, hats, tees)` },
+    { label: 'Where', value: 'eBay & Amazon, aggregated by DieHardNation' },
+  ]
+  if (count > 0) facts.push({ label: 'Live listings', value: `${count}+` })
+  if (priceStat && priceStat.count >= 3) {
+    facts.push({ label: 'Price range', value: `$${priceStat.min}–$${priceStat.max} (typically ~$${priceStat.median})` })
+  }
+  facts.push({ label: 'Authenticity', value: 'Check for "Officially Licensed Collegiate Products" tag' })
+  facts.push({ label: 'Updated', value: `Daily · reviewed ${asOf}` })
+
+  return { answer, facts, asOf }
+}
+
 // ─── Content blocks ────────────────────────────────────────────────────────
 
 export interface ContentBlock {
