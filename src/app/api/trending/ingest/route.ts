@@ -37,6 +37,7 @@ async function run() {
       context: t.context,
       is_candidate: !match, // sports-related but no existing page → moment candidate
       captured_at: new Date().toISOString(),
+      captured_date: today, // matches the (normalized_term, captured_date) unique index
     }
   })
 
@@ -53,7 +54,7 @@ async function run() {
     const deduped = [...byKey.values()]
     const { error } = await supabase
       .from('trending_signals')
-      .upsert(deduped, { onConflict: 'normalized_term,captured_at::date', ignoreDuplicates: false })
+      .upsert(deduped, { onConflict: 'normalized_term,captured_date', ignoreDuplicates: false })
     if (!error) upserted = deduped.length
   }
 
