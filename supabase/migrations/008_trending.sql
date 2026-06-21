@@ -17,12 +17,15 @@ CREATE TABLE IF NOT EXISTS trending_signals (
   context         text[] default '{}',
   -- Lifecycle: candidate → page exists? Set when a moment page is generated.
   is_candidate    boolean default false,
-  captured_at     timestamptz default now()
+  captured_at     timestamptz default now(),
+  -- Plain date column for the per-day unique index (timestamptz::date is not
+  -- IMMUTABLE, so it can't be used directly in an index expression).
+  captured_date   date not null default current_date
 );
 
--- One row per term per ~capture window; re-captures update traffic/last seen.
+-- One row per term per day; re-captures update traffic/last seen.
 CREATE UNIQUE INDEX IF NOT EXISTS trending_signals_term_day
-  ON trending_signals (normalized_term, (captured_at::date));
+  ON trending_signals (normalized_term, captured_date);
 
 CREATE INDEX IF NOT EXISTS trending_signals_matched
   ON trending_signals (matched_type, matched_slug);
