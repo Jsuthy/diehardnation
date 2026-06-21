@@ -11,10 +11,11 @@ import {
   buildLicensedGuidance,
   buildSchoolFAQ,
   buildFaqSchema,
+  buildQuickAnswer,
   computePriceStat,
   wordCountOf,
 } from '@/lib/seo/content-blocks'
-import { ContentSection, FaqSection } from '@/components/seo/ValueContent'
+import { ContentSection, FaqSection, QuickAnswerBox } from '@/components/seo/ValueContent'
 import { evaluatePageQuality, robotsForQuality } from '@/lib/seo/quality-gate'
 
 export const revalidate = 3600
@@ -82,6 +83,7 @@ export default async function SchoolPage({
 
   // Value-add content (data-driven, varies per school) + matching FAQ schema.
   const priceStat = computePriceStat(initialProducts.map(p => p.price))
+  const quickAnswer = buildQuickAnswer(school, { priceStat, productCount: stats.productCount })
   const buyingGuide = buildBuyingGuide(school, { priceStat })
   const licensedGuidance = buildLicensedGuidance(school)
   const faqs = buildSchoolFAQ(school, { productCount: stats.productCount, priceStat })
@@ -197,6 +199,9 @@ export default async function SchoolPage({
           selection and prices.
         </p>
       </section>
+
+      {/* Quick Answer — answer-engine extract block, placed high */}
+      <QuickAnswerBox qa={quickAnswer} label={`${school.name} fan gear`} />
 
       {/* Client shop section: search, filters, grid */}
       <section aria-label={`${school.name} fan gear products`}>

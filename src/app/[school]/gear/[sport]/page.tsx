@@ -12,9 +12,10 @@ import {
   buildLicensedGuidance,
   buildSchoolFAQ,
   buildFaqSchema,
+  buildQuickAnswer,
   computePriceStat,
 } from '@/lib/seo/content-blocks'
-import { ContentSection, FaqSection } from '@/components/seo/ValueContent'
+import { ContentSection, FaqSection, QuickAnswerBox } from '@/components/seo/ValueContent'
 import { evaluatePageQuality, robotsForQuality } from '@/lib/seo/quality-gate'
 
 export const revalidate = 3600
@@ -88,6 +89,7 @@ export default async function SportPage({
 
   // Value-add content (sport-aware, data-driven) + matching FAQ schema.
   const priceStat = computePriceStat(products.map(p => p.price))
+  const quickAnswer = buildQuickAnswer(school, { sportLabel: sport.name, priceStat, productCount: total })
   const buyingGuide = buildBuyingGuide(school, { sportLabel: sport.name, priceStat })
   const licensedGuidance = buildLicensedGuidance(school)
   const faqs = buildSchoolFAQ(school, { productCount: total, priceStat })
@@ -194,6 +196,9 @@ export default async function SportPage({
           {meta.intro}
         </p>
       </section>
+
+      {/* Quick Answer — answer-engine extract block, placed high */}
+      <QuickAnswerBox qa={quickAnswer} label={`${school.name} ${sport.name} gear`} />
 
       {/* Products */}
       <section aria-label={`${school.name} ${sport.name} fan gear products`} className="container" style={{ padding: '24px 20px 0' }}>
