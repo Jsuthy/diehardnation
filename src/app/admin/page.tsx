@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 interface Stats {
@@ -22,6 +22,14 @@ interface Stats {
 }
 
 export default function AdminPage() {
+  return (
+    <Suspense fallback={<main style={{ padding: 80 }}>Loading…</main>}>
+      <AdminInner />
+    </Suspense>
+  )
+}
+
+function AdminInner() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   const [stats, setStats] = useState<Stats | null>(null)
