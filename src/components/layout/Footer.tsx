@@ -102,6 +102,9 @@ export default function Footer() {
           eBay, Amazon and other retailers, at no extra cost to you.
           <br />
           As an Amazon Associate I earn from qualifying purchases.
+          <br />
+          Also from us:{' '}
+          <a href="https://tariffstool.com" target="_blank" rel="noopener" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>Calculate US import tariffs</a>
         </div>
       </div>
     </footer>
