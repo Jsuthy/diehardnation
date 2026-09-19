@@ -127,7 +127,7 @@ export function buildQuickAnswer(
 
   const answer =
     `To buy ${subject} fan gear, DieHardNation aggregates ` +
-    `${count > 0 ? `${count}+ ` : ''}live ${school.nickname} listings from eBay and Amazon ` +
+    `${count > 0 ? `${count}+ ` : ''}live ${school.nickname} listings from eBay ` +
     `— ${sportLabel ? `${sportLabel.toLowerCase()} ` : ''}jerseys, hoodies, hats and tees — ` +
     `into one place so you can compare and check out directly with the retailer.${priceClause} ` +
     `Look for an "Officially Licensed Collegiate Products" tag to confirm authenticity. ` +
@@ -135,7 +135,7 @@ export function buildQuickAnswer(
 
   const facts: { label: string; value: string }[] = [
     { label: 'What', value: `${subject} fan gear (jerseys, hoodies, hats, tees)` },
-    { label: 'Where', value: 'eBay & Amazon, aggregated by DieHardNation' },
+    { label: 'Where', value: 'eBay, aggregated by DieHardNation' },
   ]
   if (count > 0) facts.push({ label: 'Live listings', value: `${count}+` })
   if (priceStat && priceStat.count >= 3) {
@@ -173,7 +173,7 @@ export function buildBuyingGuide(
     `centered in ${school.city}, ${school.state}. As a member of the ${conferenceFullName(school.conference)}, ` +
     `the ${school.mascot} compete against the toughest schedule in college sports, and ${school.nickname} ` +
     `fans show up in team colors every week. This guide rounds up the best ${subject} gear available ` +
-    `right now from eBay and Amazon, ranked for value, selection and game-day readiness.`
+    `right now from eBay, ranked for value, selection and game-day readiness.`
   )
 
   // Para 2 — rivalry / occasion-driven (unique when rivalry data exists).
@@ -251,7 +251,7 @@ export function buildSchoolFAQ(
     question: `Where can I buy ${school.name} fan gear online?`,
     answer:
       `DieHardNation aggregates ${school.name} ${school.mascot} gear from trusted marketplaces — ` +
-      `eBay and Amazon — into one place${productCount ? `, currently ${productCount}+ live listings` : ''}. ` +
+      `eBay — into one place${productCount ? `, currently ${productCount}+ live listings` : ''}. ` +
       `You browse and compare here, then check out directly with the retailer, who handles payment, ` +
       `shipping and returns.`,
   })

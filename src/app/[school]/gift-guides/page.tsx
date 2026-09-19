@@ -17,7 +17,7 @@ export async function generateMetadata({
 
   return {
     title: `${school.name} Fan Gift Guide \u2014 Best ${school.mascot} Gift Ideas`,
-    description: `The ultimate ${school.name} fan gift guide. Top ${school.mascot} gear picks from eBay and Amazon.`,
+    description: `The ultimate ${school.name} fan gift guide. Top ${school.mascot} gear picks from eBay.`,
   }
 }
 

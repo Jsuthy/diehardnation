@@ -139,7 +139,7 @@ export function getSchoolMetadata(school: School) {
 
   return {
     title: `${school.name} Fan Gear \u2014 ${nick} ${p1}, ${p2} & ${p3}`,
-    description: `Shop ${school.name} fan gear. ${nick} ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()} and hats from eBay and Amazon. Independent fan aggregator \u2014 updated daily.`,
+    description: `Shop ${school.name} fan gear. ${nick} ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()} and hats from eBay. Independent fan aggregator \u2014 updated daily.`,
     h1: `${school.name.toUpperCase()} FAN GEAR`,
     h2s: [
       `${school.name} ${p1} & ${p2}`,
@@ -148,7 +148,7 @@ export function getSchoolMetadata(school: School) {
       `Best ${school.name} Fan Gear Deals`,
       `Latest ${school.short_name} News`,
     ],
-    intro: `Shop ${school.name} fan gear \u2014 ${nick} ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()}, hats and more from eBay and Amazon. Everything a die-hard ${school.nickname} fan needs, updated daily.`,
+    intro: `Shop ${school.name} fan gear \u2014 ${nick} ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()}, hats and more from eBay. Everything a die-hard ${school.nickname} fan needs, updated daily.`,
   }
 }
 
@@ -164,7 +164,7 @@ export function getSportMetadata(school: School, sportSlug: string) {
     const [p1, p2, p3] = getPrimaryProducts(school)
     return {
       title: `${school.name} Fan Gear \u2014 ${nick} ${p1}, ${p2} & ${p3}`,
-      description: `Shop ${school.name} fan gear including ${p1.toLowerCase()}, ${p2.toLowerCase()} and ${p3.toLowerCase()}. Find ${nick} apparel from eBay and Amazon, updated daily.`,
+      description: `Shop ${school.name} fan gear including ${p1.toLowerCase()}, ${p2.toLowerCase()} and ${p3.toLowerCase()}. Find ${nick} apparel from eBay, updated daily.`,
       h1: `${school.name.toUpperCase()} FAN GEAR`,
       h2s: [
         `${school.name} ${p1} & ${p2}`,
@@ -172,7 +172,7 @@ export function getSportMetadata(school: School, sportSlug: string) {
         `${school.name} Hats & Accessories`,
         `Shop by Sport`,
       ],
-      intro: `Shop all ${school.name} fan gear \u2014 ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()}, hats and more. Browse ${nick} apparel from top sellers on eBay and Amazon, updated daily.`,
+      intro: `Shop all ${school.name} fan gear \u2014 ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()}, hats and more. Browse ${nick} apparel from top sellers on eBay, updated daily.`,
     }
   }
 
@@ -180,7 +180,7 @@ export function getSportMetadata(school: School, sportSlug: string) {
 
   return {
     title: `${school.name} ${sport.name} Gear \u2014 ${nick} ${sport.name} ${p1}, ${p2} & ${p3}`,
-    description: `Shop ${school.name} ${sport.name.toLowerCase()} gear. ${nick} ${sport.name.toLowerCase()} ${p1.toLowerCase()}, ${p2.toLowerCase()} and ${p3.toLowerCase()} from eBay and Amazon. Updated daily.`,
+    description: `Shop ${school.name} ${sport.name.toLowerCase()} gear. ${nick} ${sport.name.toLowerCase()} ${p1.toLowerCase()}, ${p2.toLowerCase()} and ${p3.toLowerCase()} from eBay. Updated daily.`,
     h1: `${school.name.toUpperCase()} ${sport.name.toUpperCase()} GEAR`,
     h2s: [
       `${school.name} ${sport.name} ${p1} & ${p2}`,
@@ -188,7 +188,7 @@ export function getSportMetadata(school: School, sportSlug: string) {
       `${school.name} ${sport.name} Gear by Category`,
       `More ${school.short_name} Fan Gear`,
     ],
-    intro: `Shop ${school.name} ${sport.name.toLowerCase()} gear \u2014 ${nick} ${sport.name.toLowerCase()} ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()} and more. Find the best ${nick} ${sport.abbrev} apparel from eBay and Amazon, updated daily.`,
+    intro: `Shop ${school.name} ${sport.name.toLowerCase()} gear \u2014 ${nick} ${sport.name.toLowerCase()} ${p1.toLowerCase()}, ${p2.toLowerCase()}, ${p3.toLowerCase()} and more. Find the best ${nick} ${sport.abbrev} apparel from eBay, updated daily.`,
   }
 }
 
@@ -209,10 +209,10 @@ export function getSportCategoryMetadata(
     const sportLabel = (!sport || sportSlug === 'general') ? '' : `${sport.name} `
     return {
       title: `${school.name} ${sportLabel}Gear | DieHardNation`,
-      description: `Shop ${school.name} ${sportLabel.toLowerCase()}fan gear from eBay and Amazon.`,
+      description: `Shop ${school.name} ${sportLabel.toLowerCase()}fan gear from eBay.`,
       h1: `${school.name.toUpperCase()} ${sportLabel.toUpperCase()}GEAR`,
       h2s: [`Shop ${school.short_name} ${sportLabel}Gear`, `More ${school.name} Fan Gear`],
-      intro: `Shop ${school.name} ${sportLabel.toLowerCase()}gear from eBay and Amazon, updated daily.`,
+      intro: `Shop ${school.name} ${sportLabel.toLowerCase()}gear from eBay, updated daily.`,
     }
   }
 
@@ -221,7 +221,7 @@ export function getSportCategoryMetadata(
 
   return {
     title: `${school.name} ${sportLabel}${cat.titlePlural} \u2014 ${nick} ${abbrevLabel}${cat.alt}`,
-    description: `Shop ${school.name} ${sportLabel.toLowerCase()}${cat.plural.toLowerCase()} and ${cat.alt.toLowerCase()}. Find the best ${nick} fan ${cat.singular.toLowerCase()} from eBay and Amazon, updated daily.`,
+    description: `Shop ${school.name} ${sportLabel.toLowerCase()}${cat.plural.toLowerCase()} and ${cat.alt.toLowerCase()}. Find the best ${nick} fan ${cat.singular.toLowerCase()} from eBay, updated daily.`,
     h1: `${school.name.toUpperCase()} ${sportLabel.toUpperCase()}${cat.plural.toUpperCase()}`,
     h2s: [
       `Best ${school.short_name} ${sportLabel}${cat.plural}`,
@@ -229,7 +229,7 @@ export function getSportCategoryMetadata(
       `Shop More ${school.name} ${sportLabel}Gear`,
       `Filter by Price`,
     ],
-    intro: `Shop ${school.name} ${sportLabel.toLowerCase()}${cat.plural.toLowerCase()} \u2014 the best ${nick} ${abbrevLabel.toLowerCase()}${cat.alt.toLowerCase()} from top sellers on eBay and Amazon. Updated daily with fresh listings.`,
+    intro: `Shop ${school.name} ${sportLabel.toLowerCase()}${cat.plural.toLowerCase()} \u2014 the best ${nick} ${abbrevLabel.toLowerCase()}${cat.alt.toLowerCase()} from top sellers on eBay. Updated daily with fresh listings.`,
   }
 }
 
@@ -249,16 +249,16 @@ export function getSportPriceMetadata(
   if (!price) {
     return {
       title: `${school.name} ${sportLabel}Fan Gear | DieHardNation`,
-      description: `Browse ${school.name} ${sportLabel.toLowerCase()}fan gear from eBay and Amazon.`,
+      description: `Browse ${school.name} ${sportLabel.toLowerCase()}fan gear from eBay.`,
       h1: `${school.name.toUpperCase()} ${sportLabel.toUpperCase()}GEAR`,
       h2s: [`Shop ${school.short_name} ${sportLabel}Gear`, `More ${school.name} Fan Gear`],
-      intro: `Browse ${school.name} ${sportLabel.toLowerCase()}fan gear from eBay and Amazon, updated daily.`,
+      intro: `Browse ${school.name} ${sportLabel.toLowerCase()}fan gear from eBay, updated daily.`,
     }
   }
 
   return {
     title: `${school.name} ${sportLabel}Fan Gear ${price.title} \u2014 ${nick} Apparel`,
-    description: `Browse ${school.name} ${sportLabel.toLowerCase()}fan gear ${price.description}. Find affordable ${nick} hoodies, jerseys and shirts from eBay and Amazon.`,
+    description: `Browse ${school.name} ${sportLabel.toLowerCase()}fan gear ${price.description}. Find affordable ${nick} hoodies, jerseys and shirts from eBay.`,
     h1: `${school.name.toUpperCase()} ${sportLabel.toUpperCase()}GEAR ${price.title.toUpperCase()}`,
     h2s: [
       `Best ${school.short_name} Deals ${price.title}`,
@@ -266,7 +266,7 @@ export function getSportPriceMetadata(
       `Shop by Category`,
       `More ${school.name} Fan Gear`,
     ],
-    intro: `Find ${school.name} ${sportLabel.toLowerCase()}fan gear ${price.description} \u2014 affordable ${nick} hoodies, jerseys, shirts and hats from eBay and Amazon. Updated daily.`,
+    intro: `Find ${school.name} ${sportLabel.toLowerCase()}fan gear ${price.description} \u2014 affordable ${nick} hoodies, jerseys, shirts and hats from eBay. Updated daily.`,
   }
 }
 
@@ -277,7 +277,7 @@ export function getGiftGuideMetadata(school: School, guideTitle: string) {
   const nick = getFanNickname(school)
   return {
     title: `${guideTitle} | DieHardNation`,
-    description: `${guideTitle} \u2014 the best ${school.name} fan gifts including hoodies, jerseys and hats from eBay and Amazon.`,
+    description: `${guideTitle} \u2014 the best ${school.name} fan gifts including hoodies, jerseys and hats from eBay.`,
     h1: guideTitle,
     h2s: [
       `Top ${nick} Fan Picks`,
@@ -308,7 +308,7 @@ export function getNewsMetadata(
 // -----------------------------------------------
 export const HUB_METADATA = {
   title: 'College Fan Gear \u2014 Hoodies, Jerseys & Sweatshirts for Every School',
-  description: 'Shop college fan gear for all 130 FBS schools. Hoodies, jerseys, sweatshirts and hats from eBay and Amazon. Find your school, shop your team.',
+  description: 'Shop college fan gear for all 130 FBS schools. Hoodies, jerseys, sweatshirts and hats from eBay. Find your school, shop your team.',
   h1: 'COLLEGE FAN GEAR FOR EVERY SCHOOL',
   h2s: [
     'College Hoodies & Sweatshirts',

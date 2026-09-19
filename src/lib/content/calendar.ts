@@ -21,7 +21,7 @@ export const CONTENT_CALENDAR = [
   { topic: 'Why {nickname} Fans Are the Most Loyal in College Sports', type: 'scheduled' },
   { topic: 'Best Vintage {name} Gear on eBay Right Now', type: 'gear-guide' },
   { topic: '{name} Football Season Preview — Gear Up', type: 'gear-guide', sport: 'football' },
-  { topic: 'Top {name} Amazon Finds This Month', type: 'gear-guide' },
+  { topic: 'Top {name} eBay Finds This Month', type: 'gear-guide' },
   { topic: '{name} Gear for the Office — Professional Fan Style', type: 'scheduled' },
   { topic: 'Best {name} Basketball Hoodies — Hoops Season', type: 'gear-guide', sport: 'basketball' },
   { topic: 'Ranking the Best {nickname} Football Jerseys', type: 'gear-guide', sport: 'football' },
@@ -50,7 +50,7 @@ export const CONTENT_CALENDAR = [
   { topic: '{name} Basketball March Madness Gear Guide', type: 'gear-guide', sport: 'basketball' },
   { topic: 'Top {nickname} Gear Gifts for Dad', type: 'gift-guide' },
   { topic: '{name} Transfer Portal Season — Fan Reaction Gear', type: 'scheduled' },
-  { topic: 'Best {name} Fan Gear on Amazon Prime', type: 'gear-guide' },
+  { topic: 'Best {name} Fan Gear Deals Right Now', type: 'gear-guide' },
   { topic: '{name} Season Opener — Get Your Gear Ready', type: 'gear-guide' },
   { topic: 'Year in Review: Best {nickname} Gear Moments', type: 'scheduled' },
 ] as const

@@ -137,7 +137,7 @@ export default async function GiftGuidePage({
         <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{meta.h2s[0]}</h2>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
           Whether you&apos;re shopping for a die-hard {school.mascot} fan or looking for the perfect
-          game day gift, these {school.nickname} picks are fan favorites from eBay and Amazon.
+          game day gift, these {school.nickname} picks are fan favorites from eBay.
           We curate the best deals across multiple retailers so you can compare prices and find
           exactly what you&apos;re looking for &mdash; all in one place.
         </p>

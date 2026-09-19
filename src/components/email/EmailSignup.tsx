@@ -46,7 +46,7 @@ export default function EmailSignup({
   return (
     <section style={{ background: bg, borderRadius: 'var(--radius-md, 8px)', padding: '28px 24px' }}>
       <h3 style={{ fontSize: 20, fontWeight: 800, color: fg, marginBottom: 4 }}>
-        Get the latest sports news &amp; gear deals
+        Get gear deals for your teams
       </h3>
       <p style={{ fontSize: 14, color: sub, marginBottom: 16 }}>
         Join the Nation — fresh coverage and deals in your inbox.
