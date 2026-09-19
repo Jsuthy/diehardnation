@@ -61,8 +61,8 @@ export default async function SportPage({ params }: { params: Promise<{ sport: s
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
         <section style={{ marginBottom: 56 }}>
-          <ProductRail query={`${sport.name} fan gear`} title={`Shop ${sport.name} Fan Gear`} />
-          <GearCTA query={`${sport.name} fan gear`} title={`Browse all ${sport.name} gear`} />
+          <ProductRail query={`${sport.name} fan gear`} title={`Shop ${sport.name} Fan Gear`} customid={`sport-${slug}`} />
+          <GearCTA query={`${sport.name} fan gear`} title={`Browse all ${sport.name} gear`} customid={`sport-${slug}`} />
           {slug === 'soccer' && <SoccerGarageCTA query="soccer jersey" />}
         </section>
 

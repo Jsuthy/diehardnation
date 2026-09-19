@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTrendingProducts } from '@/lib/supabase/queries'
+import { withEbayCustomId } from '@/lib/affiliate/customid'
 import { getSchoolBySlug } from '@/lib/constants/schools'
 import { getPublicClient } from '@/lib/supabase/server'
 import type { MomentPage } from '@/lib/supabase/types'
@@ -117,7 +118,7 @@ export default async function TrendingPage() {
                   <div style={{ position: 'relative' }}>
                     {/* Inline ProductCard equivalent to avoid import issues */}
                     <a
-                      href={p.affiliate_url}
+                      href={withEbayCustomId(p.affiliate_url, `trending-school-${p.school_slug}`)}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
                       style={{

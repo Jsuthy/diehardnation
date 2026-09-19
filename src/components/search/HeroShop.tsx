@@ -31,7 +31,7 @@ export default function HeroShop({ showcase = [] }: { showcase?: EbayProduct[] }
     setLoading(true)
     timer.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/ebay/search?q=${encodeURIComponent(query)}&limit=18`)
+        const res = await fetch(`/api/ebay/search?q=${encodeURIComponent(query)}&limit=18&customid=search-${encodeURIComponent(query.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80))}`)
         const d = await res.json()
         setProducts(d.products || [])
         setTotal(d.total || 0)

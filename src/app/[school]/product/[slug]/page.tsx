@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getSchool, getProductBySlug, getProducts } from '@/lib/supabase/queries'
+import { withEbayCustomId } from '@/lib/affiliate/customid'
 import { CATEGORIES } from '@/lib/constants/categories'
 import SchemaScript from '@/components/SchemaScript'
 import { buildProductSchema, buildBreadcrumbSchema } from '@/lib/schema'
@@ -47,7 +48,8 @@ export default async function ProductPage({
   if (!school || !product) notFound()
 
   const category = CATEGORIES.find(c => c.slug === product.category)
-  const sourceLabel = product.source === 'ebay' ? 'eBay' : product.source === 'amazon' ? 'Amazon' : product.source
+  const sourceLabel = product.source === 'ebay' ? 'eBay' : product.source === 'amazon' ? 'Retailer' : product.source
+  const outboundUrl = withEbayCustomId(product.affiliate_url, `school-${schoolSlug}`)
 
   const { products: similar } = await getProducts({
     schoolSlug,
@@ -65,7 +67,7 @@ export default async function ProductPage({
 
   return (
     <main className="container" style={{ maxWidth: 900, padding: '16px 20px 64px' }}>
-      <SchemaScript schema={[buildProductSchema(product), buildBreadcrumbSchema(breadcrumbs)]} />
+      <SchemaScript schema={[buildProductSchema({ ...product, affiliate_url: outboundUrl }), buildBreadcrumbSchema(breadcrumbs)]} />
 
       {/* Breadcrumb */}
       <nav style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
@@ -167,7 +169,7 @@ export default async function ProductPage({
 
           {/* CTA */}
           <a
-            href={product.affiliate_url}
+            href={outboundUrl}
             target="_blank"
             rel="noopener noreferrer sponsored"
             style={{

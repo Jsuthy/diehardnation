@@ -23,7 +23,8 @@ export default function CategoryCarousel() {
     if (cache[active]) return
     let on = true
     setLoading(true)
-    fetch(`/api/ebay/search?q=${encodeURIComponent(TABS[active].q)}&limit=12&mode=rail`)
+    const customid = `home-${TABS[active].label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+    fetch(`/api/ebay/search?q=${encodeURIComponent(TABS[active].q)}&limit=12&mode=rail&customid=${encodeURIComponent(customid)}`)
       .then(r => r.json())
       .then(d => { if (on) setCache(c => ({ ...c, [active]: d.products || [] })) })
       .catch(() => { if (on) setCache(c => ({ ...c, [active]: [] })) })

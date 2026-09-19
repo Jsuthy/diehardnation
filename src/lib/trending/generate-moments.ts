@@ -94,7 +94,7 @@ export async function generateMomentPages(opts: { limit?: number; minTraffic?: n
     result.considered++
 
     // Quality gate: only build a page backed by real products.
-    const products = await searchEbayProducts(gearQuery, 24)
+    const products = await searchEbayProducts(gearQuery, 24, { customid: `trending-${slug}` })
     if (products.length < MIN_INDEX_PRODUCTS) {
       result.skippedThin++
       continue

@@ -1,9 +1,9 @@
 // eBay Browse API search — powers both the team/event product rails and the
 // PicClick-style /search product engine. Reuses the college OAuth2 flow.
 
-let cachedToken: { token: string; expires: number } | null = null
+import { ebayEndUserContext, withEbayCustomId } from '@/lib/affiliate/customid'
 
-const CAMPAIGN_ID = (process.env.EBAY_CAMPAIGN_ID || '5339267498').trim()
+let cachedToken: { token: string; expires: number } | null = null
 
 async function getEbayToken(): Promise<string | null> {
   if (cachedToken && Date.now() < cachedToken.expires) return cachedToken.token
@@ -51,6 +51,7 @@ export interface SearchOpts {
   category?: string
   minPrice?: number
   maxPrice?: number
+  customid?: string
 }
 
 export interface SearchResult {
@@ -79,7 +80,7 @@ async function runSearch(query: string, opts: SearchOpts): Promise<SearchResult>
       headers: {
         Authorization: `Bearer ${token}`,
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-        'X-EBAY-C-ENDUSERCTX': `affiliateCampaignId=${CAMPAIGN_ID}`,
+        'X-EBAY-C-ENDUSERCTX': ebayEndUserContext(opts.customid),
       },
       next: { revalidate: 1800 },
     })
@@ -97,13 +98,14 @@ async function runSearch(query: string, opts: SearchOpts): Promise<SearchResult>
       const title = String(item.title || '')
       if (!id || seen.has(id) || !image || price <= 0 || !title) continue
       seen.add(id)
+      const rawUrl = (item.itemAffiliateWebUrl as string) || (item.itemWebUrl as string) || `https://www.ebay.com/itm/${id}`
       products.push({
         id,
         title,
         price,
         currency: String((item.price as Record<string, unknown>)?.currency || 'USD'),
         imageUrl: image.replace(/s-l\d+/, 's-l500'),
-        url: (item.itemAffiliateWebUrl as string) || (item.itemWebUrl as string) || `https://www.ebay.com/itm/${id}`,
+        url: withEbayCustomId(rawUrl, opts.customid),
         condition: item.condition as string | undefined,
         seller: (item.seller as Record<string, unknown>)?.username as string | undefined,
       })
@@ -116,12 +118,12 @@ async function runSearch(query: string, opts: SearchOpts): Promise<SearchResult>
 
 // Rail helper: returns just the array, with a keyword-drop fallback so an
 // over-specific query never yields an empty rail.
-export async function searchEbayProducts(query: string, limit = 12): Promise<EbayProduct[]> {
-  let { products } = await runSearch(query, { limit })
+export async function searchEbayProducts(query: string, limit = 12, opts: SearchOpts = {}): Promise<EbayProduct[]> {
+  let { products } = await runSearch(query, { ...opts, limit })
   let words = query.trim().split(/\s+/)
   while (products.length === 0 && words.length > 2) {
     words = words.slice(0, -1)
-    products = (await runSearch(words.join(' '), { limit })).products
+    products = (await runSearch(words.join(' '), { ...opts, limit })).products
   }
   return products
 }

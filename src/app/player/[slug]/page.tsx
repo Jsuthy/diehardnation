@@ -33,7 +33,7 @@ export async function generateMetadata({
   if (!player) return {}
 
   // eBay fetch is cached (revalidate), so this is shared with the page render.
-  const products = await searchEbayProducts(`${player.name} jersey`, 24)
+  const products = await searchEbayProducts(`${player.name} jersey`, 24, { customid: `player-${slug}` })
   const quality = evaluatePageQuality({ productCount: products.length, uniqueWordCount: 180 })
 
   return {
@@ -60,7 +60,7 @@ export default async function PlayerPage({
   const player = findPlayer(slug)
   if (!player) notFound()
 
-  const products = await searchEbayProducts(`${player.name} jersey`, 24)
+  const products = await searchEbayProducts(`${player.name} jersey`, 24, { customid: `player-${slug}` })
   const priceStat = computePriceStat(products.map(p => p.price))
   const count = products.length
 

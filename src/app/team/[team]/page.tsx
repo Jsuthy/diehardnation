@@ -64,8 +64,8 @@ export default async function TeamPage({ params }: { params: Promise<{ team: str
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
         <section style={{ marginBottom: 56 }}>
-          <ProductRail query={team.name} title={`Shop ${team.name} Gear`} />
-          <GearCTA query={`${team.name} fan gear`} title={`Browse all ${team.name} gear`} teamName={team.name} />
+          <ProductRail query={`${team.name} jersey`} title={`Shop ${team.name} Gear`} customid={`team-${slug}`} />
+          <GearCTA query={`${team.name} fan gear`} title={`Browse all ${team.name} gear`} teamName={team.name} customid={`team-${slug}`} />
         </section>
 
         {team.league_slug === WC_LEAGUE_SLUG && (
