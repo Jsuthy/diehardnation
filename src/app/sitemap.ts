@@ -3,6 +3,7 @@ import { getPublicClient } from '@/lib/supabase/server'
 import { STATIC_SPORTS, STATIC_EVENTS } from '@/lib/sports/static'
 import { PRO_LEAGUE_LIST, PRO_TEAM_LIST } from '@/lib/sports/pro-data'
 import { MIN_INDEX_PRODUCTS, scorePage, sitemapPriority } from '@/lib/seo/quality-gate'
+import { programmaticPagePath } from '@/lib/seo/programmatic-url'
 import { PLAYERS } from '@/lib/sports/players'
 
 const SITE_URL = 'https://diehardnation.com'
@@ -12,8 +13,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const nowIso = new Date().toISOString()
   const [schoolsResult, pagesResult, newsResult, productsResult, leaguesResult, teamsResult, eventsResult, articlesResult, momentsResult] = await Promise.allSettled([
-    supabase.from('schools').select('slug').eq('is_active', true).eq('is_live', true).gte('product_count', MIN_INDEX_PRODUCTS),
-    supabase.from('programmatic_pages').select('school_slug, slug, page_type, updated_at, product_count').eq('is_active', true).gte('product_count', MIN_INDEX_PRODUCTS).neq('slug', '').not('slug', 'is', null),
+    supabase.from('schools').select('slug, product_count').eq('is_active', true).eq('is_live', true),
+    supabase.from('programmatic_pages').select('school_slug, slug, page_type, sport, category, price_range, updated_at, product_count').eq('is_active', true).gte('product_count', MIN_INDEX_PRODUCTS).neq('slug', '').not('slug', 'is', null),
     supabase.from('news_posts').select('school_slug, slug, published_at').eq('is_published', true).neq('slug', '=').neq('slug', '').not('slug', 'is', null),
     supabase.from('products').select('school_slug, slug, updated_at').eq('is_active', true).or('is_featured.eq.true,click_count.gt.0').neq('slug', '').not('slug', 'is', null).limit(50000),
     supabase.from('leagues').select('slug').eq('is_active', true),
@@ -23,7 +24,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase.from('moment_pages').select('slug, updated_at, product_count').eq('is_active', true).eq('indexable', true).or(`expires_at.is.null,expires_at.gt.${nowIso}`).limit(50000),
   ])
 
-  const schools = schoolsResult.status === 'fulfilled' ? schoolsResult.value.data || [] : []
+  const allLiveSchools = schoolsResult.status === 'fulfilled' ? schoolsResult.value.data || [] : []
+  const liveSchoolSlugs = new Set(allLiveSchools.map(s => s.slug))
+  const schools = allLiveSchools.filter(s => ((s as { product_count?: number }).product_count ?? 0) >= MIN_INDEX_PRODUCTS)
   const pages = pagesResult.status === 'fulfilled' ? pagesResult.value.data || [] : []
   const news = newsResult.status === 'fulfilled' ? newsResult.value.data || [] : []
   const products = productsResult.status === 'fulfilled' ? productsResult.value.data || [] : []
@@ -61,22 +64,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const frequency: 'daily' | 'weekly' = page.page_type === 'sport-price' || page.page_type === 'gift-guide' ? 'weekly' : 'daily'
 
-    // Map page slug to URL path
-    let urlPath: string
-    if (page.page_type === 'gift-guide') {
-      urlPath = `${SITE_URL}/${page.school_slug}/gift-guides/${page.slug}`
-    } else if (page.page_type === 'sport') {
-      urlPath = `${SITE_URL}/${page.school_slug}/gear/${page.slug}`
-    } else {
-      // sport-category or sport-price: slug is like "football-tees" or "football-under-25"
-      const parts = page.slug.split('-')
-      const sportSlug = parts[0]
-      const filterSlug = parts.slice(1).join('-')
-      urlPath = `${SITE_URL}/${page.school_slug}/gear/${sportSlug}/${filterSlug}`
-    }
+    // Only emit paths the App Router will resolve (no /gear/all-gear, /gear/tees, /gear/under/25).
+    if (!liveSchoolSlugs.has(page.school_slug)) continue
+    const path = programmaticPagePath(page)
+    if (!path) continue
 
     entries.push({
-      url: urlPath,
+      url: `${SITE_URL}${path}`,
       lastModified: page.updated_at ? new Date(page.updated_at) : new Date(),
       changeFrequency: frequency,
       priority,
