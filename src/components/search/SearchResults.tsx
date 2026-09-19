@@ -18,6 +18,7 @@ interface Props {
   sort: string
   initial: EbayProduct[]
   total: number
+  customid?: string
 }
 
 const SORT_OPTIONS = [
@@ -30,7 +31,7 @@ const SORT_OPTIONS = [
 
 const PAGE = 48
 
-export default function SearchResults({ query, sort, initial, total }: Props) {
+export default function SearchResults({ query, sort, initial, total, customid }: Props) {
   const router = useRouter()
   const [products, setProducts] = useState<EbayProduct[]>(initial)
   const [loading, setLoading] = useState(false)
@@ -50,6 +51,7 @@ export default function SearchResults({ query, sort, initial, total }: Props) {
     try {
       const params = new URLSearchParams({ q: query, offset: String(products.length), limit: String(PAGE) })
       if (sort && sort !== 'best') params.set('sort', sort)
+      if (customid) params.set('customid', customid)
       const res = await fetch(`/api/ebay/search?${params.toString()}`)
       const data = await res.json()
       const fresh: EbayProduct[] = (data.products || []).filter((p: EbayProduct) => !seen.current.has(p.id))

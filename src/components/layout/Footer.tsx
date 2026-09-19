@@ -48,7 +48,7 @@ export default function Footer() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.jpg" alt="DieHardNation" style={{ height: 64, width: 'auto', display: 'block', marginBottom: 10 }} />
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 8 }}>
-              Independent fan gear &amp; sports news hub for every team. Not affiliated with any league, team or the NCAA.
+              Independent fan gear hub for every team. Not affiliated with any league, team or the NCAA.
             </p>
             <p style={{ color: 'var(--text-muted)' }}>&copy; 2026 DieHardNation</p>
           </div>
@@ -99,9 +99,7 @@ export default function Footer() {
         }}>
           DieHardNation is an independent fan site. All trademarks are property of their
           respective owners. We earn affiliate commissions from qualifying purchases via
-          eBay, Amazon and other retailers, at no extra cost to you.
-          <br />
-          As an Amazon Associate I earn from qualifying purchases.
+          eBay, at no extra cost to you.
           <br />
           Also from us:{' '}
           <a href="https://tariffstool.com" target="_blank" rel="noopener" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>Calculate US import tariffs</a>

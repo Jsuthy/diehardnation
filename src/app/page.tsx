@@ -12,9 +12,9 @@ import { searchEbayProducts } from '@/lib/ebay/search'
 import type { Article, SportEvent } from '@/lib/sports/types'
 import { darken } from '@/lib/sports/color'
 
-const HOME_TITLE = 'DieHardNation — Fan Gear & Sports News for Every Team'
+const HOME_TITLE = 'DieHardNation — Fan Gear & Deals for Every Team'
 const HOME_DESCRIPTION =
-  'Shop fan gear for every team in every sport — NFL, NBA, MLB, NHL, soccer, college and more. Search live jerseys, hoodies and hats from top retailers, updated constantly.'
+  'Shop fan gear for every team in every sport — NFL, NBA, MLB, NHL, soccer, college and more. Search live jerseys, hoodies and hats on the secondary market, updated constantly.'
 
 const LEAGUE_TILES = [
   { slug: 'nfl', name: 'NFL', color: '#013369' },
@@ -71,7 +71,7 @@ async function getEventsSafe(): Promise<SportEvent[]> {
   try { return await getUpcomingEvents(undefined, 8) } catch { return [] }
 }
 async function getShowcaseSafe() {
-  try { return await searchEbayProducts('jersey', 24) } catch { return [] }
+  try { return await searchEbayProducts('jersey', 24, { customid: 'home' }) } catch { return [] }
 }
 
 export const revalidate = 600

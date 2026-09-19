@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { searchEbayPaged, type EbaySort } from '@/lib/ebay/search'
+import { buildCustomId } from '@/lib/affiliate/customid'
 import ProductSearchBar from '@/components/search/ProductSearchBar'
 import SearchResults from '@/components/search/SearchResults'
 
@@ -32,7 +33,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const sort = (SORTS.has(sortParam) ? sortParam : 'best') as EbaySort
   const query = q.trim()
 
-  const result = query ? await searchEbayPaged(query, { limit: 48, sort }) : { products: [], total: 0 }
+  const customid = query ? buildCustomId('search', query) : 'search'
+  const result = query ? await searchEbayPaged(query, { limit: 48, sort, customid }) : { products: [], total: 0 }
 
   return (
     <main className="container" style={{ padding: '32px 20px 64px' }}>
@@ -43,7 +45,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       <ProductSearchBar initialQuery={query} sort={sort} />
 
       {query ? (
-        <SearchResults query={query} sort={sort} initial={result.products} total={result.total} />
+        <SearchResults query={query} sort={sort} initial={result.products} total={result.total} customid={customid} />
       ) : (
         <div style={{ marginTop: 28 }}>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 14 }}>

@@ -30,9 +30,8 @@ export default function LegalPage() {
       <section id="affiliate" style={{ marginBottom: 40 }}>
         <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>Affiliate Disclosure</h2>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-          DieHardNation is a participant in affiliate advertising programs including the eBay
-          Partner Network and Amazon Services LLC Associates Program. These programs provide a
-          means for us to earn advertising fees by linking to products on eBay.com and Amazon.com.
+          DieHardNation is a participant in the eBay Partner Network. This program provides a
+          means for us to earn advertising fees by linking to products on eBay.com.
           When you click a product link and make a purchase, we may earn a commission at no
           additional cost to you. Product prices and availability are subject to change. Any price
           and availability information displayed at the time of purchase will apply.
@@ -52,7 +51,7 @@ export default function LegalPage() {
         </ul>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
           We do not sell, trade, or transfer personal information to third parties. We do not use
-          cookies for tracking or advertising. Third-party sites (eBay, Amazon) have their own
+          cookies for tracking or advertising. Third-party sites (eBay and other retailers) have their own
           privacy policies that apply when you visit their sites through our links.
         </p>
       </section>

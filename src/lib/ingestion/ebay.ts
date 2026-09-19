@@ -1,6 +1,7 @@
 import type { NormalizedProduct } from './utils'
 import { detectSport, detectBrand, categorizeByTitle, generateSlug, isSchoolProduct } from './utils'
 import type { School } from '@/lib/supabase/types'
+import { ebayEndUserContext, withEbayCustomId } from '@/lib/affiliate/customid'
 
 let cachedToken: { token: string; expires: number } | null = null
 
@@ -39,7 +40,7 @@ function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function searchEbay(token: string, query: string, limit = 25): Promise<unknown[]> {
+async function searchEbay(token: string, query: string, limit = 25, customid?: string): Promise<unknown[]> {
   const params = new URLSearchParams({
     q: query,
     category_ids: '15687',
@@ -52,7 +53,7 @@ async function searchEbay(token: string, query: string, limit = 25): Promise<unk
     headers: {
       Authorization: `Bearer ${token}`,
       'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-      'X-EBAY-C-ENDUSERCTX': 'affiliateCampaignId=5339267498',
+      'X-EBAY-C-ENDUSERCTX': ebayEndUserContext(customid),
     },
   })
 
@@ -75,7 +76,8 @@ export async function fetchEbayProductsForSchool(
 
   for (const term of searchTerms) {
     try {
-      const items = await searchEbay(token, term, 25)
+      const customid = `school-${school.slug}`
+      const items = await searchEbay(token, term, 25, customid)
 
       for (const item of items as Record<string, unknown>[]) {
         const itemId = String(item.itemId || '')
@@ -96,10 +98,12 @@ export async function fetchEbayProductsForSchool(
           ((item.thumbnailImages as Record<string, unknown>[]))?.[0]?.imageUrl as string ||
           null
 
-        const affiliateUrl =
+        const affiliateUrl = withEbayCustomId(
           (item.itemAffiliateWebUrl as string) ||
           (item.itemWebUrl as string) ||
-          `https://www.ebay.com/itm/${itemId}`
+          `https://www.ebay.com/itm/${itemId}`,
+          customid,
+        )
 
         allItems.push({
           school_slug: school.slug,

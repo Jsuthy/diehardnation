@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import type { Product } from '@/lib/supabase/types'
+import { withEbayCustomId } from '@/lib/affiliate/customid'
 
 interface ProductCardProps {
   product: Product
@@ -19,11 +20,12 @@ export default function ProductCard({ product, schoolColor }: ProductCardProps) 
     } catch {
       // silent fail
     }
-    window.open(product.affiliate_url, '_blank', 'noopener,noreferrer')
+    const href = withEbayCustomId(product.affiliate_url, `school-${product.school_slug}`)
+    window.open(href, '_blank', 'noopener,noreferrer')
   }
 
   const sourceLabel = product.source === 'ebay' ? 'eBay'
-    : product.source === 'amazon' ? 'Amazon'
+    : product.source === 'amazon' ? 'Retailer'
     : product.source === 'fanatics' ? 'Fanatics'
     : product.source
 

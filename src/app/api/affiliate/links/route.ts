@@ -8,8 +8,9 @@ export async function GET(request: Request) {
   const query = searchParams.get('q') || 'fan gear'
   const sport = searchParams.get('sport') || undefined
   const category = searchParams.get('category') || undefined
+  const customid = searchParams.get('customid') || undefined
 
-  const links = await getAffiliateLinks({ query, sport, category })
+  const links = await getAffiliateLinks({ query, sport, category, customid })
 
   return NextResponse.json(
     { links },

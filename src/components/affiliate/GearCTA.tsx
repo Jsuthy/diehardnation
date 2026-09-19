@@ -15,6 +15,7 @@ interface GearCTAProps {
   title?: string
   teamName?: string
   sportName?: string
+  customid?: string
 }
 
 const PROVIDER_COLORS: Record<string, string> = {
@@ -25,20 +26,22 @@ const PROVIDER_COLORS: Record<string, string> = {
   ebay: '#E43137',
 }
 
-export default function GearCTA({ query, title }: GearCTAProps) {
+export default function GearCTA({ query, title, customid }: GearCTAProps) {
   const [links, setLinks] = useState<AffiliateLink[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let active = true
     setLoading(true)
-    fetch(`/api/affiliate/links?q=${encodeURIComponent(query)}`)
+    const params = new URLSearchParams({ q: query })
+    if (customid) params.set('customid', customid)
+    fetch(`/api/affiliate/links?${params}`)
       .then(r => r.json())
       .then(data => { if (active) setLinks(data.links || []) })
       .catch(() => { if (active) setLinks([]) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
-  }, [query])
+  }, [query, customid])
 
   const primary = links.find(l => l.isPrimary) || links[0]
   const secondary = links.filter(l => l !== primary)

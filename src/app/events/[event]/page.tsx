@@ -76,8 +76,8 @@ export default async function EventPage({ params }: { params: Promise<{ event: s
 
       <div className="container" style={{ padding: '40px 20px 64px' }}>
         <section style={{ marginBottom: 56 }}>
-          <ProductRail query={event.name} title={`Shop ${event.name} Gear`} />
-          <GearCTA query={`${event.name} gear jersey hoodie`} title={`Browse all ${event.name} gear`} />
+          <ProductRail query={`${event.name} jersey`} title={`Shop ${event.name} Gear`} customid={`event-${slug}`} />
+          <GearCTA query={`${event.name} gear jersey hoodie`} title={`Browse all ${event.name} gear`} customid={`event-${slug}`} />
           {event.sport_slug === 'soccer' && <SoccerGarageCTA query={`${event.name} jersey`} />}
         </section>
 

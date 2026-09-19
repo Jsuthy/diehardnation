@@ -128,7 +128,7 @@ export async function generateProgrammaticPagesForSchool(
       category: null,
       price_range: null,
       title: `${school.short_name} Fan Gift Guide`,
-      description: `The ultimate ${school.name} fan gift guide. Top ${school.mascot} gear picks from eBay and Amazon.`,
+      description: `The ultimate ${school.name} fan gift guide. Top ${school.mascot} gear picks from eBay.`,
       product_count: totalCount || 0,
     })
   }

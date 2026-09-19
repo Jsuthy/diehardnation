@@ -195,7 +195,7 @@ export default async function SchoolPage({
           Browse {school.name} gear by sport using the navigation above — shop {school.nickname}
           football jerseys and hoodies for game day, {school.nickname} basketball apparel for hoops
           season, or {school.nickname} volleyball shirts and sweatshirts year-round. Every category
-          is updated daily with fresh listings from eBay and Amazon so you always find the best
+          is updated daily with fresh listings from eBay so you always find the best
           selection and prices.
         </p>
       </section>

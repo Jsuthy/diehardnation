@@ -13,10 +13,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'DieHardNation \u2014 Fan Gear & Sports News for Every Team',
+    default: 'DieHardNation \u2014 Fan Gear & Deals for Every Team',
     template: '%s | DieHardNation',
   },
-  description: 'Shop fan gear and follow the latest sports news for every team, league and sport \u2014 NFL, NBA, MLB, NHL, soccer, college and more. Jerseys, hoodies, hats and accessories, updated daily.',
+  description: 'Shop fan gear for every team, league and sport \u2014 NFL, NBA, MLB, NHL, soccer, college and more. Jerseys, hoodies, hats and accessories from the secondary market, updated daily.',
   metadataBase: new URL('https://diehardnation.com'),
 }
 
@@ -58,7 +58,7 @@ export default function RootLayout({
                 '@type': 'ImageObject',
                 url: 'https://diehardnation.com/logo-mark.png',
               },
-              description: 'Independent fan gear aggregator and sports hub. DieHardNation compares officially licensable jerseys, hoodies, hats and apparel from eBay and Amazon across college and pro teams, leagues and major events.',
+              description: 'Independent fan gear aggregator. DieHardNation finds jerseys, hoodies, hats and apparel from eBay across college and pro teams, leagues and major events.',
               knowsAbout: [
                 'college football fan gear', 'NFL fan gear', 'NBA fan gear',
                 'MLB fan gear', 'NHL fan gear', 'soccer kits', 'sports apparel',

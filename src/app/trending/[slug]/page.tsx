@@ -78,7 +78,7 @@ export default async function MomentPageRoute({
   if (!m) notFound()
 
   // Live products at render time (ISR-cached). Falls back to stored count.
-  const products = await searchEbayProducts(m.gear_query, 24)
+  const products = await searchEbayProducts(m.gear_query, 24, { customid: `trending-${slug}` })
   const priceStat = computePriceStat(products.map(p => p.price))
   const count = products.length || m.product_count
 
